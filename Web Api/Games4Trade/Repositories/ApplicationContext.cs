@@ -1,7 +1,6 @@
 ﻿using Games4Trade.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
-using MySql.Data.MySqlClient;
 
 namespace Games4Trade.Persistence
 {
@@ -15,14 +14,11 @@ namespace Games4Trade.Persistence
             Options = options;
         }
 
-        private MySqlConnection GetConnection()
-        {
-            var sqlServerOptionsExtension = Options.FindExtension<SqlServerOptionsExtension>();
-            return new MySqlConnection(sqlServerOptionsExtension.ConnectionString);
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Dummy>(entity => { entity.HasKey(d => d.Id); });
+
             base.OnModelCreating(modelBuilder);
         }
     }

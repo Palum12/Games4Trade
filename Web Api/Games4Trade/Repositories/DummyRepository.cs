@@ -10,7 +10,6 @@ namespace Games4Trade.Repositories
 {
     public class DummyRepository : Repository<Dummy>, IDummyRepository
     {
-        //PlutoContext ?
         public DummyRepository(ApplicationContext context) : base(context)
         {
         }
@@ -26,10 +25,10 @@ namespace Games4Trade.Repositories
             /*return PlutoContext.Courses.Include(bla).OrderBy(2bla);*/
         }
 
-        /*public PlutoContext PlutoContext
+        public ApplicationContext ApplicationContext
          {
-             get { return Context as PlutoContext; }
+             get { return Context as ApplicationContext; }
          }
-         */
+        
     }
 }
