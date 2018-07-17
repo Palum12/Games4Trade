@@ -1,11 +1,11 @@
 ﻿using System;
-using Games4Trade.Repositories;
+using System.Threading.Tasks;
 
-namespace Games4Trade.Core
+namespace Games4Trade.Repositories
 {
-    interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork : IDisposable
     {
-        IDummyRepository Dummies { get; }
-        int Complete();
+        IUserRepository Users { get; }
+        Task<int> CompleteASync();
     }
 }

@@ -26,8 +26,6 @@ namespace Games4Trade
 
             var connectionString = Configuration.GetConnectionString("ApplicationContext");
             services.AddEntityFrameworkNpgsql().AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionString));
-            //   var connection = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING")) ? Configuration["ConnectionStrings:DefaultConnection"] : Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
-            //  services.AddDbContext<ApplicationContext>(options => options.UseMySql(connection));
 
             services.AddCors(options =>
             {

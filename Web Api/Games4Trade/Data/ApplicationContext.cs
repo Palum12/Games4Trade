@@ -21,5 +21,8 @@ namespace Games4Trade.Persistence
 
             base.OnModelCreating(modelBuilder);
         }
+
+
+        public DbSet<Games4Trade.Models.User> User { get; set; }
     }
 }

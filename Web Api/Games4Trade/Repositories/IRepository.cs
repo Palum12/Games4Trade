@@ -8,12 +8,12 @@ namespace Games4Trade.Repositories
 {
     public interface IRepository <TEntity> where TEntity : class
     {
-        TEntity Get(int id);
-        IEnumerable<TEntity> GetAll();
-        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
+        Task<TEntity> GetASync(int id);
+        Task<IEnumerable<TEntity>> GetAllASync();
+        Task<IEnumerable<TEntity>> FindASync(Expression<Func<TEntity, bool>> predicate);
 
-        void Add(TEntity entity);
-        void AddRange(IEnumerable<TEntity> entities);
+        Task AddASync(TEntity entity);
+        Task AddRangeASync(IEnumerable<TEntity> entities);
 
         void Remove(TEntity entity);
         void RemoveRange(IEnumerable<TEntity> entities);

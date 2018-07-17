@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Games4Trade.Core;
 using Games4Trade.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,14 +14,14 @@ namespace Games4Trade.Repositories
         public UnitOfWork(ApplicationContext context)
         {
             _context = context;
-            Dummies = new DummyRepository(context);
+            Users = new UserRepository(context);
         }
 
-        public IDummyRepository Dummies { get; private set; }
+        public IUserRepository Users { get; private set; }
 
-        public int Complete()
+        public async Task<int> CompleteASync()
         {
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
 
         public void Dispose()
