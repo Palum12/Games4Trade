@@ -6,7 +6,7 @@ using Games4Trade.Repositories;
 
 namespace Games4Trade.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -17,8 +17,9 @@ namespace Games4Trade.Services
 
         public async Task<IList<UserDto>> Get()
         {
-            var users = await _unitOfWork.Users.GetAllASync();
-            return null;
+
+            //var users = await _unitOfWork.Users.GetAllASync();
+            return new List<UserDto>(){new UserDto(){Email = "a@a.pl", Id = 1, Login = "Benia"}};
         }
     }
 }

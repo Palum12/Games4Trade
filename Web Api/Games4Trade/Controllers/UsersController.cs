@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Games4Trade.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Games4Trade.Models;
 using Games4Trade.Persistence;
+using Games4Trade.Services;
 
 namespace Games4Trade.Controllers
 {
@@ -14,18 +16,18 @@ namespace Games4Trade.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly IUserService _userService;
 
-        public UsersController(ApplicationContext context)
+        public UsersController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         // GET: api/Users
         [HttpGet]
-        public IEnumerable<User> GetUser()
+        public async Task<IList<UserDto>> GetUser()
         {
-            return _context.User;
+            return await _userService.Get();
         }
       
     }
