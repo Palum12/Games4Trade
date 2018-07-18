@@ -1,14 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Games4Trade.Data;
-using Games4Trade.Models;
+﻿using Games4Trade.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
 
-namespace Games4Trade.Persistence
+namespace Games4Trade.Data
 {
     public class ApplicationContext : DbContext, IApplicationContext
     {
-        public virtual DbSet<Games4Trade.Models.User> Users { get; set; }
+        public virtual DbSet<User> Users { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -16,7 +13,7 @@ namespace Games4Trade.Persistence
             Options = options;
         }
 
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>(entity =>

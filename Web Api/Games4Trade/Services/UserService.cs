@@ -18,7 +18,7 @@ namespace Games4Trade.Services
         public async Task<IList<UserDto>> Get()
         {
 
-            //var users = await _unitOfWork.Users.GetAllASync();
+            var users = await _unitOfWork.Users.GetAllASync();
             return new List<UserDto>(){new UserDto(){Email = "a@a.pl", Id = 1, Login = "Benia"}};
         }
     }

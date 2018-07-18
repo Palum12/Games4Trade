@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Games4Trade.Models;
-using Games4Trade.Persistence;
 using Games4Trade.Services;
 
 namespace Games4Trade.Controllers

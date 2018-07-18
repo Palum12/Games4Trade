@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Games4Trade.Data;
 using System.Threading.Tasks;
-using Games4Trade.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace Games4Trade.Repositories
 {
