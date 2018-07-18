@@ -1,4 +1,5 @@
-﻿using Games4Trade.Data;
+﻿using AutoMapper;
+using Games4Trade.Data;
 using Games4Trade.Repositories;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Builder;
@@ -32,7 +33,8 @@ namespace Games4Trade
             var connectionString = Configuration.GetConnectionString("ApplicationContext");
             services.AddEntityFrameworkNpgsql().AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionString));
 
-            services.AddScoped<IApplicationContext, ApplicationContext>();
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
 
