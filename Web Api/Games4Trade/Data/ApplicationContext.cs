@@ -18,6 +18,7 @@ namespace Games4Trade.Data
         {
             modelBuilder.Entity<User>(entity =>
             {
+                entity.Property(u => u.Id);
                 entity.HasKey(u => u.Id);
 
                 entity.HasIndex(u => u.Login).IsUnique();
