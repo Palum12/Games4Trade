@@ -19,7 +19,7 @@ namespace Games4Trade.Repositories
 
         public async Task AddASync(TEntity entity)
         {
-            await Context.Set<TEntity>().AddRangeAsync(entity);
+            await Context.Set<TEntity>().AddAsync(entity);
         }
 
         public async Task AddRangeASync(IEnumerable<TEntity> entities)

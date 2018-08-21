@@ -24,9 +24,29 @@ namespace Games4Trade.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<IList<UserDto>> GetUser()
+        public async Task<IActionResult> GetUser()
         {
-            return await _userService.Get();
+            var users = await _userService.Get();
+            return Ok(users);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostUser([FromBody] UserRegisterDto newUser)
+        {
+            var isEmailTaken = await _userService.CheckIfEmailExists(newUser.Email);
+            if (isEmailTaken)
+            {
+                return Conflict("This email adress is already taken");
+            }
+
+            var isSuccessful = await _userService.CreateUser(newUser);
+            if (isSuccessful)
+            {
+                return Ok();
+            }
+            
+            return BadRequest("Something went wrong, please contact administrator.");
+
         }
       
     }

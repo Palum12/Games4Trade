@@ -9,6 +9,8 @@ namespace Games4Trade
         public MappingProfile()
         {
             CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, UserLoginDto>().ReverseMap();
+            CreateMap<User, UserRegisterDto>().ReverseMap();
         }
     }
 }

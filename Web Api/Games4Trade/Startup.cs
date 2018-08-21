@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Games4Trade.Data;
+using Games4Trade.Dtos;
 using Games4Trade.Repositories;
 using Games4Trade.Services;
+using Games4Trade.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,9 +18,6 @@ namespace Games4Trade
 {
     public class Startup
     {
-        
-
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,7 +29,9 @@ namespace Games4Trade
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().AddFluentValidation();
             services.AddSingleton(Configuration);
+
 
             var connectionString = Configuration.GetConnectionString("ApplicationContext");
             services.AddEntityFrameworkNpgsql().AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionString));
@@ -37,6 +40,8 @@ namespace Games4Trade
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ILoginService, LoginService>();
+            services.AddTransient<IValidator<UserRegisterDto>, UserRegisterDtoValidators> ();
 
             services.AddCors(options =>
             {
