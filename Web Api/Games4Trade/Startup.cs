@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Text;
+using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Games4Trade.Data;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Games4Trade
 {
@@ -53,6 +56,26 @@ namespace Games4Trade
                 });
             });
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "Jwt";
+                options.DefaultChallengeScheme = "Jwt";
+            }).AddJwtBearer("Jwt", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("7uUzzYky7Lxb4pkGLRzU77dxpazhWEr4")),
+
+                    ValidateLifetime = true, //validate the expiration and not before values in the token
+
+                    ClockSkew = TimeSpan.FromMinutes(5) //5 minute tolerance for the expiration date
+                };
+            });
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         }
@@ -76,6 +99,7 @@ namespace Games4Trade
                 .AllowAnyHeader()
                 .AllowCredentials());
             app.UseCors("AnyOrigin");
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseMvc();

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Games4Trade.Dtos;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Games4Trade.Models;
 using Games4Trade.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Games4Trade.Controllers
 {
@@ -24,6 +19,7 @@ namespace Games4Trade.Controllers
 
         // GET: api/Users
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetUser()
         {
             var users = await _userService.Get();
