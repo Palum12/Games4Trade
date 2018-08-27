@@ -44,7 +44,8 @@ namespace Games4Trade
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILoginService, LoginService>();
-            services.AddTransient<IValidator<UserRegisterDto>, UserRegisterDtoValidators> ();
+            services.AddTransient<IValidator<UserRegisterDto>, UserRegisterDtoValidator> ();
+            services.AddTransient<IValidator<UserRecoverDto>, UserRecoverDtoValidator> ();
 
             services.AddCors(options =>
             {

@@ -24,4 +24,10 @@ namespace Games4Trade.Dtos
         public string Email { get; set; }
         public string Password { get; set; }
     }
+
+    public class UserRecoverDto
+    {
+        public string RecoveryString { get; set; }
+        public string NewPassword { get; set; }
+    }
 }

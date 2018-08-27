@@ -7,13 +7,21 @@ using Games4Trade.Dtos;
 
 namespace Games4Trade.Validators
 {
-    public class UserRegisterDtoValidators : AbstractValidator<UserRegisterDto>
+    public class UserRegisterDtoValidator : AbstractValidator<UserRegisterDto>
     {
-        public UserRegisterDtoValidators()
+        public UserRegisterDtoValidator()
         {
             RuleFor(u => u.Email).EmailAddress().MinimumLength(5).MaximumLength(128).NotEmpty();
             RuleFor(u => u.Login).MinimumLength(4).MaximumLength(32).NotEmpty();
             RuleFor(u => u.Password).MinimumLength(4).MaximumLength(64).NotEmpty();
+        }
+        
+    }
+    public class  UserRecoverDtoValidator: AbstractValidator<UserRecoverDto>
+    {
+        public UserRecoverDtoValidator()
+        {
+            RuleFor(u => u.NewPassword).MinimumLength(4).MaximumLength(64).NotEmpty();
         }
     }
 }

@@ -30,31 +30,44 @@ namespace Games4Trade.Services
         /// </summary>
         /// <param name="user"> User dto with data to login</param>
         /// <returns>Token or message if login has failed.</returns>
-        public async Task<(string token, string message)> LoginUser(UserLoginDto user)
+        public async Task<OperationResult> LoginUser(UserLoginDto user)
         {
             var userInDb = await _unitOfWork.Users.GetUserByLogin(user.Login);
+            var result = new OperationResult();
+
             if (userInDb == null)
             {
-                return ("", "User does not exist in database");
+                result.IsSuccessful = false;
+                result.Message = "User does not exist in database";
+                return result;
             }
             if (!string.IsNullOrEmpty(userInDb.RecoveryAddress))
             {
-                return ("", "Password recovery procedure was started on this account");
+                result.IsSuccessful = false;
+                result.Message = "Password recovery procedure was started on this account";
+                return result;
             }
 
             if (IsPasswordValid(user.Password, userInDb))
             {
                 var token = GenerateToken(userInDb);
-                return (token, "");
+                result.IsSuccessful = true;
+                result.Payload = token;
+                return result;
             }
-            return ("", "Passwords do not match!");
+
+            result.IsSuccessful = false;
+            result.Message = "Passwords do not match!";
+            return result;
 
         }
 
-        public async Task<bool> CheckIfLoginIsTaken(string login)
+        public async Task<OperationResult> CheckIfLoginIsTaken(string login)
         {
             var user = await _unitOfWork.Users.GetUserByLogin(login);
-            return user != null;
+            var result = new OperationResult();
+            result.IsSuccessful = user != null;
+            return result;
         }
 
         /// <summary>
