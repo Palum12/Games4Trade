@@ -27,6 +27,30 @@ namespace Games4Trade.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpPost]
+        [Route("changepassword")]
+        public async Task<IActionResult> ChangePassword(UserRecoverDto userRecoverDto)
+        {
+            var result = await _loginService.ChangePassword(userRecoverDto);
+            if (result.IsSuccessful)
+            {
+                return Ok(result.Message);
+            }
+            return StatusCode(500, result.Message);
+        }
+
+        [HttpPost]
+        [Route("recoverpassword")]
+        public async Task<IActionResult> RecoverPassword(string email)
+        {
+            var result = await _loginService.RecoverPassword(email);
+            if (result.IsSuccessful)
+            {
+                return Ok(result.Message);
+            }
+            return StatusCode(500, result.Message);
+        }
+
         [HttpHead]
         public async Task<IActionResult> CheckIfLoginIsTaken(string login)
         {

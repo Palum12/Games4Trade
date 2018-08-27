@@ -69,7 +69,7 @@ namespace Games4Trade.Services
             if (user == null)
             {
                 result.IsSuccessful = false;
-                result.Message = "Incorrect recovery link!";
+                result.Message = "Podano zły link przywracania !";
                 return result;
             }
 
@@ -81,11 +81,12 @@ namespace Games4Trade.Services
             if (repoResult > 0)
             {
                 result.IsSuccessful = true;
+                result.Message = "Hasło zostało zmienione !";
             }
             else
             {
                 result.IsSuccessful = false;
-                result.Message = "Something went wrong with db connection!";
+                result.Message = "Ups coś poszło nie tak !";
             }
             return result;
         }
@@ -95,8 +96,60 @@ namespace Games4Trade.Services
             var result = new OperationResult();
 
             var user = await _unitOfWork.Users.GetUserByEmail(email);
+            if (user == null)
+            {
+                result.IsSuccessful = false;
+                result.Message = "Nie ma takiego adresu w bazie !";
+                return result;
+            }
+            
+            MimeMessage message = new MimeMessage();
+            message.From.Add(new MailboxAddress("noreply@games4trade.pl"));
+            message.To.Add(new MailboxAddress(user.Email));
+            message.Subject = "Przywracanie hasla.";
+
+            user.RecoveryAddress = GetSalt().Substring(0, 32);
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = string.Format(@"Witaj. </br> Wysłana została prośba o zresetowanie hasła. Oto twój <a href=""http://localhost:8080/passwordRecovery?recoveryString={0}""> link</a>", user.RecoveryAddress)
+            };
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using (var client = new MailKit.Net.Smtp.SmtpClient())
+            {
+                try
+                {
+                    // Accept all SSL certificates (in case the server supports STARTTLS)
+                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                    await client.ConnectAsync("serwer1845771.home.pl", 465, true);
+
+                    // Authenticate email with server
+                    await client.AuthenticateAsync("noreply@games4trade.pl", "Mocne12\\");
+                    // Send message to receiver
+                    await client.SendAsync(message);
+                    // Disconect to unlock unnecessary resources
+                    await client.DisconnectAsync(true);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message);
+                }
+            }
 
 
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                result.IsSuccessful = true;
+                result.Message = "Wysłano wiadomość odnawiającą hasło.";
+            }
+            else
+            {
+                result.IsSuccessful = false;
+                result.Message = "Ups coś poszło nie tak !";
+            }
             return result;
         }
 
