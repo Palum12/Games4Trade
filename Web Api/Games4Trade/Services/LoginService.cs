@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -11,6 +10,7 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit;
 
 namespace Games4Trade.Services
 {
@@ -65,7 +65,7 @@ namespace Games4Trade.Services
         public async Task<OperationResult> ChangePassword(UserRecoverDto recoverDto)
         {
             var result = new OperationResult();
-            var user = (await _unitOfWork.Users.FindASync(u => u.RecoveryAddress.Equals(recoverDto.RecoveryString))).FirstOrDefault();
+            var user = await _unitOfWork.Users.GetUserByRecoveryAddress(recoverDto.RecoveryString);
             if (user == null)
             {
                 result.IsSuccessful = false;
@@ -87,6 +87,16 @@ namespace Games4Trade.Services
                 result.IsSuccessful = false;
                 result.Message = "Something went wrong with db connection!";
             }
+            return result;
+        }
+
+        public async Task<OperationResult> RecoverPassword(string email)
+        {
+            var result = new OperationResult();
+
+            var user = await _unitOfWork.Users.GetUserByEmail(email);
+
+
             return result;
         }
 

@@ -29,7 +29,8 @@ namespace Games4Trade.Repositories
 
         public async Task<IEnumerable<TEntity>> FindASync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await Context.Set<TEntity>().Where(predicate).ToListAsync();
+            var result = await Context.Set<TEntity>().Where(predicate).ToListAsync();
+            return result;
         }
 
         public async Task<TEntity> GetASync(int id)
