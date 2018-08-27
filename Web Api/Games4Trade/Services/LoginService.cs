@@ -62,11 +62,41 @@ namespace Games4Trade.Services
 
         }
 
+        public async Task<OperationResult> ChangePassword(UserRecoverDto recoverDto)
+        {
+            var result = new OperationResult();
+            var user = (await _unitOfWork.Users.FindASync(u => u.RecoveryAddress.Equals(recoverDto.RecoveryString))).FirstOrDefault();
+            if (user == null)
+            {
+                result.IsSuccessful = false;
+                result.Message = "Incorrect recovery link!";
+                return result;
+            }
+
+            user.Salt = GetSalt();
+            user.Password = ComputeHash(user.Salt, recoverDto.NewPassword);
+            user.RecoveryAddress = "";
+
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                result.IsSuccessful = true;
+            }
+            else
+            {
+                result.IsSuccessful = false;
+                result.Message = "Something went wrong with db connection!";
+            }
+            return result;
+        }
+
         public async Task<OperationResult> CheckIfLoginIsTaken(string login)
         {
             var user = await _unitOfWork.Users.GetUserByLogin(login);
-            var result = new OperationResult();
-            result.IsSuccessful = user != null;
+            var result = new OperationResult
+            {
+                IsSuccessful = user != null
+            };
             return result;
         }
 
@@ -121,5 +151,6 @@ namespace Games4Trade.Services
             return !string.IsNullOrEmpty(password) &&
                    user.Password.Equals(ComputeHash(user.Salt, password));
         }
+
     }
 }

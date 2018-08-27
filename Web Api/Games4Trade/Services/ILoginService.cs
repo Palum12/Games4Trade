@@ -8,6 +8,7 @@ namespace Games4Trade.Services
     {
         Task<OperationResult> LoginUser(UserLoginDto user);
         Task<OperationResult> CheckIfLoginIsTaken(string login);
+        Task<OperationResult> ChangePassword(UserRecoverDto recoverDto);
         string ComputeHash(string salt, string password);
         string GetSalt();
     }

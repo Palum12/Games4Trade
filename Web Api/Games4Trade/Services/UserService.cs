@@ -30,22 +30,41 @@ namespace Games4Trade.Services
             return mappedUsers.ToList();
         }
 
-        public async Task<bool> CheckIfEmailExists(string email)
+        public async Task<OperationResult> CheckIfEmailExists(string email)
         {
-            var user = await  _unitOfWork.Users.FindASync(u => u.Email.Equals(email));
-            return user.Any();
+            var result = new OperationResult();
+            var user = await _unitOfWork.Users.FindASync(u => u.Email.Equals(email));
+            result.IsSuccessful = user.Any();
+            if (!result.IsSuccessful)
+            {
+                result.Message = "This email adress is already taken";
+            }
+            return result;
         }
 
-        public async Task<bool> CreateUser(UserRegisterDto newUser)
+        public async Task<OperationResult> CreateUser(UserRegisterDto newUser)
         {
+            var result = new OperationResult();
+
             var mappedUser = _mapper.Map<UserRegisterDto, User>(newUser);
             mappedUser.Salt = _loginService.GetSalt();
             mappedUser.Password = _loginService.ComputeHash(
                 mappedUser.Salt, mappedUser.Password);
 
             await _unitOfWork.Users.AddASync(mappedUser);
-            var result = await _unitOfWork.CompleteASync();
-            return result > 0;
+
+            var repoResult = await _unitOfWork.CompleteASync();
+
+            if (repoResult > 0)
+            {
+                result.IsSuccessful = true;
+            }
+            else
+            {
+                result.IsSuccessful = false;
+                result.Message = "Something went wrong with db connection!";
+            }
+            return result;
         }
     }
 }

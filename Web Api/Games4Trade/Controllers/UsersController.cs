@@ -30,18 +30,17 @@ namespace Games4Trade.Controllers
         public async Task<IActionResult> PostUser([FromBody] UserRegisterDto newUser)
         {
             var isEmailTaken = await _userService.CheckIfEmailExists(newUser.Email);
-            if (isEmailTaken)
+            if (isEmailTaken.IsSuccessful)
             {
-                return Conflict("This email adress is already taken");
+                return Conflict(isEmailTaken.Message);
             }
 
-            var isSuccessful = await _userService.CreateUser(newUser);
-            if (isSuccessful)
+            var result = await _userService.CreateUser(newUser);
+            if (result.IsSuccessful)
             {
                 return Ok();
             }
-            
-            return BadRequest("Something went wrong, please contact administrator.");
+            return BadRequest(result.Message);
 
         }
       
