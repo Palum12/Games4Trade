@@ -25,6 +25,11 @@ namespace Games4Trade.Services
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Method loging in user and generating token.
+        /// </summary>
+        /// <param name="user"> User dto with data to login</param>
+        /// <returns>Token or message if login has failed.</returns>
         public async Task<(string token, string message)> LoginUser(UserLoginDto user)
         {
             var userInDb = await _unitOfWork.Users.GetUserByLogin(user.Login);
@@ -46,6 +51,18 @@ namespace Games4Trade.Services
 
         }
 
+        public async Task<bool> CheckIfLoginIsTaken(string login)
+        {
+            var user = await _unitOfWork.Users.GetUserByLogin(login);
+            return user != null;
+        }
+
+        /// <summary>
+        /// Compute hash for given password
+        /// </summary>
+        /// <param name="salt">Salt which will be added to password</param>
+        /// <param name="password">Password to hash</param>
+        /// <returns>Hashed password with added salt</returns>
         public string ComputeHash(string salt, string password)
         {
             var saltBytes = Convert.FromBase64String(salt);
@@ -53,6 +70,10 @@ namespace Games4Trade.Services
                 return Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(256));
         }
 
+        /// <summary>
+        /// Generates Salt
+        /// </summary>
+        /// <returns>32 character salt</returns>
         public string GetSalt()
         {
             byte[] bytes = new byte[16];

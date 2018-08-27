@@ -30,5 +30,17 @@ namespace Games4Trade.Controllers
             }
             return new ObjectResult(result.token);
         }
+
+        [HttpHead]
+        public async Task<IActionResult> CheckIfLoginIsTaken(string login)
+        {
+            var exists = await _loginService.CheckIfLoginIsTaken(login);
+            if (exists)
+            {
+                return Conflict();
+            }
+
+            return NotFound();
+        }
     }
 }
