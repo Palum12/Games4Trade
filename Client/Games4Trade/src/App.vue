@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-      <navbar/>
+      <navbar style="margin-bottom: 2vh"/>
       <router-view/>
   </div>
 </template>
@@ -17,7 +17,6 @@ export default {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
     background-color: whitesmoke;
     min-height: 100vh;
 }

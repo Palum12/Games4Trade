@@ -6,9 +6,9 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse " id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
+                <ul class="navbar-nav mr-auto" >
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Test</a>
+                        <a class="nav-link"  v-if="isAuthenticated">Test</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
@@ -25,8 +25,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
-  name: 'Navbar'
+  name: 'Navbar',
+  computed: {
+    ...mapGetters(['isAuthenticated'])
+  }
 }
 </script>
 
