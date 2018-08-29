@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '../../router/router'
 import jwt from 'jwt-decode'
 
 const state = {
@@ -28,7 +29,13 @@ const mutations = {
     state.userData.token = userData['token']
   },
   clearAuthData (state) {
-    state.user = null
+    state.userData = {
+      name: null,
+      role: null,
+      obtainingTime: null,
+      expirationTime: null,
+      token: null
+    }
     state.userLoggedIn = false
   }
 }
@@ -42,10 +49,34 @@ const actions = {
       let decodedToken = jwt(response.data)
       decodedToken['token'] = `Bearer ${response.data}`
       commit('authUser', decodedToken)
+      localStorage.setItem('token', response.data)
+      localStorage.setItem('expirationTime', decodedToken['exp'])
+      router.push('/')
     }).catch(error => {
       console.log(error)
       commit('clearAuthData')
     })
+  },
+  tryAutoLogin ({commit}) {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      return
+    }
+    const expirationDate = localStorage.getItem('expirationTime')
+    const dateNow = new Date()
+    console.log(expirationDate)
+    console.log(dateNow.getTime())
+    if (dateNow.getTime() / 1000 >= expirationDate) {
+      return
+    }
+    let decodedToken = jwt(token)
+    decodedToken['token'] = `Bearer ${token}`
+    commit('authUser', decodedToken)
+  },
+  logout ({commit}) {
+    commit('clearAuthData')
+    router.push('/')
+    localStorage.clear()
   }
 }
 

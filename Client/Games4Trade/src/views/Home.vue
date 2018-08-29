@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-6 offset-3">
-            <div class="jumbotron jumbotron-fluid rounded">
+            <div class="jumbotron jumbotron-fluid text-center ">
                 <img alt="Vue logo" src="../assets/logo.png">
             </div>
         </div>

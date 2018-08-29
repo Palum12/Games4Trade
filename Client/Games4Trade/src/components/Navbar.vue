@@ -12,11 +12,14 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="!isAuthenticated">
                         <router-link to="/signup" class="nav-link"><a>Utwórz konto</a></router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="!isAuthenticated">
                         <router-link to="/login" class="nav-link"><a>Zaloguj</a></router-link>
+                    </li>
+                    <li class="nav-item" v-if="isAuthenticated" @click="logout">
+                        <a class="nav-link" style="cursor: pointer">Wyloguj</a>
                     </li>
                 </ul>
             </div>
@@ -30,6 +33,11 @@ export default {
   name: 'Navbar',
   computed: {
     ...mapGetters(['isAuthenticated'])
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
+    }
   }
 }
 </script>
