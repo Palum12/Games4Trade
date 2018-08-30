@@ -18,6 +18,7 @@
                             class="form-control"
                             v-model="user.password">
                 </div>
+                <p style="color: red" v-if="wrongPassword">Podano nie prawidłową kombinację loginu i hasła.</p>
                 <div class="submit">
                     <button type="submit" class="btn btn-info">Zaloguj</button>
                 </div>
@@ -34,12 +35,20 @@ export default {
       user: {
         login: '',
         password: ''
-      }
+      },
+      wrongPassword: false
     }
   },
   methods: {
     onSubmit () {
       this.$store.dispatch('login', this.user)
+        .catch(error => {
+          if (error.response.status === 400) {
+            this.wrongPassword = true
+          } else {
+            console.log(error)
+          }
+        })
     }
   }
 }

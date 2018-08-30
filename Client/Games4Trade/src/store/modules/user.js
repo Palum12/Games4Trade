@@ -54,19 +54,22 @@ const actions = {
     })
   },
   login ({commit}, authData) {
-    axios.post('login', {
-      login: authData.login,
-      password: authData.password
-    }).then(response => {
-      let decodedToken = jwt(response.data)
-      decodedToken['token'] = `Bearer ${response.data}`
-      commit('authUser', decodedToken)
-      localStorage.setItem('token', response.data)
-      localStorage.setItem('expirationTime', decodedToken['exp'])
-      router.push('/')
-    }).catch(error => {
-      console.log(error)
-      commit('clearAuthData')
+    return new Promise((resolve, reject) => {
+      axios.post('login', {
+        login: authData.login,
+        password: authData.password
+      }).then(response => {
+        let decodedToken = jwt(response.data)
+        decodedToken['token'] = `Bearer ${response.data}`
+        commit('authUser', decodedToken)
+        localStorage.setItem('token', response.data)
+        localStorage.setItem('expirationTime', decodedToken['exp'])
+        router.push('/')
+        resolve()
+      }).catch(error => {
+        commit('clearAuthData')
+        reject(error)
+      })
     })
   },
   tryAutoLogin ({commit}) {
