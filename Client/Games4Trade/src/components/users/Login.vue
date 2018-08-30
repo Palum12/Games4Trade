@@ -21,7 +21,7 @@
                 <p style="color: red" v-if="wrongPassword">Podano nie prawidłową kombinację loginu i hasła.</p>
                 <div class="form-group d-flex justify-content-between">
                     <span class="small">
-                        <router-link to="/user/recover"><a>Nie pamiętasz hasła ?</a></router-link>
+                        <router-link to="/recover"><a>Nie pamiętasz hasła ?</a></router-link>
                     </span>
                     <div class="submit">
                         <button type="submit" class="btn btn-info">Zaloguj</button>
