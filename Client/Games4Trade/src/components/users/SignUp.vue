@@ -64,7 +64,6 @@
                 </div>
             </form>
         </div>
-        <p>{{$v}}</p>
     </div>
 </div>
 </template>
