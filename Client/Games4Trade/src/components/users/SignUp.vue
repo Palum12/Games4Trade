@@ -8,8 +8,9 @@
                     <input
                             type="text"
                             id="email"
-                            v-bind:class="[$v.email.$error ? invalidClass : '',
+                            v-bind:class="[$v.email.$error || isEmailTaken ? invalidClass : '',
                                 !$v.email.$invalid ? validClass : '', formClass]"
+                            @keydown="isEmailTaken = false"
                             @blur="$v.email.$touch()"
                             v-model="email">
                     <p v-if="!$v.email.email">Proszę podać prawidłowy adres email.</p>
@@ -87,7 +88,21 @@ export default {
   },
   methods: {
     onSubmit () {
-      console.log(this.email)
+      this.$store.dispatch('signUp', {
+        email: this.email,
+        login: this.login,
+        password: this.password
+      })
+        .then(result => {
+          alert('Gratulacje, zostałeś zarejstrowany, proszę zaloguj się.')
+        })
+        .catch(error => {
+          if (error.response.status === 409) {
+            this.isEmailTaken = true
+          } else {
+            alert('Ups!' + error.response.status)
+          }
+        })
     }
   },
   validations: {

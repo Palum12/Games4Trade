@@ -41,6 +41,18 @@ const mutations = {
 }
 
 const actions = {
+  signUp ({commit, dispatch}, newUser) {
+    return new Promise((resolve, reject) => {
+      axios.post('users', {
+        email: newUser.email,
+        login: newUser.login,
+        password: newUser.password
+      }).then(response => {
+        resolve(response)
+      })
+        .catch(error => { reject(error) })
+    })
+  },
   login ({commit}, authData) {
     axios.post('login', {
       login: authData.login,
