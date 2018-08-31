@@ -4,12 +4,12 @@ import SignUp from '../../components/users/SignUp'
 export default {
   LOGIN: {
     path: '/login',
-    name: 'Login',
+    name: 'login',
     component: Login
   },
   SIGNUP: {
     path: '/signup',
-    name: 'SignUp',
+    name: 'signup',
     component: SignUp
   }
 }

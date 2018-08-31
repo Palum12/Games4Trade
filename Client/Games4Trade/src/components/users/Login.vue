@@ -48,6 +48,9 @@ export default {
   methods: {
     onSubmit () {
       this.$store.dispatch('login', this.user)
+        .then(() => {
+          this.$router.push('/')
+        })
         .catch(error => {
           if (error.response.status === 400) {
             this.wrongPassword = true

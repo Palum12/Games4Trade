@@ -90,14 +90,26 @@ export default {
         login: this.login,
         password: this.password
       })
-        .then(result => {
-          alert('Gratulacje, zostałeś zarejstrowany, proszę zaloguj się.')
+        .then(() => {
+          this.$swal({
+            title: 'Gratulacje !',
+            text: 'Super, udało Ci się zakończyć proces tworzenia konta,' +
+              'teraz tylko się na nie zaloguj i korzystaj z naszego serwisu.',
+            type: 'success'
+          })
+            .then(() => {
+              this.$router.push('/')
+            })
         })
         .catch(error => {
           if (error.response.status === 409) {
             this.isEmailTaken = true
           } else {
-            alert('Ups!' + error.response.status)
+            this.$swal({
+              title: 'Wystąpił nieoczekiwany błąd',
+              text: 'Jeżeli nie wiesz co może być przyczyną błędu, proszę skontaktuj się z administratorem',
+              type: 'error'
+            })
           }
         })
     }

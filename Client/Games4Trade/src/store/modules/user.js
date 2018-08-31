@@ -64,7 +64,6 @@ const actions = {
         commit('authUser', decodedToken)
         localStorage.setItem('token', response.data)
         localStorage.setItem('expirationTime', decodedToken['exp'])
-        router.push('/')
         resolve()
       }).catch(error => {
         commit('clearAuthData')
