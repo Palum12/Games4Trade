@@ -21,7 +21,7 @@
                 <p style="color: red" v-if="wrongPassword">Podano nie prawidłową kombinację loginu i hasła.</p>
                 <div class="form-group d-flex justify-content-between">
                     <span class="small">
-                        <router-link to="/recover"><a>Nie pamiętasz hasła ?</a></router-link>
+                        <a class="page-link" @click="onRecover">Nie pamiętasz hasła ?</a>
                     </span>
                     <div class="submit">
                         <button type="submit" class="btn btn-info">Zaloguj</button>
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'Login',
   data () {
@@ -54,6 +55,32 @@ export default {
             console.log(error)
           }
         })
+    },
+    async onRecover () {
+      const {value: email} = await this.$swal({
+        title: 'Przypominanie hasła',
+        text: 'Proszę podać swój adres e-mail, zostanie na niego wysłany link do procedury przypominania hasła.',
+        showCancelButton: true,
+        confirmButtonText: 'Wyślij wiadomość',
+        cancelButtonText: 'Nie wysyłaj',
+        input: 'email'
+      })
+      if (email) {
+        axios.post(`login/recoverpassword?email=${email}`)
+          .then(() => {
+            this.$swal({
+              title: 'Wiadomość została wysłana',
+              type: 'success'
+            })
+          })
+          .catch(() => {
+            this.$swal({
+              title: 'Wystąpił nieoczekiwany błąd',
+              text: 'Może wprowadziłes nie prawidłowy adres email ?',
+              type: 'error'
+            })
+          })
+      }
     }
   }
 }

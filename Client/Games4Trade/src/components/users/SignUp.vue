@@ -35,7 +35,6 @@
                     <input
                             type="password"
                             id="password"
-                            class="form-control"
                             v-bind:class="[$v.password.$error ? invalidClass : '',
                                 !$v.password.$invalid ? validClass : '', formClass]"
                             @blur="$v.password.$touch()"
@@ -48,7 +47,6 @@
                     <input
                             type="password"
                             id="confirmPassword"
-                            class="form-control"
                             v-bind:class="[$v.confirmPassword.$error ? invalidClass : '',
                                 !$v.confirmPassword.$invalid && $v.confirmPassword.$dirty ? validClass : '', formClass]"
                             @blur="$v.confirmPassword.$touch()"
