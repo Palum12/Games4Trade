@@ -22,6 +22,7 @@
                             id="confirm-password"
                             v-bind:class="[$v.confirmPassword.$error ? invalidClass : '',
                                 !$v.confirmPassword.$invalid && $v.confirmPassword.$dirty ? validClass : '', formClass]"
+                            @blur="$v.confirmPassword.$touch()"
                             v-model="confirmPassword">
                 </div>
                 <p v-if="!$v.confirmPassword.sameAs">Hasła muszą sie zgadzać !</p>
@@ -53,7 +54,24 @@ export default {
   },
   methods: {
     changePassword () {
-      console.log(this.recoveryString)
+      axios.post('login/changepassword', {
+        recoveryString: this.recoveryString,
+        newPassword: this.password
+      })
+        .then(() => {
+          this.$swal({
+            title: 'Wiadomość została wysłana',
+            type: 'success'
+          })
+          this.$router.replace({name: 'home'})
+        })
+        .catch(() => {
+          this.$swal({
+            title: 'Wystąpił nieoczekiwany błąd',
+            text: 'Jeżeli nie wiesz co może być przyczyną błędu, proszę skontaktuj się z administratorem',
+            type: 'error'
+          })
+        })
     }
   },
   created () {
