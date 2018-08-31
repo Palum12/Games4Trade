@@ -24,4 +24,8 @@ export default {
     min-height: 100vh;
 }
 
+.form{
+    background-color: whitesmoke;
+    border: solid 1px #26bba6;
+}
 </style>

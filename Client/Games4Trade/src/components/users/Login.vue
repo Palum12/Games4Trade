@@ -89,8 +89,4 @@ export default {
 }
 </script>
 <style scoped>
- .form{
-     background-color: whitesmoke;
-     border: solid 1px #26bba6;
- }
 </style>
