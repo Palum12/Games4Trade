@@ -14,6 +14,7 @@ namespace Games4Trade.Data
         public virtual DbSet<UserOwnedSystem> UserSystemRelationship { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<State> States { get; set; }
+        public virtual DbSet<Photo> Photos { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -143,6 +144,14 @@ namespace Games4Trade.Data
                 new State() { Id = 2, Value = "Używany" },
                 new State() { Id = 3, Value = "Uszkodzony" }
             );
+
+            modelBuilder.Entity<Photo>(entity =>
+            {
+                entity.Property(p => p.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.DateCreated).HasDefaultValueSql("Now()");
+                entity.Property(p => p.Path).IsRequired();
+            });
 
             base.OnModelCreating(modelBuilder);
         }
