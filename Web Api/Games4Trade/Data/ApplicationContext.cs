@@ -1,4 +1,5 @@
-﻿using Games4Trade.Models;
+﻿using System;
+using Games4Trade.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Games4Trade.Data
@@ -6,6 +7,7 @@ namespace Games4Trade.Data
     public class ApplicationContext : DbContext, IApplicationContext
     {
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Announcement> Announcements { get; set; }
         public virtual DbSet<ObservedUsersRelationShip> ObservedUsersRelationship { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
@@ -28,6 +30,16 @@ namespace Games4Trade.Data
                 entity.HasOne(uu => uu.ObservedUser)
                     .WithMany(uu => uu.ObservedUsers)
                     .HasForeignKey(uu => uu.ObservedUserId);
+            });
+
+            modelBuilder.Entity<Announcement>(entity =>
+            {
+                entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(a => a.Id);
+                entity.Property(a => a.Content).HasColumnType("text").IsRequired();
+                entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
+                entity.Property(a => a.UserId).IsRequired();
+                entity.HasOne(a => a.User).WithMany(u => u.Announcements).HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<User>(entity =>

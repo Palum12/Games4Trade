@@ -17,5 +17,7 @@ namespace Games4Trade.Models
         
         public virtual ICollection<ObservedUsersRelationShip> ObservedUsers { get; set; }
         public virtual ICollection<ObservedUsersRelationShip> ObservingUsers { get; set; }
+
+        public virtual ICollection<Announcement> Announcements { get; set; }
     }
 }
