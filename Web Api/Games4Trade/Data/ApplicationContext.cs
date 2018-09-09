@@ -15,6 +15,7 @@ namespace Games4Trade.Data
         public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<State> States { get; set; }
         public virtual DbSet<Photo> Photos { get; set; }
+        public virtual DbSet<Advertisement> Advertisements { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -151,6 +152,22 @@ namespace Games4Trade.Data
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.DateCreated).HasDefaultValueSql("Now()");
                 entity.Property(p => p.Path).IsRequired();
+                entity.Property(p => p.AdvertisementId).IsRequired();
+                entity.HasOne(p => p.Advertisement).WithMany(a => a.Photos).HasForeignKey(p => p.AdvertisementId);
+            });
+
+            modelBuilder.Entity<Advertisement>(entity =>
+            {
+                entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(a => a.Id);
+                entity.Property(a => a.Description).HasColumnType("text").IsRequired();
+                entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
+                entity.Property(a => a.IsActive).IsRequired().HasDefaultValue(true);
+                entity.Property(a => a.ExchangeActive).IsRequired().HasDefaultValue(true);
+                entity.Property(a => a.Price).IsRequired().HasColumnType("money");
+                entity.Property(a => a.Title).IsRequired();
+                entity.Property(a => a.UserId).IsRequired();
+                entity.HasOne(a => a.User).WithMany(u => u.Advertisements).HasForeignKey(a => a.UserId);
             });
 
             base.OnModelCreating(modelBuilder);

@@ -10,5 +10,8 @@ namespace Games4Trade.Models
         public int Id { get; set; }
         public string Path { get; set; }
         public DateTime DateCreated { get; set; }
+
+        public int AdvertisementId { get; set; }
+        public Advertisement Advertisement { get; set; }
     }
 }
