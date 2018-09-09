@@ -1,5 +1,4 @@
-﻿using System;
-using Games4Trade.Models;
+﻿using Games4Trade.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Games4Trade.Data
@@ -11,6 +10,8 @@ namespace Games4Trade.Data
         public virtual DbSet<ObservedUsersRelationship> ObservedUsersRelationship { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }
         public virtual DbSet<UserLikedGenre> UserGenreRelationship { get; set; }
+        public virtual DbSet<Models.System> Systems { get; set; }
+        public virtual DbSet<UserOwnedSystem> UserSystemRelationship { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -70,7 +71,7 @@ namespace Games4Trade.Data
             {
                 entity.Property(g => g.Id).UseNpgsqlIdentityByDefaultColumn();
                 entity.HasKey(g => g.Id);
-                entity.Property(g => g.Value).IsRequired();
+                entity.Property(g => g.Value).IsRequired().HasMaxLength(128);
                 entity.HasIndex(u => u.Value).IsUnique();
             });
 
@@ -85,6 +86,30 @@ namespace Games4Trade.Data
                 entity.HasOne(ug => ug.Genre)
                     .WithMany(ug => ug.LikedByUsers)
                     .HasForeignKey(ug => ug.GenreId);
+            });
+
+            modelBuilder.Entity<Models.System>(entity =>
+            {
+                entity.Property(s => s.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(s => s.Id);
+
+                entity.Property(s => s.Manufacturer).IsRequired().HasMaxLength(128);
+                entity.Property(s => s.Model).IsRequired().HasMaxLength(128);
+
+                entity.HasIndex(u => new {u.Manufacturer, u.Model});
+            });
+
+            modelBuilder.Entity<UserOwnedSystem>(entity =>
+            {
+                entity.HasKey(us => new { us.SystemId, us.UserId });
+
+                entity.HasOne(us => us.User)
+                    .WithMany(us => us.OwnedSystems)
+                    .HasForeignKey(us => us.UserId);
+
+                entity.HasOne(us => us.System)
+                    .WithMany(us => us.OwnedByUsers)
+                    .HasForeignKey(us => us.SystemId);
             });
 
             base.OnModelCreating(modelBuilder);

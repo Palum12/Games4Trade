@@ -20,5 +20,6 @@ namespace Games4Trade.Models
 
         public virtual ICollection<Announcement> Announcements { get; set; }
         public virtual ICollection<UserLikedGenre> LikedGenres { get; set; }
+        public virtual ICollection<UserOwnedSystem> OwnedSystems { get; set; }
     }
 }

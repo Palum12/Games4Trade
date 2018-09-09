@@ -3,15 +3,17 @@ using System;
 using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Games4Trade.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20180909135350_added systems")]
+    partial class addedsystems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,19 +151,6 @@ namespace Games4Trade.Data.Migrations
                     b.ToTable("UserGenreRelationship");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.UserOwnedSystem", b =>
-                {
-                    b.Property<int>("SystemId");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("SystemId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserSystemRelationship");
-                });
-
             modelBuilder.Entity("Games4Trade.Models.Announcement", b =>
                 {
                     b.HasOne("Games4Trade.Models.User", "User")
@@ -192,19 +181,6 @@ namespace Games4Trade.Data.Migrations
 
                     b.HasOne("Games4Trade.Models.User", "User")
                         .WithMany("LikedGenres")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Games4Trade.Models.UserOwnedSystem", b =>
-                {
-                    b.HasOne("Games4Trade.Models.System", "System")
-                        .WithMany("OwnedByUsers")
-                        .HasForeignKey("SystemId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Games4Trade.Models.User", "User")
-                        .WithMany("OwnedSystems")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
