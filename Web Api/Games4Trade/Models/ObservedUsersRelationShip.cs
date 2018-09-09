@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Games4Trade.Models
 {
-    public class ObservedUsersRelationShip
+    public class ObservedUsersRelationship
     {
         public int ObservingUserId { get; set; }
         public virtual User ObservingUser { get; set; }

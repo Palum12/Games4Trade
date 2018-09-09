@@ -3,15 +3,17 @@ using System;
 using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Games4Trade.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20180909132825_added genre")]
+    partial class addedgenre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,7 +61,7 @@ namespace Games4Trade.Data.Migrations
                     b.ToTable("Genres");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.ObservedUsersRelationship", b =>
+            modelBuilder.Entity("Games4Trade.Models.ObservedUsersRelationShip", b =>
                 {
                     b.Property<int>("ObservingUserId");
 
@@ -114,19 +116,6 @@ namespace Games4Trade.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.UserLikedGenre", b =>
-                {
-                    b.Property<int>("GenreId");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("GenreId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserGenreRelationship");
-                });
-
             modelBuilder.Entity("Games4Trade.Models.Announcement", b =>
                 {
                     b.HasOne("Games4Trade.Models.User", "User")
@@ -135,7 +124,7 @@ namespace Games4Trade.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.ObservedUsersRelationship", b =>
+            modelBuilder.Entity("Games4Trade.Models.ObservedUsersRelationShip", b =>
                 {
                     b.HasOne("Games4Trade.Models.User", "ObservedUser")
                         .WithMany("ObservedUsers")
@@ -145,19 +134,6 @@ namespace Games4Trade.Data.Migrations
                     b.HasOne("Games4Trade.Models.User", "ObservingUser")
                         .WithMany("ObservingUsers")
                         .HasForeignKey("ObservingUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Games4Trade.Models.UserLikedGenre", b =>
-                {
-                    b.HasOne("Games4Trade.Models.Genre", "Genre")
-                        .WithMany("LikedByUsers")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Games4Trade.Models.User", "User")
-                        .WithMany("LikedGenres")
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

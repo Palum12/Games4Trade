@@ -15,9 +15,10 @@ namespace Games4Trade.Models
         public string RecoveryAddress { get; set; }
         public string Role { get; set; }
         
-        public virtual ICollection<ObservedUsersRelationShip> ObservedUsers { get; set; }
-        public virtual ICollection<ObservedUsersRelationShip> ObservingUsers { get; set; }
+        public virtual ICollection<ObservedUsersRelationship> ObservedUsers { get; set; }
+        public virtual ICollection<ObservedUsersRelationship> ObservingUsers { get; set; }
 
         public virtual ICollection<Announcement> Announcements { get; set; }
+        public virtual ICollection<UserLikedGenre> LikedGenres { get; set; }
     }
 }

@@ -8,7 +8,9 @@ namespace Games4Trade.Data
     {
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Announcement> Announcements { get; set; }
-        public virtual DbSet<ObservedUsersRelationShip> ObservedUsersRelationship { get; set; }
+        public virtual DbSet<ObservedUsersRelationship> ObservedUsersRelationship { get; set; }
+        public virtual DbSet<Genre> Genres { get; set; }
+        public virtual DbSet<UserLikedGenre> UserGenreRelationship { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -19,7 +21,7 @@ namespace Games4Trade.Data
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ObservedUsersRelationShip>(entity =>
+            modelBuilder.Entity<ObservedUsersRelationship>(entity =>
             {
                 entity.HasKey(uu => new {uu.ObservingUserId, uu.ObservedUserId});
 
@@ -30,16 +32,6 @@ namespace Games4Trade.Data
                 entity.HasOne(uu => uu.ObservedUser)
                     .WithMany(uu => uu.ObservedUsers)
                     .HasForeignKey(uu => uu.ObservedUserId);
-            });
-
-            modelBuilder.Entity<Announcement>(entity =>
-            {
-                entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
-                entity.HasKey(a => a.Id);
-                entity.Property(a => a.Content).HasColumnType("text").IsRequired();
-                entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
-                entity.Property(a => a.UserId).IsRequired();
-                entity.HasOne(a => a.User).WithMany(u => u.Announcements).HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -61,6 +53,38 @@ namespace Games4Trade.Data
                     .HasDefaultValueSql("'User'");
                 entity.Property(e => e.RecoveryAddress).HasMaxLength(32);
 
+            });
+
+            modelBuilder.Entity<Announcement>(entity =>
+            {
+                entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(a => a.Id);
+                entity.Property(a => a.Content).HasColumnType("text").IsRequired();
+                entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
+                entity.Property(a => a.UserId).IsRequired();
+                entity.HasOne(a => a.User).WithMany(u => u.Announcements).HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+
+            modelBuilder.Entity<Genre>(entity =>
+            {
+                entity.Property(g => g.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(g => g.Id);
+                entity.Property(g => g.Value).IsRequired();
+                entity.HasIndex(u => u.Value).IsUnique();
+            });
+
+            modelBuilder.Entity<UserLikedGenre>(entity =>
+            {
+                entity.HasKey(ug => new { ug.GenreId, ug.UserId });
+
+                entity.HasOne(ug => ug.User)
+                    .WithMany(ug => ug.LikedGenres)
+                    .HasForeignKey(ug => ug.UserId);
+
+                entity.HasOne(ug => ug.Genre)
+                    .WithMany(ug => ug.LikedByUsers)
+                    .HasForeignKey(ug => ug.GenreId);
             });
 
             base.OnModelCreating(modelBuilder);
