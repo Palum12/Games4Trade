@@ -16,6 +16,7 @@ namespace Games4Trade.Data
         public virtual DbSet<State> States { get; set; }
         public virtual DbSet<Photo> Photos { get; set; }
         public virtual DbSet<Advertisement> Advertisements { get; set; }
+        public virtual DbSet<AdvertisementItem> AdvertisementItems { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -168,6 +169,20 @@ namespace Games4Trade.Data
                 entity.Property(a => a.Title).IsRequired();
                 entity.Property(a => a.UserId).IsRequired();
                 entity.HasOne(a => a.User).WithMany(u => u.Advertisements).HasForeignKey(a => a.UserId);
+            });
+
+            modelBuilder.Entity<AdvertisementItem>(entity =>
+            {
+                entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(a => a.Id);
+                entity.Property(a => a.AdvertisementId).IsRequired();
+                entity.Property(a => a.StateId).IsRequired();
+                entity.Property(a => a.SystemId).IsRequired();
+
+                entity.HasOne(a => a.State).WithMany(s => s.AdvertisementItems).HasForeignKey(a => a.StateId);
+                entity.HasOne(a => a.System).WithMany(s => s.AdvertisementItems).HasForeignKey(a => a.SystemId);
+                entity.HasOne(a => a.Advertisement).WithOne(ad => ad.Item).HasForeignKey<AdvertisementItem>(a => a.AdvertisementId);
+
             });
 
             base.OnModelCreating(modelBuilder);

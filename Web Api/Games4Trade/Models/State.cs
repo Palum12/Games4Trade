@@ -9,5 +9,6 @@ namespace Games4Trade.Models
     {
         public int Id { get; set; }
         public string Value { get; set; }
+        public virtual ICollection<AdvertisementItem> AdvertisementItems { get; set; }
     }
 }
