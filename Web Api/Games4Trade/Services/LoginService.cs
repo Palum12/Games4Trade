@@ -10,6 +10,7 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using static System.Console;
 using MimeKit;
 
 namespace Games4Trade.Services
@@ -134,7 +135,7 @@ namespace Games4Trade.Services
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine(exception.Message);
+                    WriteLine(exception.Message);
                 }
             }
 

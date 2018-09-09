@@ -1,4 +1,5 @@
-﻿using Games4Trade.Models;
+﻿using System.Collections.Generic;
+using Games4Trade.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Games4Trade.Data
@@ -17,6 +18,9 @@ namespace Games4Trade.Data
         public virtual DbSet<Photo> Photos { get; set; }
         public virtual DbSet<Advertisement> Advertisements { get; set; }
         public virtual DbSet<AdvertisementItem> AdvertisementItems { get; set; }
+        public virtual DbSet<Console> Consoles { get; set; }
+        public virtual DbSet<Game> Games { get; set; }
+        public virtual DbSet<Accessory> Accessories { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -182,7 +186,18 @@ namespace Games4Trade.Data
                 entity.HasOne(a => a.State).WithMany(s => s.AdvertisementItems).HasForeignKey(a => a.StateId);
                 entity.HasOne(a => a.System).WithMany(s => s.AdvertisementItems).HasForeignKey(a => a.SystemId);
                 entity.HasOne(a => a.Advertisement).WithOne(ad => ad.Item).HasForeignKey<AdvertisementItem>(a => a.AdvertisementId);
+            });
 
+            modelBuilder.Entity<Console>(entity =>
+            {
+                entity.HasOne(c => c.ConsoleRegion).WithMany(r => r.Consoles)
+                    .HasForeignKey(c => c.ConsoleRegionId);
+            });
+
+            modelBuilder.Entity<Game>(entity =>
+            {
+                entity.HasOne(g => g.Genre).WithMany(ge => ge.Games).HasForeignKey(g => g.GenreId);
+                entity.HasOne(g => g.GameRegion).WithMany(r => r.Games).HasForeignKey(g => g.GameRegionId);
             });
 
             base.OnModelCreating(modelBuilder);

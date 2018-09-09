@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Games4Trade.Models
 {
@@ -9,5 +6,8 @@ namespace Games4Trade.Models
     {
         public int Id { get; set; }
         public string Value { get; set; }
+        public virtual ICollection<Console> Consoles { get; set; }
+        public virtual ICollection<Game> Games { get; set; }
+
     }
 }

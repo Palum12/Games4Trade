@@ -3,15 +3,17 @@ using System;
 using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Games4Trade.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20180909172453_added consoles and games")]
+    partial class addedconsolesandgames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -299,19 +301,6 @@ namespace Games4Trade.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserSystemRelationship");
-                });
-
-            modelBuilder.Entity("Games4Trade.Models.Accessory", b =>
-                {
-                    b.HasBaseType("Games4Trade.Models.AdvertisementItem");
-
-                    b.Property<string>("AccessoryManufacturer");
-
-                    b.Property<string>("AccessoryModel");
-
-                    b.ToTable("Accessory");
-
-                    b.HasDiscriminator().HasValue("Accessory");
                 });
 
             modelBuilder.Entity("Games4Trade.Models.Console", b =>

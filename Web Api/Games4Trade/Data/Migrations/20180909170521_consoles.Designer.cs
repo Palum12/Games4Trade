@@ -3,15 +3,17 @@ using System;
 using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Games4Trade.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20180909170521_consoles")]
+    partial class consoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -301,55 +303,15 @@ namespace Games4Trade.Data.Migrations
                     b.ToTable("UserSystemRelationship");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Accessory", b =>
-                {
-                    b.HasBaseType("Games4Trade.Models.AdvertisementItem");
-
-                    b.Property<string>("AccessoryManufacturer");
-
-                    b.Property<string>("AccessoryModel");
-
-                    b.ToTable("Accessory");
-
-                    b.HasDiscriminator().HasValue("Accessory");
-                });
-
             modelBuilder.Entity("Games4Trade.Models.Console", b =>
                 {
                     b.HasBaseType("Games4Trade.Models.AdvertisementItem");
 
-                    b.Property<int>("ConsoleRegionId");
-
                     b.Property<DateTime>("DateManufactured");
-
-                    b.HasIndex("ConsoleRegionId");
 
                     b.ToTable("Console");
 
                     b.HasDiscriminator().HasValue("Console");
-                });
-
-            modelBuilder.Entity("Games4Trade.Models.Game", b =>
-                {
-                    b.HasBaseType("Games4Trade.Models.AdvertisementItem");
-
-                    b.Property<DateTime>("DateDeveloped");
-
-                    b.Property<string>("Developer");
-
-                    b.Property<int>("GameRegionId");
-
-                    b.Property<int>("GenreId");
-
-                    b.Property<string>("Title");
-
-                    b.HasIndex("GameRegionId");
-
-                    b.HasIndex("GenreId");
-
-                    b.ToTable("Game");
-
-                    b.HasDiscriminator().HasValue("Game");
                 });
 
             modelBuilder.Entity("Games4Trade.Models.Advertisement", b =>
@@ -430,27 +392,6 @@ namespace Games4Trade.Data.Migrations
                     b.HasOne("Games4Trade.Models.User", "User")
                         .WithMany("OwnedSystems")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Games4Trade.Models.Console", b =>
-                {
-                    b.HasOne("Games4Trade.Models.Region", "ConsoleRegion")
-                        .WithMany("Consoles")
-                        .HasForeignKey("ConsoleRegionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Games4Trade.Models.Game", b =>
-                {
-                    b.HasOne("Games4Trade.Models.Region", "GameRegion")
-                        .WithMany("Games")
-                        .HasForeignKey("GameRegionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Games4Trade.Models.Genre", "Genre")
-                        .WithMany("Games")
-                        .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

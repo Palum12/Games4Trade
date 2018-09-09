@@ -7,6 +7,8 @@
   <ItemGroup>
     <Compile Remove="Data\Migrations\20180908161727_many to many users.cs" />
     <Compile Remove="Data\Migrations\20180908161727_many to many users.Designer.cs" />
+    <Compile Remove="Data\Migrations\20180909170818_consoles and regions.cs" />
+    <Compile Remove="Data\Migrations\20180909170818_consoles and regions.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

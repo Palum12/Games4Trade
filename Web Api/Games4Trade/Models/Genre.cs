@@ -10,5 +10,6 @@ namespace Games4Trade.Models
         public int Id { get; set; }
         public string Value { get; set; }
         public virtual ICollection<UserLikedGenre> LikedByUsers { get; set; }
+        public virtual ICollection<Game> Games { get; set; }
     }
 }
