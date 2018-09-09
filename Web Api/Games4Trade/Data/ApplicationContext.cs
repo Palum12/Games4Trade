@@ -13,6 +13,7 @@ namespace Games4Trade.Data
         public virtual DbSet<Models.System> Systems { get; set; }
         public virtual DbSet<UserOwnedSystem> UserSystemRelationship { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
+        public virtual DbSet<State> States { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -125,9 +126,23 @@ namespace Games4Trade.Data
             modelBuilder.Entity<Region>().HasData(
                 new Region() { Id = 1, Value = "PAL"},
                 new Region() { Id = 2, Value = "NTSC"},
-                new Region() { Id = 3, Value = "OTHER"},
+                new Region() { Id = 3, Value = "INNY"},
                 new Region() { Id = 4, Value = "MULTI"}
                 );
+
+            modelBuilder.Entity<State>(entity =>
+            {
+                entity.Property(s => s.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(s => s.Id);
+                entity.Property(s => s.Value).IsRequired().HasMaxLength(16);
+                entity.HasIndex(s => s.Value).IsUnique();
+            });
+
+            modelBuilder.Entity<State>().HasData(
+                new State() { Id = 1, Value = "Nowy" },
+                new State() { Id = 2, Value = "Używany" },
+                new State() { Id = 3, Value = "Uszkodzony" }
+            );
 
             base.OnModelCreating(modelBuilder);
         }
