@@ -12,6 +12,7 @@ namespace Games4Trade.Data
         public virtual DbSet<UserLikedGenre> UserGenreRelationship { get; set; }
         public virtual DbSet<Models.System> Systems { get; set; }
         public virtual DbSet<UserOwnedSystem> UserSystemRelationship { get; set; }
+        public virtual DbSet<Region> Regions { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -19,7 +20,7 @@ namespace Games4Trade.Data
             Options = options;
         }
 
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ObservedUsersRelationship>(entity =>
@@ -63,7 +64,8 @@ namespace Games4Trade.Data
                 entity.Property(a => a.Content).HasColumnType("text").IsRequired();
                 entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
                 entity.Property(a => a.UserId).IsRequired();
-                entity.HasOne(a => a.User).WithMany(u => u.Announcements).HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(a => a.User).WithMany(u => u.Announcements).HasForeignKey(a => a.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
 
@@ -77,7 +79,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<UserLikedGenre>(entity =>
             {
-                entity.HasKey(ug => new { ug.GenreId, ug.UserId });
+                entity.HasKey(ug => new {ug.GenreId, ug.UserId});
 
                 entity.HasOne(ug => ug.User)
                     .WithMany(ug => ug.LikedGenres)
@@ -101,7 +103,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<UserOwnedSystem>(entity =>
             {
-                entity.HasKey(us => new { us.SystemId, us.UserId });
+                entity.HasKey(us => new {us.SystemId, us.UserId});
 
                 entity.HasOne(us => us.User)
                     .WithMany(us => us.OwnedSystems)
@@ -111,6 +113,21 @@ namespace Games4Trade.Data
                     .WithMany(us => us.OwnedByUsers)
                     .HasForeignKey(us => us.SystemId);
             });
+
+            modelBuilder.Entity<Region>(entity =>
+            {
+                entity.Property(r => r.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.HasKey(r => r.Id);
+                entity.Property(r => r.Value).IsRequired().HasMaxLength(16);
+                entity.HasIndex(r => r.Value).IsUnique();
+            });
+
+            modelBuilder.Entity<Region>().HasData(
+                new Region() { Id = 1, Value = "PAL"},
+                new Region() { Id = 2, Value = "NTSC"},
+                new Region() { Id = 3, Value = "OTHER"},
+                new Region() { Id = 4, Value = "MULTI"}
+                );
 
             base.OnModelCreating(modelBuilder);
         }
