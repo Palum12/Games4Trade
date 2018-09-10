@@ -47,11 +47,14 @@ export default {
   },
   methods: {
     onSubmit () {
+      this.$store.dispatch('setSpinnerLoading')
       this.$store.dispatch('login', this.user)
         .then(() => {
+          this.$store.dispatch('unsetSpinnerLoading')
           this.$router.push('/')
         })
         .catch(error => {
+          this.$store.dispatch('unsetSpinnerLoading')
           if (error.response.status === 400) {
             this.wrongPassword = true
           } else {
@@ -69,14 +72,17 @@ export default {
         input: 'email'
       })
       if (email) {
+        this.$store.dispatch('setSpinnerLoading')
         axios.post(`login/password/recover?email=${email}`)
           .then(() => {
+            this.$store.dispatch('unsetSpinnerLoading')
             this.$swal({
               title: 'Wiadomość została wysłana',
               type: 'success'
             })
           })
           .catch(() => {
+            this.$store.dispatch('unsetSpinnerLoading')
             this.$swal({
               title: 'Wystąpił nieoczekiwany błąd',
               text: 'Może wprowadziłes nie prawidłowy adres email ?',

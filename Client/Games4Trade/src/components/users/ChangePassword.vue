@@ -54,11 +54,13 @@ export default {
   },
   methods: {
     changePassword () {
+      this.$store.dispatch('setSpinnerLoading')
       axios.post('login/password/change', {
         recoveryString: this.recoveryString,
         newPassword: this.password
       })
         .then(() => {
+          this.$store.dispatch('unsetSpinnerLoading')
           this.$swal({
             title: 'Wiadomość została wysłana',
             type: 'success'
@@ -66,6 +68,7 @@ export default {
           this.$router.replace({name: 'home'})
         })
         .catch(() => {
+          this.$store.dispatch('unsetSpinnerLoading')
           this.$swal({
             title: 'Wystąpił nieoczekiwany błąd',
             text: 'Jeżeli nie wiesz co może być przyczyną błędu, proszę skontaktuj się z administratorem',

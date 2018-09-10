@@ -85,12 +85,14 @@ export default {
   },
   methods: {
     onSubmit () {
+      this.$store.dispatch('setSpinnerLoading')
       this.$store.dispatch('signUp', {
         email: this.email,
         login: this.login,
         password: this.password
       })
         .then(() => {
+          this.$store.dispatch('unsetSpinnerLoading')
           this.$swal({
             title: 'Gratulacje !',
             text: 'Super, udało Ci się zakończyć proces tworzenia konta,' +
@@ -102,6 +104,7 @@ export default {
             })
         })
         .catch(error => {
+          this.$store.dispatch('unsetSpinnerLoading')
           if (error.response.status === 409) {
             this.isEmailTaken = true
           } else {
