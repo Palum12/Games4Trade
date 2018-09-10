@@ -6,14 +6,13 @@ namespace Games4Trade.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationContext _context;
+        public IUserRepository Users { get; private set; }
 
         public UnitOfWork(ApplicationContext context)
         {
             _context = context;
             Users = new UserRepository(context);
         }
-
-        public IUserRepository Users { get; private set; }
 
         public async Task<int> CompleteASync()
         {

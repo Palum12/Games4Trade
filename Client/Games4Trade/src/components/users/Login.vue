@@ -69,7 +69,7 @@ export default {
         input: 'email'
       })
       if (email) {
-        axios.post(`login/recoverpassword?email=${email}`)
+        axios.post(`login/password/recover?email=${email}`)
           .then(() => {
             this.$swal({
               title: 'Wiadomość została wysłana',

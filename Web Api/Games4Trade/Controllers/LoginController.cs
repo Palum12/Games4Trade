@@ -28,7 +28,7 @@ namespace Games4Trade.Controllers
         }
 
         [HttpPost]
-        [Route("changepassword")]
+        [Route("password/change")]
         public async Task<IActionResult> ChangePassword(UserRecoverDto userRecoverDto)
         {
             var result = await _loginService.ChangePassword(userRecoverDto);
@@ -40,7 +40,7 @@ namespace Games4Trade.Controllers
         }
 
         [HttpPost]
-        [Route("recoverpassword")]
+        [Route("password/recover")]
         public async Task<IActionResult> RecoverPassword(string email)
         {
             var result = await _loginService.RecoverPassword(email);

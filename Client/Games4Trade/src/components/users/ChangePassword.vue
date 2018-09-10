@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     changePassword () {
-      axios.post('login/changepassword', {
+      axios.post('login/password/change', {
         recoveryString: this.recoveryString,
         newPassword: this.password
       })

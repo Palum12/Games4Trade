@@ -113,7 +113,7 @@ namespace Games4Trade.Services
 
             var bodyBuilder = new BodyBuilder
             {
-                HtmlBody = string.Format(@"Witaj. </br> Wysłana została prośba o zresetowanie hasła. Oto twój <a href=""http://localhost:8080/changepassword?recoveryString={0}""> link</a>", user.RecoveryAddress)
+                HtmlBody = string.Format(@"Witaj. </br> Wysłana została prośba o zresetowanie hasła. Oto twój <a href=""http://localhost:8080/password/change?recoveryString={0}""> link</a>", user.RecoveryAddress)
             };
             message.Body = bodyBuilder.ToMessageBody();
 
