@@ -21,7 +21,7 @@ export default {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: whitesmoke;
-    min-height: 100vh;
+    min-height: 90vh;
 }
 
 .form{
