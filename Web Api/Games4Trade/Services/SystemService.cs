@@ -8,29 +8,29 @@ using Games4Trade.Repositories;
 
 namespace Games4Trade.Services
 {
-    public class GenreService : IGenreService
+    public class SystemService : ISystemService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GenreService(IUnitOfWork unitOfWork, IMapper mapper)
+        public SystemService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        public async Task<IList<GenreGetDto>> GetGenres()
+        public async Task<IList<SystemGetDto>> GetSystems()
         {
-            var repoResponse = await _unitOfWork.Genres.GetAllASync();
-            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreGetDto>>(repoResponse);
-            return genres.ToList();
+            var repoResponse = await _unitOfWork.Systems.GetAllASync();
+            var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemGetDto>>(repoResponse);
+            return systems.ToList();
         }
 
-        public async Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre)
+        public async Task<OperationResult> CreateSystem(SystemCreateOrUpdateDto system)
         {
-            var genreModel = _mapper.Map<GenreCreateOrUpdateDto, Genre>(genre);
-            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value.Equals(genreModel.Value));
-            if (doesExists.Any())
+            var systemModel = _mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);
+            var doesExists = await _unitOfWork.Systems.GetSameSystem(systemModel);
+            if (doesExists != null)
             {
                 return new OperationResult()
                 {
@@ -40,14 +40,14 @@ namespace Games4Trade.Services
                 };
             }
 
-            await _unitOfWork.Genres.AddASync(genreModel);
+            await _unitOfWork.Systems.AddASync(systemModel);
             var repoResult = await _unitOfWork.CompleteASync();
             if (repoResult > 0)
             {
                 return new OperationResult()
                 {
                     IsSuccessful = true,
-                    Payload = genreModel
+                    Payload = _mapper.Map<Models.System, SystemGetDto>(systemModel)
                 };
             }
             else
@@ -56,19 +56,20 @@ namespace Games4Trade.Services
             }
         }
 
-        public async Task<OperationResult> EditGenre(int id, GenreCreateOrUpdateDto genre)
+        public async Task<OperationResult> EditSystem(int id, SystemCreateOrUpdateDto system)
         {
-            var genreInDb = await _unitOfWork.Genres.GetASync(id);
-            if (genreInDb != null)
+            var systemInDb = await _unitOfWork.Systems.GetASync(id);
+            if (systemInDb != null)
             {
-                genreInDb.Value = genre.Value;
+                systemInDb.Model = system.Model;
+                systemInDb.Manufacturer = system.Manufacturer;
                 var repoResult = await _unitOfWork.CompleteASync();
                 if (repoResult > 0)
                 {
                     return new OperationResult()
                     {
                         IsSuccessful = true,
-                        Payload = _mapper.Map<Genre, GenreGetDto>(genreInDb)
+                        Payload = systemInDb
                     };
                 }
                 else
@@ -87,22 +88,22 @@ namespace Games4Trade.Services
             }
         }
 
-        public async Task<OperationResult> DeleteGenre(int id)
+        public async Task<OperationResult> DeleteSystem(int id)
         {
-            var genreInDb = await _unitOfWork.Genres.GetGenreWithGames(id);
-            if (genreInDb != null)
+            var systemInDb = await _unitOfWork.Systems.GetSystemWithItems(id);
+            if (systemInDb != null)
             {
-                if (genreInDb.Games.Any())
+                if (systemInDb.AdvertisementItems.Any())
                 {
                     return new OperationResult()
                     {
                         IsSuccessful = false,
                         IsClientError = true,
                         Message = "Genre has connected games with it, please delete them first",
-                        Payload = genreInDb.Games
+                        Payload = systemInDb.AdvertisementItems
                     };
                 }
-                _unitOfWork.Genres.Remove(genreInDb);
+                _unitOfWork.Systems.Remove(systemInDb);
                 var repoResult = await _unitOfWork.CompleteASync();
                 if (repoResult > 0)
                 {
@@ -126,7 +127,5 @@ namespace Games4Trade.Services
                 };
             }
         }
-
-        
     }
 }

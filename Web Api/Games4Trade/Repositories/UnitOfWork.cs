@@ -8,13 +8,15 @@ namespace Games4Trade.Repositories
     {
         private readonly ApplicationContext _context;
         public IUserRepository Users { get; private set; }
-        public IGenreRepository Genres { get; set; }
+        public IGenreRepository Genres { get; private set; }
+        public ISystemRepository Systems { get; private set; }
 
         public UnitOfWork(ApplicationContext context)
         {
             _context = context;
             Users = new UserRepository(context);
             Genres = new GenreRepository(context);
+            Systems = new SystemRepository(context);
         }
 
         public async Task<int> CompleteASync()

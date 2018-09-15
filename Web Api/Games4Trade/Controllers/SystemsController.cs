@@ -8,28 +8,29 @@ namespace Games4Trade.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenresController : ControllerBase
+    public class SystemsController : ControllerBase
     {
-        private readonly IGenreService _genreService;
+        private readonly ISystemService _systemService;
 
-        public GenresController(IGenreService genreService)
+        public SystemsController(ISystemService systemService)
         {
-            _genreService = genreService;
+            _systemService = systemService;
         }
+
 
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Get()
         {
-            var result = await _genreService.GetGenres();
+            var result = await _systemService.GetSystems();
             return Ok(result);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Post([FromBody] GenreCreateOrUpdateDto genre)
+        public async Task<IActionResult> Post([FromBody] SystemCreateOrUpdateDto system)
         {
-            var result = await _genreService.CreateGenre(genre);
+            var result = await _systemService.CreateSystem(system);
             if (result.IsSuccessful)
             {
                 return Ok(result.Payload);
@@ -37,7 +38,7 @@ namespace Games4Trade.Controllers
 
             if (result.Payload != null)
             {
-                return BadRequest($"Object {((GenreGetDto) result.Payload).Value} already exists!");
+                return BadRequest("Object already exists!");
             }
 
             return StatusCode(500, result.Message);
@@ -45,9 +46,9 @@ namespace Games4Trade.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] GenreCreateOrUpdateDto genre)
+        public async Task<IActionResult> Put(int id, [FromBody] SystemCreateOrUpdateDto system)
         {
-            var result = await _genreService.EditGenre(id, genre);
+            var result = await _systemService.EditSystem(id, system);
             if (result.IsSuccessful)
             {
                 return Ok(result.Payload);
@@ -60,7 +61,7 @@ namespace Games4Trade.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _genreService.DeleteGenre(id);
+            var result = await _systemService.DeleteSystem(id);
             if (result.IsSuccessful)
             {
                 return Ok();

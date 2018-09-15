@@ -1,0 +1,10 @@
+﻿using System.Threading.Tasks;
+
+namespace Games4Trade.Repositories
+{
+    public interface ISystemRepository : IRepository<Models.System>
+    {
+        Task<Models.System> GetSystemWithItems(int id);
+        Task<Models.System> GetSameSystem(Models.System system);
+    }
+}
