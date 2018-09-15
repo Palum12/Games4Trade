@@ -1,0 +1,132 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using Games4Trade.Dtos;
+using Games4Trade.Models;
+using Games4Trade.Repositories;
+
+namespace Games4Trade.Services
+{
+    public class GenreService : IGenreService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public GenreService(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
+
+        public async Task<IList<GenreGetDto>> GetGenres()
+        {
+            var repoResponse = await _unitOfWork.Genres.GetAllASync();
+            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreGetDto>>(repoResponse);
+            return genres.ToList();
+        }
+
+        public async Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre)
+        {
+            var genreModel = new Genre(){Value = genre.Value};
+            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value.Equals(genreModel.Value));
+            if (doesExists.Any())
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Payload = doesExists
+                };
+            }
+
+            await _unitOfWork.Genres.AddASync(genreModel);
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = true,
+                    Payload = genreModel
+                };
+            }
+            else
+            {
+                return OtherServices.GetIncorrectDatabaseConnectionResult();
+            }
+        }
+
+        public async Task<OperationResult> EditGenre(int id, GenreCreateOrUpdateDto genre)
+        {
+            var genreInDb = await _unitOfWork.Genres.GetASync(id);
+            if (genreInDb != null)
+            {
+                genreInDb.Value = genre.Value;
+                var repoResult = await _unitOfWork.CompleteASync();
+                if (repoResult > 0)
+                {
+                    return new OperationResult()
+                    {
+                        IsSuccessful = true,
+                        Payload = genreInDb
+                    };
+                }
+                else
+                {
+                    return OtherServices.GetIncorrectDatabaseConnectionResult();
+                }
+            }
+            else
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Object does not exist in database"
+                };
+            }
+        }
+
+        public async Task<OperationResult> DeleteGenre(int id)
+        {
+            var genreInDb = await _unitOfWork.Genres.GetGenreWithGames(id);
+            if (genreInDb != null)
+            {
+                if (genreInDb.Games.Any())
+                {
+                    return new OperationResult()
+                    {
+                        IsSuccessful = false,
+                        IsClientError = true,
+                        Message = "Genre has connected games with it, please delete them first",
+                        Payload = genreInDb.Games
+                    };
+                }
+                _unitOfWork.Genres.Remove(genreInDb);
+                var repoResult = await _unitOfWork.CompleteASync();
+                if (repoResult > 0)
+                {
+                    return new OperationResult()
+                    {
+                        IsSuccessful = true
+                    };
+                }
+                else
+                {
+                    return OtherServices.GetIncorrectDatabaseConnectionResult();
+                }
+            }
+            else
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Object does not exist in database"
+                };
+            }
+        }
+
+        
+    }
+}

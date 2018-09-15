@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Games4Trade.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Games4Trade.Services
@@ -19,6 +20,16 @@ namespace Games4Trade.Services
         {
             var allErrors = modelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
             return allErrors;
+        }
+
+        public static OperationResult GetIncorrectDatabaseConnectionResult()
+        {
+            return new OperationResult()
+            {
+                IsSuccessful = false,
+                IsClientError = false,
+                Message = "Something went wrong with db connection!"
+            };
         }
     }
 }

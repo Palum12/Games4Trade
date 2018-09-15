@@ -1,5 +1,6 @@
 ﻿using Games4Trade.Data;
 using System.Threading.Tasks;
+using Games4Trade.Models;
 
 namespace Games4Trade.Repositories
 {
@@ -7,11 +8,13 @@ namespace Games4Trade.Repositories
     {
         private readonly ApplicationContext _context;
         public IUserRepository Users { get; private set; }
+        public IGenreRepository Genres { get; set; }
 
         public UnitOfWork(ApplicationContext context)
         {
             _context = context;
             Users = new UserRepository(context);
+            Genres = new GenreRepository(context);
         }
 
         public async Task<int> CompleteASync()

@@ -44,6 +44,7 @@ namespace Games4Trade
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IGenreService, GenreService>();
             services.AddTransient<IValidator<UserRegisterDto>, UserRegisterDtoValidator> ();
             services.AddTransient<IValidator<UserRecoverDto>, UserRecoverDtoValidator> ();
 

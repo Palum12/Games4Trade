@@ -11,6 +11,8 @@ namespace Games4Trade
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<User, UserLoginDto>().ReverseMap();
             CreateMap<User, UserRegisterDto>().ReverseMap();
+            CreateMap<Genre, GenreCreateOrUpdateDto>().ReverseMap();
+            CreateMap<Genre, GenreGetDto>().ReverseMap();
         }
     }
 }
