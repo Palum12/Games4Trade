@@ -16,6 +16,7 @@ namespace Games4Trade.Controllers
         {
             _genreService = genreService;
         }
+        
 
         [HttpGet]
         [Authorize]

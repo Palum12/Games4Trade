@@ -11,7 +11,7 @@ Vue.config.productionTip = false
 
 Vue.use(VueSweetAlert2)
 Vue.use(Vuelidate)
-axios.defaults.baseURL = 'https://localhost:44303/api/'
+axios.defaults.baseURL = 'http://localhost:5000/api/'
 
 new Vue({
   router,

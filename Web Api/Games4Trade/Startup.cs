@@ -104,7 +104,6 @@ namespace Games4Trade
             app.UseCors("AnyOrigin");
             app.UseAuthentication();
 
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
 
