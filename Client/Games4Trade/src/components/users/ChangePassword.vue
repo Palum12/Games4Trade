@@ -1,5 +1,5 @@
 <template>
-    <div id="login-form" class="row">
+    <div id="login-form" class="row no-gutters">
         <div class="form rounded col-4 offset-4 p-4">
             <form @submit.prevent="changePassword">
                 <div class="form-group">

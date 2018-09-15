@@ -16,6 +16,12 @@ const state = {
 const getters = {
   isAuthenticated (state) {
     return state.userLoggedIn
+  },
+  isAdmin (state) {
+    if (state.userLoggedIn) {
+      return state.userData.role === 'Admin'
+    }
+    return false
   }
 }
 

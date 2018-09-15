@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div id="signup-form" class="row" >
+    <div id="signup-form" class="row no-gutters" >
         <div class="form rounded col-6 offset-3 p-4">
             <form novalidate v-on:submit.prevent>
                 <div class="form-group ">

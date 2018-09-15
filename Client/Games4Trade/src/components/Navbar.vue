@@ -1,14 +1,14 @@
 <template>
     <div>
-        <nav class="navbar sticky-top navbar-expand-lg navbar-light" id="mainNavbar">
+        <nav class="navbar sticky-top navbar-expand-lg navbar-light " id="mainNavbar">
             <router-link class="navbar-brand" to="/"><a>Games4Trade</a></router-link>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse " id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto" >
-                    <li class="nav-item">
-                        <a class="nav-link"  v-if="isAuthenticated">Test</a>
+                    <li class="nav-item" v-if="isAdmin">
+                        <router-link to="/admin" class="nav-link"><a>Panel administratora</a></router-link>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
@@ -32,7 +32,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'Navbar',
   computed: {
-    ...mapGetters(['isAuthenticated'])
+    ...mapGetters(['isAuthenticated', 'isAdmin'])
   },
   methods: {
     logout () {
