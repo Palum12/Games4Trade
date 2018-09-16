@@ -73,14 +73,21 @@ export default {
         isLast = true
       }
       return !this.isDbInSync && isLast
+    },
+    getGenres () {
+      return new Promise((resolve, reject) => {
+        let vm = this
+        this.$store.dispatch('getGenres')
+          .then(() => {
+            vm.genres = vm.$store.getters.genres
+          })
+          .then(() => resolve())
+          .catch(error => reject(error))
+      })
     }
   },
   mounted () {
-    let vm = this
-    this.$store.dispatch('getGenres')
-      .then(() => {
-        vm.genres = vm.$store.getters.genres
-      })
+    this.getGenres()
   }
 }
 </script>
