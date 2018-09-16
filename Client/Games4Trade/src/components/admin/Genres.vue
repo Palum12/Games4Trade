@@ -11,6 +11,7 @@
                                 class="form-control"
                                 v-model="genre.value"
                         >
+                        <p v-if="genre.value === ''">Pole nie może być puste !</p>
                     </div>
                     <div v-if="shouldSave(genre.id)" class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
                         <button class="btn btn-info" @click="save(genre)">Zapisz</button>
@@ -34,14 +35,7 @@ export default {
   data () {
     return {
       isDbInSync: true,
-      genres: [{
-        id: 3,
-        value: 'Wyścigi'
-      },
-      {
-        id: 4,
-        value: 'FPS'
-      }]
+      genres: []
     }
   },
   computed: {
@@ -82,7 +76,11 @@ export default {
     }
   },
   mounted () {
-    console.log('test')
+    let vm = this
+    this.$store.dispatch('getGenres')
+      .then(() => {
+        vm.genres = vm.$store.getters.genres
+      })
   }
 }
 </script>

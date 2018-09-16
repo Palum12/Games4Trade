@@ -21,6 +21,7 @@ export default {
   },
   created () {
     this.$store.dispatch('tryAutoLogin')
+    this.$store.dispatch('getGenres')
   }
 }
 </script>

@@ -84,8 +84,6 @@ const actions = {
     }
     const expirationDate = localStorage.getItem('expirationTime')
     const dateNow = new Date()
-    console.log(expirationDate)
-    console.log(dateNow.getTime())
     if (dateNow.getTime() / 1000 >= expirationDate) {
       return
     }

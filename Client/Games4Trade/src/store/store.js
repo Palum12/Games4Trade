@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './modules/user'
+import genre from './modules/genre'
 import getters from './getters'
 import actions from './actions'
 import state from './state'
@@ -12,6 +13,7 @@ export default new Vuex.Store({
   getters,
   actions,
   modules: {
-    user
+    user,
+    genre
   }
 })
