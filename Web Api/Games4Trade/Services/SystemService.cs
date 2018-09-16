@@ -58,6 +58,18 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> EditSystem(int id, SystemCreateOrUpdateDto system)
         {
+            var systemModel = _mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);
+            var doesExists = await _unitOfWork.Systems.GetSameSystem(systemModel);
+            if (doesExists != null && doesExists.Id == id)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Payload = doesExists
+                };
+            }
+
             var systemInDb = await _unitOfWork.Systems.GetASync(id);
             if (systemInDb != null)
             {

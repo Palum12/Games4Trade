@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -37,7 +38,7 @@ namespace Games4Trade.Controllers
 
             if (result.Payload != null)
             {
-                return BadRequest($"Object {((GenreGetDto) result.Payload).Value} already exists!");
+                return Conflict($"Object {((GenreGetDto) result.Payload).Value} already exists!");
             }
 
             return StatusCode(500, result.Message);
@@ -53,7 +54,14 @@ namespace Games4Trade.Controllers
                 return Ok(result.Payload);
             }
 
-            return BadRequest(result.Message);
+            if (result.Payload == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Conflict();
+            }
         }
 
         [Authorize(Roles = "Admin")]

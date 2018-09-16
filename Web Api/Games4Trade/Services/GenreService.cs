@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
@@ -29,7 +31,7 @@ namespace Games4Trade.Services
         public async Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre)
         {
             var genreModel = _mapper.Map<GenreCreateOrUpdateDto, Genre>(genre);
-            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value.Equals(genreModel.Value));
+            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value.Equals(genreModel.Value, StringComparison.OrdinalIgnoreCase));
             if (doesExists.Any())
             {
                 return new OperationResult()
@@ -58,6 +60,17 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> EditGenre(int id, GenreCreateOrUpdateDto genre)
         {
+            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value.Equals(genre.Value, StringComparison.OrdinalIgnoreCase) && g.Id != id);
+            if (doesExists.Any())
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Payload = doesExists
+                };
+            }
+
             var genreInDb = await _unitOfWork.Genres.GetASync(id);
             if (genreInDb != null)
             {

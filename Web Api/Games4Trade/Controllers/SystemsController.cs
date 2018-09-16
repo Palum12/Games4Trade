@@ -38,7 +38,7 @@ namespace Games4Trade.Controllers
 
             if (result.Payload != null)
             {
-                return BadRequest("Object already exists!");
+                return Conflict("Object already exists!");
             }
 
             return StatusCode(500, result.Message);
@@ -54,7 +54,14 @@ namespace Games4Trade.Controllers
                 return Ok(result.Payload);
             }
 
-            return BadRequest(result.Message);
+            if (result.Payload == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Conflict();
+            }
         }
 
         [Authorize(Roles = "Admin")]
