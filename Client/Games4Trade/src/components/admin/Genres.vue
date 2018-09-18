@@ -14,11 +14,14 @@
                         <p v-if="genre.value === ''">Pole nie może być puste !</p>
                     </div>
                     <div v-if="shouldSave(genre.id)" class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
-                        <button class="btn btn-info" @click="save(genre)">Zapisz</button>
+                        <button class="btn btn-info" :disabled="genre.value === ''" @click="save(genre)">Zapisz</button>
                     </div>
                     <div v-else class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
-                        <button class="btn btn-warning" @click="modify(genre)">Modyfikuj</button>
-                        <button class="btn btn-danger ml-1" @click="remove(genre.id)">X</button>
+                        <button class="btn btn-warning"
+                                :disabled="genre.value === ''"
+                                @click="modify(genre)">Modyfikuj</button>
+                        <button class="btn btn-danger ml-1"
+                                @click="remove(genre.id)">X</button>
                     </div>
                 </div>
             </div>
@@ -58,15 +61,31 @@ export default {
       this.isDbInSync = false
     },
     save (genre) {
-      console.log('test')
-      this.isDbInSync = true
+      let vm = this
+      this.$store.dispatch('setSpinnerLoading')
+      mixins.methods.confirmationDialog(vm)
+        .then(() => {
+          axios.post('genres', {value: genre.value})
+            .then(() => {
+              vm.$store.dispatch('unsetSpinnerLoading')
+              mixins.methods.simpleSuccessPopUp(vm)
+              vm.getGenres()
+            })
+            .catch(error => {
+              if (error.response.status === 409) {
+                mixins.methods.customErrorPopUp(vm, 'Podany gatunek już istnieje !')
+              } else {
+                mixins.methods.errorPopUp(vm)
+              }
+              vm.$store.dispatch('unsetSpinnerLoading')
+            })
+        })
+        .catch(() => {
+          vm.$store.dispatch('unsetSpinnerLoading')
+        })
     },
     modify (genre) {
       let vm = this
-      if (genre.value.length === 0) {
-        mixins.methods.customErrorPopUp(vm, 'Nie możesz zapisać pustego gatunku !')
-        return
-      }
       if (genre.value === this.originalGenres.find((element) => element.id === genre.id).value) {
         mixins.methods.customErrorPopUp(vm, 'Proszę zmień coś zanim spróbujesz zapisać zmiany !')
         return
@@ -89,6 +108,9 @@ export default {
               }
               vm.$store.dispatch('unsetSpinnerLoading')
             })
+        })
+        .catch(() => {
+          vm.$store.dispatch('unsetSpinnerLoading')
         })
     },
     remove (genreId) {
