@@ -13,6 +13,16 @@ Vue.use(VueSweetAlert2)
 Vue.use(Vuelidate)
 axios.defaults.baseURL = 'http://localhost:5000/api/'
 
+axios.interceptors.request.use((config) => {
+  let authToken = store.getters.getToken
+  if (authToken) {
+    config.headers['Authorization'] = authToken
+  }
+  return config
+}, (error) => {
+  return Promise.reject(error)
+})
+
 new Vue({
   router,
   store,

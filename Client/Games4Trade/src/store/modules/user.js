@@ -22,6 +22,9 @@ const getters = {
       return state.userData.role === 'Admin'
     }
     return false
+  },
+  getToken (state) {
+    return state.userData.token
   }
 }
 

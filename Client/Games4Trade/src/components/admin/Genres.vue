@@ -30,6 +30,9 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+import axios from 'axios'
+import mixins from '../../mixins/mixins'
 export default {
   name: 'Genres',
   data () {
@@ -39,6 +42,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isSpinnerLoading']),
     canAdd () {
       return !this.genres.some(genre => genre.value === '') && this.isDbInSync
     }
@@ -60,10 +64,24 @@ export default {
       console.log(genre)
     },
     remove (genreId) {
-      console.log(genreId)
-      this.genres = this.genres.filter(genre => {
-        return genre.id !== genreId
-      })
+      this.$store.dispatch('setSpinnerLoading')
+      let vm = this
+      mixins.methods.confirmationDialog(vm)
+        .then(() => {
+          axios.delete(`genres/${genreId}`)
+            .then(() => {
+              vm.$store.dispatch('unsetSpinnerLoading')
+              mixins.methods.simpleSuccessPopUp(vm)
+              vm.getGenres()
+            })
+            .catch(() => {
+              vm.$store.dispatch('unsetSpinnerLoading')
+              mixins.methods.errorPopUp(vm)
+            })
+        })
+        .catch(() => {
+          vm.$store.dispatch('unsetSpinnerLoading')
+        })
     },
     shouldSave (id) {
       let isLast
@@ -87,7 +105,9 @@ export default {
     }
   },
   mounted () {
+    this.$store.dispatch('setSpinnerLoading')
     this.getGenres()
+    this.$store.dispatch('unsetSpinnerLoading')
   }
 }
 </script>
