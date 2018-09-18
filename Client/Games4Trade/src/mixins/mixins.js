@@ -6,6 +6,13 @@ export default {
         type: 'error'
       })
     },
+    customErrorPopUp (self, message) {
+      self.$swal({
+        title: 'Ups coś poszło nie tak !',
+        text: message,
+        type: 'error'
+      })
+    },
     simpleSuccessPopUp (self) {
       self.$swal({
         title: 'Akcja zakończona sukcesem !',

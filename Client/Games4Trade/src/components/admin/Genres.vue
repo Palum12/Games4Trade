@@ -38,7 +38,8 @@ export default {
   data () {
     return {
       isDbInSync: true,
-      genres: []
+      genres: [],
+      originalGenres: []
     }
   },
   computed: {
@@ -62,6 +63,33 @@ export default {
     },
     modify (genre) {
       console.log(genre)
+      let vm = this
+      if (genre.value.length === 0) {
+        mixins.methods.customErrorPopUp(vm, 'Nie możesz zapisać pustego gatunku !')
+        return
+      }
+      if (genre.value === this.originalGenres.find((element) => element.id === genre.id).value) {
+        mixins.methods.customErrorPopUp(vm, 'Proszę zmień coś zanim spróbujesz zapisać zmiany !')
+        return
+      }
+      this.$store.dispatch('setSpinnerLoading')
+      mixins.methods.confirmationDialog(vm)
+        .then(() => {
+          axios.put(`genres/${genre.id}`, {value: genre.value})
+            .then(() => {
+              vm.$store.dispatch('unsetSpinnerLoading')
+              mixins.methods.simpleSuccessPopUp(vm)
+              vm.getGenres()
+            })
+            .catch(error => {
+              if (error.response.status === 409) {
+                mixins.methods.customErrorPopUp(vm, 'Podany gatunek już istnieje !')
+              } else {
+                mixins.methods.errorPopUp(vm)
+              }
+              vm.$store.dispatch('unsetSpinnerLoading')
+            })
+        })
     },
     remove (genreId) {
       this.$store.dispatch('setSpinnerLoading')
@@ -98,6 +126,7 @@ export default {
         this.$store.dispatch('getGenres')
           .then(() => {
             vm.genres = vm.$store.getters.genres
+            vm.originalGenres = JSON.parse(JSON.stringify(vm.genres))
           })
           .then(() => resolve())
           .catch(error => reject(error))
