@@ -62,7 +62,6 @@ export default {
       this.isDbInSync = true
     },
     modify (genre) {
-      console.log(genre)
       let vm = this
       if (genre.value.length === 0) {
         mixins.methods.customErrorPopUp(vm, 'Nie możesz zapisać pustego gatunku !')
@@ -84,6 +83,7 @@ export default {
             .catch(error => {
               if (error.response.status === 409) {
                 mixins.methods.customErrorPopUp(vm, 'Podany gatunek już istnieje !')
+                genre.value = vm.originalGenres.find((element) => element.id === genre.id).value
               } else {
                 mixins.methods.errorPopUp(vm)
               }
@@ -127,6 +127,7 @@ export default {
           .then(() => {
             vm.genres = vm.$store.getters.genres
             vm.originalGenres = JSON.parse(JSON.stringify(vm.genres))
+            vm.isDbInSync = true
           })
           .then(() => resolve())
           .catch(error => reject(error))

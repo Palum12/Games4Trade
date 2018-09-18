@@ -23,7 +23,7 @@ namespace Games4Trade.Services
         {
             var repoResponse = await _unitOfWork.Systems.GetAllASync();
             var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemGetDto>>(repoResponse);
-            return systems.ToList();
+            return systems.OrderBy(s => s.Id).ToList();
         }
 
         public async Task<OperationResult> CreateSystem(SystemCreateOrUpdateDto system)

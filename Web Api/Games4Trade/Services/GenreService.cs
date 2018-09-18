@@ -25,7 +25,7 @@ namespace Games4Trade.Services
         {
             var repoResponse = await _unitOfWork.Genres.GetAllASync();
             var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreGetDto>>(repoResponse);
-            return genres.ToList();
+            return genres.OrderBy(g => g.Id).ToList();
         }
 
         public async Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre)
