@@ -38,7 +38,7 @@ namespace Games4Trade.Controllers
 
             if (result.Payload != null)
             {
-                return Conflict($"Object {((GenreGetDto) result.Payload).Value} already exists!");
+                return Conflict("Object already exists!");
             }
 
             return StatusCode(500, result.Message);
