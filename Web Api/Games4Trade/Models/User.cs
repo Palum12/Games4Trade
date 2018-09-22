@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+
 
 namespace Games4Trade.Models
 {
@@ -10,10 +8,15 @@ namespace Games4Trade.Models
         public int Id { get; set; }
         public string Login { get; set; }
         public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Description { get; set; }
         public string Password { get; set; }
         public string Salt { get; set; }
         public string RecoveryAddress { get; set; }
         public string Role { get; set; }
+        public int? PhotoId { get; set; }
+
+        public virtual Photo Photo { get; set; }
         
         public virtual ICollection<ObservedUsersRelationship> ObservedUsers { get; set; }
         public virtual ICollection<ObservedUsersRelationship> ObservingUsers { get; set; }

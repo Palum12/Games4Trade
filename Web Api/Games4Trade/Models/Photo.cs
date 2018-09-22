@@ -12,6 +12,8 @@ namespace Games4Trade.Models
         public DateTime DateCreated { get; set; }
 
         public int AdvertisementId { get; set; }
-        public Advertisement Advertisement { get; set; }
+        public virtual Advertisement Advertisement { get; set; }
+
+        public virtual User User { get; set; }
     }
 }

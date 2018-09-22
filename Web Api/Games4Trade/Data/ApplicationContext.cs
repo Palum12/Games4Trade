@@ -56,6 +56,8 @@ namespace Games4Trade.Data
                     .IsRequired();
                 entity.Property(u => u.Login).HasMaxLength(32)
                     .IsRequired();
+                entity.Property(u => u.Description).HasColumnType("text");
+                entity.Property(u => u.PhoneNumber).HasMaxLength(11);
                 entity.Property(u => u.Password).HasMaxLength(512).IsRequired();
                 entity.Property(e => e.Salt).IsRequired()
                     .HasMaxLength(32);
@@ -63,12 +65,15 @@ namespace Games4Trade.Data
                     .HasDefaultValueSql("'User'");
                 entity.Property(e => e.RecoveryAddress).HasMaxLength(32);
 
+                entity.HasOne(u => u.Photo).WithOne(p => p.User).HasForeignKey<User>(u => u.PhotoId);
+
             });
 
             modelBuilder.Entity<Announcement>(entity =>
             {
                 entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
                 entity.HasKey(a => a.Id);
+                entity.Property(a => a.Title).IsRequired();
                 entity.Property(a => a.Content).HasColumnType("text").IsRequired();
                 entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
                 entity.Property(a => a.UserId).IsRequired();
