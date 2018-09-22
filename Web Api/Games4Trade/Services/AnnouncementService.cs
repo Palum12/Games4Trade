@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace Games4Trade.Services
 {
@@ -18,19 +22,40 @@ namespace Games4Trade.Services
             _mapper = mapper;
         }
 
-        public async Task<IList<AnnouncementGetListDto>> GetAnnouncements()
+        public async Task<IList<AnnouncementGetDto>> GetAnnouncements()
         {
-            throw new System.NotImplementedException();
+            var result = await _unitOfWork.Announcements.GetAnnouncementsWithAuthors();
+            var response = _mapper.Map<IEnumerable<Announcement>, IEnumerable<AnnouncementGetDto>>(result)
+                .OrderByDescending(a => a.DateCreated).ToList();
+            return response;
         }
 
-        public async Task<AnnouncementGetDetailDto> GetAnnouncement(int id)
+        public async Task<AnnouncementGetDto> GetAnnouncement(int id)
         {
-            throw new System.NotImplementedException();
+            var result = await _unitOfWork.Announcements.GetAnnouncementWithAuthor(id);
+            return _mapper.Map<Announcement, AnnouncementGetDto>(result);
         }
 
-        public async Task<OperationResult> CreateAnnouncement(AnnouncementSaveDto announcement)
+        public async Task<OperationResult> CreateAnnouncement(AnnouncementSaveDto announcement, string login)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _unitOfWork.Users.GetUserByLogin(login);
+            var announcementModel = _mapper.Map<AnnouncementSaveDto, Announcement>(announcement);
+            announcementModel.UserId = currentUser.Id;
+            announcementModel.DateCreated = DateTime.Now;
+            await _unitOfWork.Announcements.AddASync(announcementModel);
+            var result = await _unitOfWork.CompleteASync();
+            if (result > 0)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = true,
+                    Payload = announcementModel
+                };
+            }
+            else
+            {
+                return OtherServices.GetIncorrectDatabaseConnectionResult();
+            }
         }
 
         public async Task<OperationResult> EditAnnouncement(int id, AnnouncementSaveDto announcement)
@@ -40,7 +65,29 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> DeleteAnnouncement(int id)
         {
-            throw new System.NotImplementedException();
+            var entity = await _unitOfWork.Announcements.GetASync(id);
+            if (entity == null)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Announcement was not found"
+                };
+            }
+            _unitOfWork.Announcements.Remove(entity);
+            var result = await _unitOfWork.CompleteASync();
+            if (result > 0)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = true
+                };
+            }
+            else
+            {
+                return OtherServices.GetIncorrectDatabaseConnectionResult();
+            }
         }
     }
 }

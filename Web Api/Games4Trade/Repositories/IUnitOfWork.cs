@@ -10,6 +10,7 @@ namespace Games4Trade.Repositories
         IUserRepository Users { get; }
         IGenreRepository Genres { get; }
         ISystemRepository Systems { get; }
+        IAnnouncementReposiotry Announcements { get; }
         Task<int> CompleteASync();
     }
 }

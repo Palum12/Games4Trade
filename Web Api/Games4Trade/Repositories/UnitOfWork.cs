@@ -10,6 +10,7 @@ namespace Games4Trade.Repositories
         public IUserRepository Users { get; private set; }
         public IGenreRepository Genres { get; private set; }
         public ISystemRepository Systems { get; private set; }
+        public IAnnouncementReposiotry Announcements { get; private set; }
 
         public UnitOfWork(ApplicationContext context)
         {
@@ -17,6 +18,7 @@ namespace Games4Trade.Repositories
             Users = new UserRepository(context);
             Genres = new GenreRepository(context);
             Systems = new SystemRepository(context);
+            Announcements = new AnnouncementRepository(context);
         }
 
         public async Task<int> CompleteASync()
