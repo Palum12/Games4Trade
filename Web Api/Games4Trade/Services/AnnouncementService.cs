@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
-using Microsoft.AspNetCore.Identity;
 
 namespace Games4Trade.Services
 {
@@ -60,7 +58,43 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> EditAnnouncement(int id, AnnouncementSaveDto announcement)
         {
-            throw new System.NotImplementedException();
+            var announcementInDb = await _unitOfWork.Announcements.GetASync(id);
+            if (announcementInDb == null)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true
+                };
+            }
+
+            if (announcementInDb.Title.Equals(announcement.Title) &&
+                announcementInDb.Content.Equals(announcement.Content))
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Nothing has changed operation aborted",
+                    Payload = announcement
+                };
+            }
+
+            announcementInDb.Content = announcement.Content;
+            announcementInDb.Title = announcement.Title;
+
+            var result = await _unitOfWork.CompleteASync();
+            if (result > 0)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = true
+                };
+            }
+            else
+            {
+                return OtherServices.GetIncorrectDatabaseConnectionResult();
+            }
         }
 
         public async Task<OperationResult> DeleteAnnouncement(int id)

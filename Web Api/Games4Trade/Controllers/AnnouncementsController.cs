@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Services;
@@ -68,8 +67,34 @@ namespace Games4Trade.Controllers
 
         // PUT: api/Announcements/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Put(int id, [FromBody] AnnouncementSaveDto value)
         {
+
+            if (ModelState.IsValid)
+            {
+                var response = await _announcementService.EditAnnouncement(id, value);
+                if (response.IsSuccessful)
+                {
+                    return Ok();
+                }
+                else if (response.IsClientError)
+                {
+                    if (response.Payload != null)
+                    {
+                        return Ok();
+                    }
+                    return NotFound();
+                }
+                else
+                {
+                    return StatusCode(500, response.Message);
+                }
+            }
+            else
+            {
+                return BadRequest(String.Join(" ,", OtherServices.ReturnAllModelErrors(ModelState)));
+            }
         }
 
         // DELETE: api/ApiWithActions/5
