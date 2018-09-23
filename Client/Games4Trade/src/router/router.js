@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '../views/Home.vue'
 import Admin from '../views/AdminPanel'
 import Navbar from './navbar/navbar'
+import Annoucements from './announcements/announcements'
 import Users from './users/users'
 Vue.use(Router)
 
@@ -13,6 +14,7 @@ export default new Router({
     Users.CHANGE_PASSWORD,
     Navbar.LOGIN,
     Navbar.SIGNUP,
+    Annoucements.ANNOUNCEMENT,
     {
       path: '/',
       name: 'home',

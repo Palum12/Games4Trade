@@ -5,12 +5,15 @@ import store from './store/store'
 import axios from 'axios'
 import VueSweetAlert2 from 'vue-sweetalert2'
 import Vuelidate from 'vuelidate'
+import {Tabs, Tab} from 'vue-tabs-component'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 Vue.config.productionTip = false
 
 Vue.use(VueSweetAlert2)
 Vue.use(Vuelidate)
+Vue.component('tabs', Tabs)
+Vue.component('tab', Tab)
 axios.defaults.baseURL = 'http://localhost:5000/api/'
 
 axios.interceptors.request.use((config) => {
