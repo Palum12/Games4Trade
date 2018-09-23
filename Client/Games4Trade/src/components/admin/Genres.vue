@@ -1,34 +1,34 @@
 <template>
-    <div class="form rounded m-2 p-3">
-        <form v-on:submit.prevent>
-            <h2 class="text-center">Gatunki</h2>
-            <div v-for="genre in genres" :key="genre.id">
-                <div class="form-row text-center mb-1">
-                    <div class=" col-lg-8 col-md-6 col-12">
-                        <input
-                                type="text"
-                                id="key"
-                                class="form-control"
-                                v-model="genre.value"
-                        >
-                        <p v-if="genre.value === ''">Pole nie może być puste !</p>
-                    </div>
-                    <div v-if="shouldSave(genre.id)" class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
-                        <button class="btn btn-info" :disabled="genre.value === ''" @click="save(genre)">Zapisz</button>
-                    </div>
-                    <div v-else class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
-                        <button class="btn btn-warning"
-                                :disabled="genre.value === ''"
-                                @click="modify(genre)">Modyfikuj</button>
-                        <button class="btn btn-danger ml-1"
-                                @click="remove(genre.id)">X</button>
+    <div>
+        <h2 class="text-center">Gatunki</h2>
+        <div class="form rounded m-2 p-3 genres">
+            <form v-on:submit.prevent>
+                <div v-for="genre in genres" :key="genre.id">
+                    <div class="form-row text-center mb-1">
+                        <div class=" col-lg-8 col-md-6 col-12">
+                            <input
+                                    type="text"
+                                    id="key"
+                                    class="form-control"
+                                    v-model="genre.value"
+                            >
+                            <p v-if="genre.value === ''">Pole nie może być puste !</p>
+                        </div>
+                        <div v-if="shouldSave(genre.id)" class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
+                            <button class="btn btn-info" :disabled="genre.value === ''" @click="save(genre)">Zapisz</button>
+                        </div>
+                        <div v-else class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
+                            <button class="btn btn-warning"
+                                    :disabled="genre.value === ''"
+                                    @click="modify(genre)">Modyfikuj</button>
+                            <button class="btn btn-danger ml-1"
+                                    @click="remove(genre.id)">X</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <button class="btn btn-info btn-block" :disabled="!canAdd" @click="addPlace">Dodaj nowy gatunek</button>
-
-        </form>
+            </form>
+        </div>
+        <button class="btn btn-info btn-block" :disabled="!canAdd" @click="addPlace">Dodaj nowy gatunek</button>
     </div>
 </template>
 
@@ -54,11 +54,15 @@ export default {
   methods: {
     addPlace () {
       if (this.genres.length > 0) {
-        this.genres.push({id: this.genres[this.genres.length - 1].id + 1, value: ''})
+        this.genres.push({id: -1, value: ''})
       } else {
-        this.genres.push({id: 0, value: ''})
+        this.genres.push({id: -1, value: ''})
       }
       this.isDbInSync = false
+      this.$nextTick(() => {
+        let container = this.$el.querySelector('.genres')
+        container.scrollTop = container.scrollHeight
+      })
     },
     save (genre) {
       let vm = this
@@ -165,5 +169,11 @@ export default {
 </script>
 
 <style scoped>
-
+    .genres {
+        min-height: 200px;
+        height: 65vh;
+        max-height: 90%;
+        overflow: hidden;
+        overflow-y: auto;
+    }
 </style>

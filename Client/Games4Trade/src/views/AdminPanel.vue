@@ -22,7 +22,7 @@
 <script>
 import genres from '../components/admin/Genres'
 import systems from '../components/admin/Systems'
-import announcementsList from '../components/announcements/AnnouncementsList'
+import announcementsList from './announcements/AnnouncementsList'
 import 'vue-tabs-component/docs/resources/tabs-component.css'
 export default {
   name: 'AdminPanel',

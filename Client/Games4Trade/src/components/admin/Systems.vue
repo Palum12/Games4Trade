@@ -1,45 +1,45 @@
 <template>
-    <div class="form rounded m-2 p-3">
-        <form v-on:submit.prevent>
-            <h2 class="text-center">Systemy</h2>
-            <div v-for="system in systems" :key="system.id">
-                <div class="form-row text-center mb-1">
-                    <div class=" col-lg-8 col-md-6 col-12">
-                        <input
-                                type="text"
-                                id="Manufacturer"
-                                class="form-control"
-                                placeholder="Producent"
-                                v-model="system.manufacturer"
-                        >
-                        <p v-if="system.manufacturer === ''">Pole nie może być puste !</p>
-                        <input
-                                type="text"
-                                id="Model"
-                                class="form-control mt-1"
-                                placeholder="Model"
-                                v-model="system.model"
-                        >
-                        <p v-if="system.model === ''">Pole nie może być puste !</p>
-                    </div>
-                    <div v-if="shouldSave(system.id)" class="col-lg-4 col-md-6 col-12 d-flex justify-content-end ">
-                        <button class="btn btn-info"
-                                :disabled="system.manufacturer === '' || system.model === ''"
-                                @click="save(system)">Zapisz</button>
-                    </div>
-                    <div v-else class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
-                        <button class="btn btn-warning"
-                                :disabled="system.manufacturer === '' || system.model === ''"
-                                @click="modify(system)">Modyfikuj</button>
-                        <button class="btn btn-danger ml-1"
-                                @click="remove(system.id)">X</button>
+    <div>
+        <h2 class="text-center">Systemy</h2>
+        <div class="form rounded m-2 p-3 systems">
+            <form v-on:submit.prevent>
+                <div v-for="system in systems" :key="system.id">
+                    <div class="form-row text-center mb-1">
+                        <div class=" col-lg-8 col-md-6 col-12">
+                            <input
+                                    type="text"
+                                    id="Manufacturer"
+                                    class="form-control"
+                                    placeholder="Producent"
+                                    v-model="system.manufacturer"
+                            >
+                            <p v-if="system.manufacturer === ''">Pole nie może być puste !</p>
+                            <input
+                                    type="text"
+                                    id="Model"
+                                    class="form-control mt-1"
+                                    placeholder="Model"
+                                    v-model="system.model"
+                            >
+                            <p v-if="system.model === ''">Pole nie może być puste !</p>
+                        </div>
+                        <div v-if="shouldSave(system.id)" class="col-lg-4 col-md-6 col-12 d-flex justify-content-end ">
+                            <button class="btn btn-info"
+                                    :disabled="system.manufacturer === '' || system.model === ''"
+                                    @click="save(system)">Zapisz</button>
+                        </div>
+                        <div v-else class="col-lg-4 col-md-6 col-12 d-flex justify-content-end">
+                            <button class="btn btn-warning"
+                                    :disabled="system.manufacturer === '' || system.model === ''"
+                                    @click="modify(system)">Modyfikuj</button>
+                            <button class="btn btn-danger ml-1"
+                                    @click="remove(system.id)">X</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <button class="btn btn-info btn-block" :disabled="!canAdd" @click="addPlace">Dodaj nowy system</button>
-
-        </form>
+            </form>
+        </div>
+        <button class="btn btn-info btn-block" :disabled="!canAdd" @click="addPlace">Dodaj nowy system</button>
     </div>
 </template>
 
@@ -65,11 +65,15 @@ export default {
   methods: {
     addPlace () {
       if (this.systems.length > 0) {
-        this.systems.push({id: this.systems[this.systems.length - 1].id + 1, manufacturer: '', model: ''})
+        this.systems.push({id: -1, manufacturer: '', model: ''})
       } else {
-        this.systems.push({id: 0, manufacturer: '', model: ''})
+        this.systems.push({id: -1, manufacturer: '', model: ''})
       }
       this.isDbInSync = false
+      this.$nextTick(() => {
+        let container = this.$el.querySelector('.systems')
+        container.scrollTop = container.scrollHeight
+      })
     },
     save (system) {
       let vm = this
@@ -179,5 +183,11 @@ export default {
 </script>
 
 <style scoped>
-
+.systems {
+    min-height: 200px;
+    height: 65vh;
+    max-height: 90%;
+    overflow: hidden;
+    overflow-y: auto;
+}
 </style>

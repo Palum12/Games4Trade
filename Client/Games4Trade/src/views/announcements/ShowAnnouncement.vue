@@ -31,7 +31,8 @@ export default {
     this.$store.dispatch('getAnnouncement', id)
       .then(response => {
         vm.announcement = response.data
-        vm.announcement.dateCreated = vm.announcement.dateCreated.substring(0, 10)
+        vm.announcement.dateCreated = vm.announcement.dateCreated.substring(0, 10) + ' ' +
+          vm.announcement.dateCreated.substring(11, 16)
       })
       // .catch(() => { this.$router.push({name: 'home'}) })
   }
