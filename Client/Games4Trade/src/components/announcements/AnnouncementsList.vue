@@ -11,8 +11,8 @@
                         <p class="mb-1">{{shortenString(announcement.content)}}</p>
                         <small>{{announcement.author}}</small>
                     </a>
-                    <button v-if="isAdminLook" class="btn btn-info mt-1 mb-3" @click="modify(announcement.id)">Modyfikuj</button>
-                    <button v-if="isAdminLook" class="btn btn-danger mt-1 mb-3 mx-2" @click="remove(announcement.id)">X</button>
+                    <button v-if="isAdminLook" class="btn btn-info mt-1 mb-2" @click="modify(announcement.id)">Modyfikuj</button>
+                    <button v-if="isAdminLook" class="btn btn-danger mt-1 mb-2 mx-2" @click="remove(announcement.id)">X</button>
                 </router-link>
             </div>
     </div>
@@ -34,6 +34,9 @@ export default {
         return content.substring(0, 97) + '...'
       }
       return content
+    },
+    modify (id) {
+      this.$router.push({name: 'EditAnnouncement', params: {id: id}})
     },
     remove (id) {
       this.$store.dispatch('setSpinnerLoading')

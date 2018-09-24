@@ -18,16 +18,14 @@ const mutations = {
 
 const actions = {
   getGenres ({commit}) {
-    return new Promise((resolve, reject) => {
-      axios.get('/genres')
-        .then(response => {
-          commit('setGenres', response.data)
-          resolve()
-        })
-        .catch(error => {
-          reject(error)
-        })
-    })
+    return axios.get('/genres')
+      .then(response => {
+        commit('setGenres', response.data)
+        return Promise.resolve()
+      })
+      .catch(error => {
+        return Promise.reject(error)
+      })
   }
 }
 

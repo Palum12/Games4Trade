@@ -18,16 +18,14 @@ const mutations = {
 
 const actions = {
   getSystems ({commit}) {
-    return new Promise((resolve, reject) => {
-      axios.get('/systems')
-        .then(response => {
-          commit('setSystems', response.data)
-          resolve()
-        })
-        .catch(error => {
-          reject(error)
-        })
-    })
+    return axios.get('/systems')
+      .then(response => {
+        commit('setSystems', response.data)
+        return Promise.resolve()
+      })
+      .catch(error => {
+        return Promise.reject(error)
+      })
   }
 }
 

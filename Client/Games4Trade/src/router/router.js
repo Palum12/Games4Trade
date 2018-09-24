@@ -14,6 +14,8 @@ export default new Router({
     Users.CHANGE_PASSWORD,
     Navbar.LOGIN,
     Navbar.SIGNUP,
+    Annoucements.ADDANNOUNCEMENT,
+    Annoucements.EDITANNOUNCEMENT,
     Annoucements.ANNOUNCEMENT,
     {
       path: '/',

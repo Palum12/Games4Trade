@@ -8,30 +8,26 @@ export default {
   },
   getAnnouncements ({dispatch}) {
     dispatch('setSpinnerLoading')
-    return new Promise((resolve, reject) => {
-      axios.get('/announcements')
-        .then(response => {
-          dispatch('unsetSpinnerLoading')
-          resolve(response)
-        })
-        .catch(error => {
-          dispatch('unsetSpinnerLoading')
-          reject(error)
-        })
-    })
+    return axios.get('/announcements')
+      .then(response => {
+        dispatch('unsetSpinnerLoading')
+        return Promise.resolve(response)
+      })
+      .catch(error => {
+        dispatch('unsetSpinnerLoading')
+        return Promise.reject(error)
+      })
   },
   getAnnouncement ({dispatch}, id) {
     dispatch('setSpinnerLoading')
-    return new Promise((resolve, reject) => {
-      axios.get(`/announcements/${id}`)
-        .then(response => {
-          dispatch('unsetSpinnerLoading')
-          resolve(response)
-        })
-        .catch(error => {
-          dispatch('unsetSpinnerLoading')
-          reject(error)
-        })
-    })
+    return axios.get(`/announcements/${id}`)
+      .then(response => {
+        dispatch('unsetSpinnerLoading')
+        return Promise.resolve(response)
+      })
+      .catch(error => {
+        dispatch('unsetSpinnerLoading')
+        return Promise.reject(error)
+      })
   }
 }

@@ -51,33 +51,31 @@ const mutations = {
 
 const actions = {
   signUp ({commit, dispatch}, newUser) {
-    return new Promise((resolve, reject) => {
-      axios.post('users', {
-        email: newUser.email,
-        login: newUser.login,
-        password: newUser.password
-      }).then(response => {
-        resolve(response)
-      })
-        .catch(error => { reject(error) })
+    return axios.post('users', {
+      email: newUser.email,
+      login: newUser.login,
+      password: newUser.password
+    }).then(response => {
+      return Promise.resolve(response)
     })
+      .catch(error => {
+        return Promise.reject(error)
+      })
   },
   login ({commit}, authData) {
-    return new Promise((resolve, reject) => {
-      axios.post('login', {
-        login: authData.login,
-        password: authData.password
-      }).then(response => {
-        let decodedToken = jwt(response.data)
-        decodedToken['token'] = `Bearer ${response.data}`
-        commit('authUser', decodedToken)
-        localStorage.setItem('token', response.data)
-        localStorage.setItem('expirationTime', decodedToken['exp'])
-        resolve()
-      }).catch(error => {
-        commit('clearAuthData')
-        reject(error)
-      })
+    return axios.post('login', {
+      login: authData.login,
+      password: authData.password
+    }).then(response => {
+      let decodedToken = jwt(response.data)
+      decodedToken['token'] = `Bearer ${response.data}`
+      commit('authUser', decodedToken)
+      localStorage.setItem('token', response.data)
+      localStorage.setItem('expirationTime', decodedToken['exp'])
+      return Promise.resolve()
+    }).catch(error => {
+      commit('clearAuthData')
+      return Promise.reject(error)
     })
   },
   tryAutoLogin ({commit}) {

@@ -11,8 +11,9 @@
                     </div>
                 </div>
             </tab>
-            <tab name="Ogłoszenia społeczności">
-                <announcements-list class="announcements"></announcements-list>
+            <tab name="Ogłoszenia społeczności" class="tabs-height">
+                <announcements-list class="announcements mb-1"></announcements-list>
+                <button class="btn btn-success btn-block" @click="addNewAnnouncement">Dodaj nowe ogłoszenie !</button>
             </tab>
         </tabs>
     </div>
@@ -30,6 +31,11 @@ export default {
     genres,
     systems,
     announcementsList
+  },
+  methods: {
+    addNewAnnouncement () {
+      this.$router.push({name: 'AddAnnouncement'})
+    }
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
@@ -51,12 +57,17 @@ export default {
         margin-left: 1vw;
         margin-right: 1vw;
     }
+
+    .tabs-component >>> .tabs-component-panels{
+        padding-top: 2em !important;
+        padding-bottom: 2em !important;
+    }
     .announcements {
         min-height: 200px;
         height: 70vh;
         max-height: 90%;
     }
     .tabs-height {
-        height: 70vh !important;
+        height: 73vh !important;
     }
 </style>
