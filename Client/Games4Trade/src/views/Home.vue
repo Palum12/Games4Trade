@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import announcementsList from './announcements/AnnouncementsList'
+import announcementsList from '../components/announcements/AnnouncementsList'
 export default {
   name: 'home',
   components: {
