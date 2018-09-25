@@ -6,7 +6,7 @@
             <br>
             <small>Autor: {{announcement.author}}</small>
         </div>
-        <div class="container-fluid">
+        <div class="container-fluid" style="white-space: pre-line;">
             {{announcement.content}}
         </div>
     </div>

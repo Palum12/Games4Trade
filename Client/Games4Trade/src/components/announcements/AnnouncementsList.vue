@@ -81,5 +81,6 @@ export default {
 .inner {
     overflow: hidden;
     overflow-y: auto;
+    -webkit-transform: translate3d(0, 0, 0);
 }
 </style>

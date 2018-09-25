@@ -1,6 +1,5 @@
 <template>
-<div class="no-gutters">
-    <div>
+    <div class="no-gutters ">
         <div id="login-form" class="row no-gutters p-2">
             <div class="form rounded col-12 p-3">
                 <form @submit.prevent="onSubmit">
@@ -17,30 +16,30 @@
                         <textarea
                                 id="content"
                                 class="form-control"
+                                rows="20"
                                 v-model="announcement.content">
                         </textarea>
                     </div>
                     <div v-if="isEditing" class="form-group d-flex justify-content-end">
                         <div class="submit mx-3">
-                            <button type="submit" class="btn btn-info btn-block">Modyfikuj</button>
+                            <button type="button" class="btn btn-info btn-block">Modyfikuj</button>
                         </div>
                         <div class="submit">
-                            <button type="submit" class="btn btn-danger btn-block">Usuń</button>
+                            <button type="button" class="btn btn-danger btn-block">Usuń</button>
                         </div>
                     </div>
                     <div v-if="!isEditing" class="form-group">
-                        <div class="submit">
-                            <button type="submit" class="btn btn-info btn-block">Dodaj</button>
-                        </div>
+                        <button type="submit" class="btn btn-info btn-block">Dodaj</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 </template>
 
 <script>
+import mixins from '../../mixins/mixins'
+import axios from 'axios'
 export default {
   name: 'CreateOrUpdateAnnouncement',
   data () {
@@ -52,6 +51,19 @@ export default {
         author: '',
         dateCreated: ''
       }
+    }
+  },
+  methods: {
+    onSubmit () {
+      let vm = this
+      axios.post('announcements', {title: this.announcement.title, content: this.announcement.content})
+        .then(() => {
+          mixins.methods.simpleSuccessPopUp(vm)
+          vm.$router.go(-1)
+        })
+        .catch(() => {
+          mixins.methods.errorPopUp(vm)
+        })
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -83,11 +95,5 @@ export default {
 </script>
 
 <style scoped>
-.myText {
-    width:100%;
-    height:100%;
-    box-sizing: border-box;         /* For IE and modern versions of Chrome */
-    -moz-box-sizing: border-box;    /* For Firefox                          */
-    -webkit-box-sizing: border-box; /* For Safari                           */
-}
+
 </style>
