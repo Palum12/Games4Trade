@@ -9,6 +9,7 @@
         <div class="container-fluid" style="white-space: pre-line;">
             {{announcement.content}}
         </div>
+        <button class="btn btn-info ml-3" @click="goBack">Powrót</button>
     </div>
 </template>
 
@@ -25,6 +26,11 @@ export default {
       }
     }
   },
+  methods: {
+    goBack () {
+      this.$router.go(-1)
+    }
+  },
   mounted () {
     let vm = this
     let id = this.$route.params.id
@@ -34,7 +40,7 @@ export default {
         vm.announcement.dateCreated = vm.announcement.dateCreated.substring(0, 10) + ' ' +
           vm.announcement.dateCreated.substring(11, 16)
       })
-      // .catch(() => { this.$router.push({name: 'home'}) })
+      .catch(() => { this.$router.push({name: 'home'}) })
   }
 }
 </script>

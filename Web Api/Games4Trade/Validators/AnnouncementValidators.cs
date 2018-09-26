@@ -7,7 +7,7 @@ namespace Games4Trade.Validators
     {
         public AnnoucementSaveValidator()
         {
-            RuleFor(a => a.Title).MinimumLength(2).NotEmpty().Matches("^\\p{Lu}\\p{L}+(?:[\\s,.\'-]\\p{L}+)?$");
+            RuleFor(a => a.Title).MinimumLength(2).NotEmpty();
             RuleFor(a => a.Content).MinimumLength(2).NotEmpty();
         }
     }
