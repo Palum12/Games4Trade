@@ -25,7 +25,8 @@ export default {
   name: 'AnnouncementsList',
   data () {
     return {
-      announcements: []
+      announcements: [],
+      nextPage: 2
     }
   },
   methods: {
@@ -61,7 +62,7 @@ export default {
     getAnnouncements () {
       let vm = this
       this.$store.dispatch('setSpinnerLoading')
-      axios.get('/announcements')
+      axios.get('/announcements/page/1')
         .then(response => {
           vm.$store.dispatch('unsetSpinnerLoading')
           vm.announcements = response.data
@@ -70,12 +71,20 @@ export default {
           vm.$store.dispatch('unsetSpinnerLoading')
         })
     },
+    getNextPageAnnouncements () {
+      let vm = this
+      axios.get(`/announcements/page/${this.nextPage}`)
+        .then(response => {
+          vm.announcements.push(...response.data)
+          vm.nextPage = vm.nextPage + 1
+        })
+    },
     scrollEnded () {
       var sh = document.getElementById('inner').scrollHeight
       var st = document.getElementById('inner').scrollTop
       var oh = document.getElementById('inner').offsetHeight
-      if (sh - st - oh + 1 < 1) {
-        console.log('scrolled to bottom')
+      if (sh - st - oh + 1 <= 1) {
+        this.getNextPageAnnouncements()
       }
     }
   },
