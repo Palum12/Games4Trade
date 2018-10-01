@@ -8,5 +8,6 @@ namespace Games4Trade.Repositories
     {
         Task<Announcement> GetAnnouncementWithAuthor(int id);
         Task<IEnumerable<Announcement>> GetAnnouncementsWithAuthors();
+        Task<IEnumerable<Announcement>> GetAnnouncementsPageWithAuthors(int page, int pageSize);
     }
 }

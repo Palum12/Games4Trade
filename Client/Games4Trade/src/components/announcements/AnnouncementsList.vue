@@ -1,5 +1,5 @@
 <template>
-    <div class="inner">
+    <div id="inner">
             <div class="list-group" v-for="announcement in announcements" :key="announcement.id">
                 <router-link :to="'/announcement/'+announcement.id" tag="span">
                     <a class="list-group-item list-group-item-action flex-column align-items-start mb-1">
@@ -47,7 +47,7 @@ export default {
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
               mixins.methods.simpleSuccessPopUp(vm)
-              vm.getAnnouncementsFromServer()
+              vm.announcements = vm.announcements.filter(el => el.id !== id)
             })
             .catch(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -58,12 +58,25 @@ export default {
           vm.$store.dispatch('unsetSpinnerLoading')
         })
     },
-    getAnnouncementsFromServer () {
+    getAnnouncements () {
       let vm = this
-      this.$store.dispatch('getAnnouncements')
+      this.$store.dispatch('setSpinnerLoading')
+      axios.get('/announcements')
         .then(response => {
+          vm.$store.dispatch('unsetSpinnerLoading')
           vm.announcements = response.data
         })
+        .catch(() => {
+          vm.$store.dispatch('unsetSpinnerLoading')
+        })
+    },
+    scrollEnded () {
+      var sh = document.getElementById('inner').scrollHeight
+      var st = document.getElementById('inner').scrollTop
+      var oh = document.getElementById('inner').offsetHeight
+      if (sh - st - oh + 1 < 1) {
+        console.log('scrolled to bottom')
+      }
     }
   },
   computed: {
@@ -72,13 +85,17 @@ export default {
     }
   },
   mounted () {
-    this.getAnnouncementsFromServer()
+    this.getAnnouncements()
+    document.getElementById('inner').addEventListener('scroll', this.scrollEnded)
+  },
+  beforeDestroy () {
+    document.getElementById('inner').removeEventListener('scroll', this.scrollEnded)
   }
 }
 </script>
 
 <style scoped>
-.inner {
+#inner {
     overflow: hidden;
     overflow-y: auto;
     -webkit-transform: translate3d(0, 0, 0);

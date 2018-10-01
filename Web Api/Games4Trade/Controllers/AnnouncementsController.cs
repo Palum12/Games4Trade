@@ -26,6 +26,14 @@ namespace Games4Trade.Controllers
             return Ok(announcements);
         }
 
+        [HttpGet("page/{page}")]
+        public async Task<IActionResult> GetPage(int page)
+        {
+            page = page > 0 ? page - 1 : 0;
+            var announcements = await _announcementService.GetAnnouncementsPage(page);
+            return Ok(announcements);
+        }
+
         // GET: api/Announcements/5
         [HttpGet("{id}", Name = "Get")]
         public async Task<IActionResult> Get(int id)

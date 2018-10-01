@@ -13,6 +13,7 @@ namespace Games4Trade.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private const int PageSize = 10;
 
         public AnnouncementService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -24,8 +25,15 @@ namespace Games4Trade.Services
         {
             var result = await _unitOfWork.Announcements.GetAnnouncementsWithAuthors();
             var response = _mapper.Map<IEnumerable<Announcement>, IEnumerable<AnnouncementGetDto>>(result)
-                .OrderByDescending(a => a.DateCreated).ToList();
+                .ToList();
             return response;
+        }
+
+        public async Task<IList<AnnouncementGetDto>> GetAnnouncementsPage(int page)
+        {
+            var result = await _unitOfWork.Announcements.GetAnnouncementsPageWithAuthors(page, PageSize);
+            var response = _mapper.Map<IEnumerable<Announcement>, IEnumerable<AnnouncementGetDto>>(result);
+            return response.ToList();
         }
 
         public async Task<AnnouncementGetDto> GetAnnouncement(int id)
