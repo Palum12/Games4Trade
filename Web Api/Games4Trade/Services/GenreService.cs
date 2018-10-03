@@ -28,6 +28,13 @@ namespace Games4Trade.Services
             return genres.OrderBy(g => g.Value).ToList();
         }
 
+        public async Task<IList<GenreGetDto>> GetGenresForUser(int userId)
+        {
+            var repoResponse = await _unitOfWork.Genres.GetGenresForUser(userId);
+            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreGetDto>>(repoResponse);
+            return genres.OrderBy(g => g.Value).ToList();
+        }
+
         public async Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre)
         {
             var genreModel = _mapper.Map<GenreCreateOrUpdateDto, Genre>(genre);

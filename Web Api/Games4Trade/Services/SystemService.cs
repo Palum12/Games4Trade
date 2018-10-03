@@ -26,6 +26,13 @@ namespace Games4Trade.Services
             return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s=> s.Model).ToList();
         }
 
+        public async Task<IList<SystemGetDto>> GetSystemsForUser(int userId)
+        {
+            var repoResponse = await _unitOfWork.Systems.GetSystemsForUser(userId);
+            var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemGetDto>>(repoResponse);
+            return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s => s.Model).ToList();
+        }
+
         public async Task<OperationResult> CreateSystem(SystemCreateOrUpdateDto system)
         {
             var systemModel = _mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);

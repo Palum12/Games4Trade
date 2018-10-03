@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Games4Trade.Repositories
 {
@@ -6,5 +7,6 @@ namespace Games4Trade.Repositories
     {
         Task<Models.System> GetSystemWithItems(int id);
         Task<Models.System> GetSameSystem(Models.System system);
+        Task<IList<Models.System>> GetSystemsForUser(int userId);
     }
 }

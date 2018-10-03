@@ -8,6 +8,8 @@ namespace Games4Trade.Services
     public interface IUserService
     {
         Task<IList<UserDto>> Get();
+        Task<UserDto> GetUserById(int id);
+        Task<int?> GetUserIdByLogin(string login);
         Task<OperationResult> CreateUser(UserRegisterDto newUser);
         Task<OperationResult> CheckIfEmailExists(string email);
     }

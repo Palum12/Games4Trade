@@ -8,6 +8,7 @@ namespace Games4Trade.Services
     public interface IGenreService
     {
         Task<IList<GenreGetDto>> GetGenres();
+        Task<IList<GenreGetDto>> GetGenresForUser(int userId);
         Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre);
         Task<OperationResult> EditGenre(int id, GenreCreateOrUpdateDto genre);
         Task<OperationResult> DeleteGenre(int id);      

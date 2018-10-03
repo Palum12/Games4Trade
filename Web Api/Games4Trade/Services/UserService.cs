@@ -30,6 +30,18 @@ namespace Games4Trade.Services
             return mappedUsers.ToList();
         }
 
+        public async Task<UserDto> GetUserById(int id)
+        {
+            var user = await _unitOfWork.Users.GetASync(id);
+            return _mapper.Map<User, UserDto>(user);
+        }
+
+        public async Task<int?> GetUserIdByLogin(string login)
+        {
+            var user = await _unitOfWork.Users.GetUserByLogin(login);
+            return user.Id;
+        }
+
         public async Task<OperationResult> CheckIfEmailExists(string email)
         {
             var result = new OperationResult();

@@ -11,10 +11,14 @@ namespace Games4Trade.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IGenreService _genreService;
+        private readonly ISystemService _systemService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, IGenreService genreService, ISystemService systemService)
         {
             _userService = userService;
+            _genreService = genreService;
+            _systemService = systemService;
         }
 
         // GET: api/Users
@@ -24,6 +28,35 @@ namespace Games4Trade.Controllers
         {
             var users = await _userService.Get();
             return Ok(users);
+        }
+
+        [HttpGet]
+        [Route("{id}/genres")]
+        [Authorize]
+        public async Task<IActionResult> GetGenresForUser(int id)
+        {
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var genres = await _genreService.GetGenresForUser(id);
+            return Ok(genres);
+        }
+
+        [HttpGet]
+        [Route("{id}/systems")]
+        [Authorize]
+        public async Task<IActionResult> GetSystemsForUser(int id)
+        {
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var genres = await _systemService.GetSystemsForUser(id);
+            return Ok(genres);
         }
 
         [HttpPost]

@@ -7,5 +7,6 @@ namespace Games4Trade.Repositories
     public interface IGenreRepository : IRepository<Genre>
     {
         Task<Genre> GetGenreWithGames(int id);
+        Task<IList<Genre>> GetGenresForUser(int userId);
     }
 }

@@ -8,6 +8,7 @@ namespace Games4Trade.Services
     public interface ISystemService
     {
         Task<IList<SystemGetDto>> GetSystems();
+        Task<IList<SystemGetDto>> GetSystemsForUser(int userId);
         Task<OperationResult> CreateSystem(SystemCreateOrUpdateDto system);
         Task<OperationResult> EditSystem(int id, SystemCreateOrUpdateDto system);
         Task<OperationResult> DeleteSystem(int id);
