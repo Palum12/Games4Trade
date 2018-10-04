@@ -23,6 +23,57 @@ namespace Games4Trade.Services
             _loginService = loginService;
         }
 
+        public async Task<OperationResult> AddObservedUser(ObservedUsersRelationshipDto pair)
+        {
+            var observingUser = await GetUserById(pair.ObservingUserId);
+            if (observingUser == null)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Observing user not found!"
+                };
+            }
+            var observedUser = await GetUserById(pair.ObservedUserId);
+            if (observedUser == null)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Observed user not found!"
+                };
+            }
+
+            var currentList = await GetObservedUsersForUser(pair.ObservingUserId);
+            var ids = currentList.Select(u => u.Id);
+            if (ids.Contains(pair.ObservedUserId))
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Payload = pair
+                };
+            }
+
+            await _unitOfWork.Users.AddObsersvedUser(pair.ObservingUserId, pair.ObservedUserId);
+            var result = await _unitOfWork.CompleteASync();
+            if (result > 0)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = true,
+                    Payload = pair
+                };
+            }
+            else
+            {
+                return OtherServices.GetIncorrectDatabaseConnectionResult();
+            }
+        }
+
         public async Task<IList<UserDto>> Get()
         {
             var users = await _unitOfWork.Users.GetAllASync();
@@ -40,6 +91,12 @@ namespace Games4Trade.Services
         {
             var user = await _unitOfWork.Users.GetUserByLogin(login);
             return user.Id;
+        }
+
+        public async Task<IList<UserDto>> GetObservedUsersForUser(int userId)
+        {
+            var users = await _unitOfWork.Users.GetObservedUsersForUser(userId);
+            return _mapper.Map<IList<User>, IList<UserDto>>(users);
         }
 
         public async Task<OperationResult> CheckIfEmailExists(string email)

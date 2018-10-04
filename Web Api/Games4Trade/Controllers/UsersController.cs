@@ -59,6 +59,48 @@ namespace Games4Trade.Controllers
             return Ok(genres);
         }
 
+        [HttpGet]
+        [Route("{id}/observed")]
+        [Authorize]
+        public async Task<IActionResult> GetObservedUsersForUser(int id)
+        {
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var users = await _userService.GetObservedUsersForUser(id);
+            return Ok(users);
+        }
+
+        [Route("{id}/observed")]
+        [HttpPost]
+        public async Task<IActionResult> AddObservedUser([FromBody] ObservedUsersRelationshipDto pair)
+        {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            if (currentUserId.Value != pair.ObservingUserId)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.AddObservedUser(pair);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            if (result.Payload != null)
+            {
+                return Conflict();
+            }
+
+            if (result.IsClientError)
+            {
+                return NotFound(result.Message);
+            }
+            return StatusCode(500, result.Message);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostUser([FromBody] UserRegisterDto newUser)
         {
