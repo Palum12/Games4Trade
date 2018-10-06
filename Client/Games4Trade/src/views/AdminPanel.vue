@@ -11,7 +11,7 @@
                     </div>
                 </div>
             </tab>
-            <tab name="Ogłoszenia społeczności" class="tabs-height">
+            <tab name="Ogłoszenia dla społeczności" class="tabs-height">
                 <announcements-list class="announcements mb-1"></announcements-list>
                 <button class="btn btn-success btn-block" @click="addNewAnnouncement">Dodaj nowe ogłoszenie !</button>
             </tab>

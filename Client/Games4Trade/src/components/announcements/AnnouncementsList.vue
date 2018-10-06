@@ -83,7 +83,7 @@ export default {
       var sh = document.getElementById('inner').scrollHeight
       var st = document.getElementById('inner').scrollTop
       var oh = document.getElementById('inner').offsetHeight
-      if (sh - st - oh + 1 <= 1) {
+      if (sh - st - oh + 1 < 2) {
         this.getNextPageAnnouncements()
       }
     }
