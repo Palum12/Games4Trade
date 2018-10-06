@@ -8,6 +8,7 @@ namespace Games4Trade.Services
     public interface IUserService
     {
         Task<OperationResult> AddObservedUser(ObservedUsersRelationshipDto pair);
+        Task<OperationResult> DeleteObservedUser(ObservedUsersRelationshipDto pair);
         Task<IList<UserDto>> Get();
         Task<UserDto> GetUserById(int id);
         Task<int?> GetUserIdByLogin(string login);

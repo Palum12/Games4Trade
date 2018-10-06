@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Games4Trade.Services;
@@ -73,6 +74,7 @@ namespace Games4Trade.Controllers
             return Ok(users);
         }
 
+        [Authorize]
         [Route("{id}/observed")]
         [HttpPost]
         public async Task<IActionResult> AddObservedUser([FromBody] ObservedUsersRelationshipDto pair)
@@ -98,6 +100,32 @@ namespace Games4Trade.Controllers
             {
                 return NotFound(result.Message);
             }
+            return StatusCode(500, result.Message);
+        }
+
+
+        [Authorize]
+        [Route("{id}/observed")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteObservedUser([FromBody] ObservedUsersRelationshipDto pair)
+        {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            if (currentUserId.Value != pair.ObservingUserId)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.DeleteObservedUser(pair);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            if (result.IsClientError)
+            {
+                return NotFound();
+            }
+
             return StatusCode(500, result.Message);
         }
 

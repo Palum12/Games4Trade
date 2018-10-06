@@ -74,6 +74,56 @@ namespace Games4Trade.Services
             }
         }
 
+        public async Task<OperationResult> DeleteObservedUser(ObservedUsersRelationshipDto pair)
+        {
+            var observingUser = await GetUserById(pair.ObservingUserId);
+            if (observingUser == null)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Observing user not found!"
+                };
+            }
+            var observedUser = await GetUserById(pair.ObservedUserId);
+            if (observedUser == null)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Observed user not found!"
+                };
+            }
+
+            var currentList = await GetObservedUsersForUser(pair.ObservingUserId);
+            var ids = currentList.Select(u => u.Id);
+            if (ids.Contains(pair.ObservedUserId))
+            {
+                _unitOfWork.Users.DeleteObservedUser(pair.ObservingUserId, pair.ObservedUserId);
+                var result = await _unitOfWork.CompleteASync();
+                if (result > 0)
+                {
+                    return new OperationResult()
+                    {
+                        IsSuccessful = true
+                    };
+                }
+                else
+                {
+                    return OtherServices.GetIncorrectDatabaseConnectionResult();
+                }
+            }
+            return new OperationResult()
+            {
+                IsSuccessful = false,
+                IsClientError = true,
+                Message = "Pair of users has not been found",
+                Payload = pair
+            };
+        }
+
         public async Task<IList<UserDto>> Get()
         {
             var users = await _unitOfWork.Users.GetAllASync();

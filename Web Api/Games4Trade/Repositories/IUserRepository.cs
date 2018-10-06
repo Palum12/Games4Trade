@@ -11,5 +11,6 @@ namespace Games4Trade.Repositories
         Task<User> GetUserByEmail(string email);
         Task<User> GetUserByRecoveryAddress(string recoveryAddress);
         Task<IList<User>> GetObservedUsersForUser(int userId);
+        void DeleteObservedUser(int observingUserId, int observedUserId);
     }
 }

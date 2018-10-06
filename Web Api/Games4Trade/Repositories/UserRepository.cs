@@ -35,7 +35,16 @@ namespace Games4Trade.Repositories
 
         public async Task AddObsersvedUser(int observingUserId, int observedUserId)
         {
-            await Context.ObservedUsersRelationship.AddAsync(new ObservedUsersRelationship()
+            await Context.ObservedUsersRelationship.AddAsync(new ObservedUsersRelationship
+            {
+                ObservingUserId = observingUserId,
+                ObservedUserId = observedUserId
+            });
+        }
+
+        public void DeleteObservedUser(int observingUserId, int observedUserId)
+        {
+            Context.ObservedUsersRelationship.Remove(new ObservedUsersRelationship
             {
                 ObservingUserId = observingUserId,
                 ObservedUserId = observedUserId
