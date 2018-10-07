@@ -15,6 +15,7 @@ namespace Games4Trade.Services
         Task<IList<UserDto>> GetObservedUsersForUser(int userId);
         Task<OperationResult> CreateUser(UserRegisterDto newUser);
         Task<OperationResult> CheckIfEmailExists(string email);
+        Task<OperationResult> ChangeUserDescription(int userId, string description);
         Task<OperationResult> ReplaceGenresForUser(int userId, IList<int> genresIds);
         Task<OperationResult> ReplaceSystemsForUser(int userId, IList<int> systemsIds);
     }

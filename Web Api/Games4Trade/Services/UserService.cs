@@ -161,6 +161,30 @@ namespace Games4Trade.Services
             return result;
         }
 
+        public async Task<OperationResult> ChangeUserDescription(int userId, string description)
+        {
+            var user = await _unitOfWork.Users.GetASync(userId);
+            if (user.Description != null && user.Description.Equals(description))
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            user.Description = description;
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            return OtherServices.GetIncorrectDatabaseConnectionResult();
+        }
+
         public async Task<OperationResult> ReplaceGenresForUser(int userId, IList<int> genresIds)
         {
             var genres = await _unitOfWork.Genres.GetAllASync();

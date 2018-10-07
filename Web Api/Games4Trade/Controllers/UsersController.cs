@@ -5,6 +5,7 @@ using Games4Trade.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 
 namespace Games4Trade.Controllers
 {
@@ -23,13 +24,49 @@ namespace Games4Trade.Controllers
             _systemService = systemService;
         }
 
-        // GET: api/Users
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetUser()
         {
             var users = await _userService.Get();
             return Ok(users);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostUser([FromBody] UserRegisterDto newUser)
+        {
+            var isEmailTaken = await _userService.CheckIfEmailExists(newUser.Email);
+            if (isEmailTaken.IsSuccessful)
+            {
+                return Conflict(isEmailTaken.Message);
+            }
+
+            var result = await _userService.CreateUser(newUser);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+            return BadRequest(result.Message);
+
+        }
+
+        [HttpPatch]
+        [Route("{id}/description")]
+        [Authorize]
+        public async Task<IActionResult> ChangeUserDescription(int id, [FromBody]string userDescription)
+        {
+            if (!await IsSelfService(id))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.ChangeUserDescription(id, userDescription);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            return StatusCode(500, result.Message);
         }
 
         [HttpGet]
@@ -156,7 +193,6 @@ namespace Games4Trade.Controllers
             return StatusCode(500, result.Message);
         }
 
-
         [Authorize]
         [Route("{id}/observed")]
         [HttpDelete]
@@ -179,24 +215,6 @@ namespace Games4Trade.Controllers
             }
 
             return StatusCode(500, result.Message);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> PostUser([FromBody] UserRegisterDto newUser)
-        {
-            var isEmailTaken = await _userService.CheckIfEmailExists(newUser.Email);
-            if (isEmailTaken.IsSuccessful)
-            {
-                return Conflict(isEmailTaken.Message);
-            }
-
-            var result = await _userService.CreateUser(newUser);
-            if (result.IsSuccessful)
-            {
-                return Ok();
-            }
-            return BadRequest(result.Message);
-
         }
 
         private async Task<bool> IsSelfService(int userId)
