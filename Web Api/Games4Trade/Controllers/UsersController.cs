@@ -37,6 +37,11 @@ namespace Games4Trade.Controllers
         [Authorize]
         public async Task<IActionResult> GetGenresForUser(int id)
         {
+            if (!await IsSelfService(id))
+            {
+                return Unauthorized();
+            }
+
             var user = await _userService.GetUserById(id);
             if (user == null)
             {
@@ -52,8 +57,7 @@ namespace Games4Trade.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeUserLikedGenres(int id, IList<int> likedGenres)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-            if (currentUserId.Value != id)
+            if (!await IsSelfService(id))
             {
                 return Unauthorized();
             }
@@ -77,11 +81,11 @@ namespace Games4Trade.Controllers
         [Authorize]
         public async Task<IActionResult> GetSystemsForUser(int id)
         {
-            var user = await _userService.GetUserById(id);
-            if (user == null)
+            if (!await IsSelfService(id))
             {
-                return NotFound();
+                return Unauthorized();
             }
+
             var genres = await _systemService.GetSystemsForUser(id);
             return Ok(genres);
         }
@@ -91,8 +95,7 @@ namespace Games4Trade.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeUserLikedSystems(int id, IList<int> ownedSystems)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-            if (currentUserId.Value != id)
+            if (!await IsSelfService(id))
             {
                 return Unauthorized();
             }
@@ -116,11 +119,11 @@ namespace Games4Trade.Controllers
         [Authorize]
         public async Task<IActionResult> GetObservedUsersForUser(int id)
         {
-            var user = await _userService.GetUserById(id);
-            if (user == null)
+            if (!await IsSelfService(id))
             {
-                return NotFound();
+                return Unauthorized();
             }
+
             var users = await _userService.GetObservedUsersForUser(id);
             return Ok(users);
         }
@@ -130,8 +133,7 @@ namespace Games4Trade.Controllers
         [HttpPost]
         public async Task<IActionResult> AddObservedUser([FromBody] ObservedUsersRelationshipDto pair)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-            if (currentUserId.Value != pair.ObservingUserId)
+            if (!await IsSelfService(pair.ObservingUserId))
             {
                 return Unauthorized();
             }
@@ -160,8 +162,7 @@ namespace Games4Trade.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteObservedUser([FromBody] ObservedUsersRelationshipDto pair)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-            if (currentUserId.Value != pair.ObservingUserId)
+            if (!await IsSelfService(pair.ObservingUserId))
             {
                 return Unauthorized();
             }
@@ -196,6 +197,12 @@ namespace Games4Trade.Controllers
             }
             return BadRequest(result.Message);
 
+        }
+
+        private async Task<bool> IsSelfService(int userId)
+        {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            return currentUserId.Value == userId;
         }
       
     }
