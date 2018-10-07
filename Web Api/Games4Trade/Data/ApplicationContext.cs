@@ -76,9 +76,11 @@ namespace Games4Trade.Data
                 entity.Property(a => a.Title).IsRequired();
                 entity.Property(a => a.Content).HasColumnType("text").IsRequired();
                 entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
-                entity.Property(a => a.UserId).IsRequired();
-                entity.HasOne(a => a.User).WithMany(u => u.Announcements).HasForeignKey(a => a.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(a => a.UserId);
+                entity.HasOne(a => a.User)
+                    .WithMany(u => u.Announcements)
+                    .HasForeignKey(a => a.UserId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
 
@@ -162,8 +164,11 @@ namespace Games4Trade.Data
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.DateCreated).HasDefaultValueSql("Now()");
                 entity.Property(p => p.Path).IsRequired();
-                entity.Property(p => p.AdvertisementId).IsRequired();
-                entity.HasOne(p => p.Advertisement).WithMany(a => a.Photos).HasForeignKey(p => p.AdvertisementId);
+                entity.Property(p => p.AdvertisementId);
+                entity.HasOne(p => p.Advertisement)
+                    .WithMany(a => a.Photos)
+                    .HasForeignKey(p => p.AdvertisementId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Advertisement>(entity =>

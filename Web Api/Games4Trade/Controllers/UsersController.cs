@@ -5,6 +5,7 @@ using Games4Trade.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace Games4Trade.Controllers
@@ -68,6 +69,38 @@ namespace Games4Trade.Controllers
 
             return StatusCode(500, result.Message);
         }
+
+        [HttpGet]
+        [Route("{id}/photo")]
+        public async Task<IActionResult> GetUserProfilePhoto(int id)
+        {
+            var bytes = await _userService.GetUserPhoto(id);
+            if(bytes != null)
+            {
+                return File(bytes, "image/jpeg");
+            }
+
+            return NotFound();
+        }
+
+        [HttpPatch]
+        [Route("{id}/photo")]
+        [Authorize]
+        public async Task<IActionResult> ChangeUserProfilePhoto(int id, [FromForm]IFormFile photo)
+        {
+            if (!await IsSelfService(id))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.ChangeUserPhoto(id, photo);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            return StatusCode(500, result.Message);
+        } 
 
         [HttpGet]
         [Route("{id}/genres")]

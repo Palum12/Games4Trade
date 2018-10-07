@@ -11,6 +11,7 @@ namespace Games4Trade.Repositories
         IGenreRepository Genres { get; }
         ISystemRepository Systems { get; }
         IAnnouncementReposiotry Announcements { get; }
+        IRepository<Photo> Photos { get; }
         Task<int> CompleteASync();
     }
 }

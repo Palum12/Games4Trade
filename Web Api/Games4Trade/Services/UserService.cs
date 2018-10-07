@@ -1,11 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
+using Microsoft.AspNetCore.Http;
 
 
 namespace Games4Trade.Services
@@ -173,6 +176,58 @@ namespace Games4Trade.Services
             }
 
             user.Description = description;
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            return OtherServices.GetIncorrectDatabaseConnectionResult();
+        }
+
+        public async Task<byte[]> GetUserPhoto(int userId)
+        {
+            var user = await _unitOfWork.Users.GetASync(userId);
+            if (user?.PhotoId != null)
+            {
+                var photo = await _unitOfWork.Photos.GetASync(user.PhotoId.Value);
+                var bytes = await File.ReadAllBytesAsync(photo.Path);
+                return bytes;
+            }
+
+            return null;
+        }
+
+        public async Task<OperationResult> ChangeUserPhoto(int userId, IFormFile photo)
+        {
+            var fileId = Guid.NewGuid().ToString("N").ToUpper();
+            // todo: create nested directory
+            var directory = "user" + userId;
+            Directory.CreateDirectory(directory);
+
+            var path = Path.Combine(directory, fileId);
+            using (var fileStream = new FileStream(path, FileMode.Create))
+            {
+                await photo.CopyToAsync(fileStream);
+            }
+
+            var newPhoto = new Photo {DateCreated = DateTime.Now, Path = path};
+
+            var user = await _unitOfWork.Users.GetASync(userId);
+            if (user.PhotoId.HasValue)
+            {
+                var oldPhoto = await _unitOfWork.Photos.GetASync(user.PhotoId.Value);
+                if (oldPhoto != null)
+                {
+                    File.Delete(oldPhoto.Path);
+                }
+            }
+
+            await _unitOfWork.Photos.AddASync(newPhoto);
+            user.PhotoId = newPhoto.Id;
             var repoResult = await _unitOfWork.CompleteASync();
             if (repoResult > 0)
             {

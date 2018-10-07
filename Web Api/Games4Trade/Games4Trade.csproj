@@ -9,6 +9,8 @@
     <Compile Remove="Data\Migrations\20180908161727_many to many users.Designer.cs" />
     <Compile Remove="Data\Migrations\20180909170818_consoles and regions.cs" />
     <Compile Remove="Data\Migrations\20180909170818_consoles and regions.Designer.cs" />
+    <Compile Remove="Data\Migrations\20181007154117_fixed photos.cs" />
+    <Compile Remove="Data\Migrations\20181007154117_fixed photos.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

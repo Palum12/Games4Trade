@@ -11,6 +11,7 @@ namespace Games4Trade.Repositories
         public IGenreRepository Genres { get; private set; }
         public ISystemRepository Systems { get; private set; }
         public IAnnouncementReposiotry Announcements { get; private set; }
+        public IRepository<Photo> Photos { get; private set; }
 
         public UnitOfWork(ApplicationContext context)
         {
@@ -19,6 +20,7 @@ namespace Games4Trade.Repositories
             Genres = new GenreRepository(context);
             Systems = new SystemRepository(context);
             Announcements = new AnnouncementRepository(context);
+            Photos = new Repository<Photo>(context);
         }
 
         public async Task<int> CompleteASync()
