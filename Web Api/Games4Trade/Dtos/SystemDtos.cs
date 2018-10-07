@@ -1,6 +1,6 @@
 ﻿namespace Games4Trade.Dtos
 {
-    public class SystemGetDto
+    public class SystemDto
     {
         public int Id { get; set; }
         public string Manufacturer { get; set; }

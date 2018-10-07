@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +47,31 @@ namespace Games4Trade.Controllers
             return Ok(genres);
         }
 
+        [HttpPatch]
+        [Route("{id}/genres")]
+        [Authorize]
+        public async Task<IActionResult> ChangeUserLikedGenres(int id, IList<int> likedGenres)
+        {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            if (currentUserId.Value != id)
+            {
+                return Unauthorized();
+            }
+
+            var result =  await _userService.ReplaceGenresForUser(id, likedGenres);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            if (result.IsClientError)
+            {
+                return BadRequest();
+            }
+
+            return StatusCode(500, result.Message);
+        }
+
         [HttpGet]
         [Route("{id}/systems")]
         [Authorize]
@@ -58,6 +84,31 @@ namespace Games4Trade.Controllers
             }
             var genres = await _systemService.GetSystemsForUser(id);
             return Ok(genres);
+        }
+
+        [HttpPatch]
+        [Route("{id}/systems")]
+        [Authorize]
+        public async Task<IActionResult> ChangeUserLikedSystems(int id, IList<int> ownedSystems)
+        {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            if (currentUserId.Value != id)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.ReplaceSystemsForUser(id, ownedSystems);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            if (result.IsClientError)
+            {
+                return BadRequest();
+            }
+
+            return StatusCode(500, result.Message);
         }
 
         [HttpGet]

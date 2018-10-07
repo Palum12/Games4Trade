@@ -12,5 +12,7 @@ namespace Games4Trade.Repositories
         Task<User> GetUserByRecoveryAddress(string recoveryAddress);
         Task<IList<User>> GetObservedUsersForUser(int userId);
         void DeleteObservedUser(int observingUserId, int observedUserId);
+        Task ReplaceGenresForUser(int userId, IList<UserLikedGenre> pairs);
+        Task ReplaceSystemsForUser(int userId, IList<UserOwnedSystem> pairs);
     }
 }

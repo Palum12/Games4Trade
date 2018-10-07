@@ -19,17 +19,17 @@ namespace Games4Trade.Services
             _mapper = mapper;
         }
 
-        public async Task<IList<SystemGetDto>> GetSystems()
+        public async Task<IList<SystemDto>> GetSystems()
         {
             var repoResponse = await _unitOfWork.Systems.GetAllASync();
-            var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemGetDto>>(repoResponse);
+            var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
             return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s=> s.Model).ToList();
         }
 
-        public async Task<IList<SystemGetDto>> GetSystemsForUser(int userId)
+        public async Task<IList<SystemDto>> GetSystemsForUser(int userId)
         {
             var repoResponse = await _unitOfWork.Systems.GetSystemsForUser(userId);
-            var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemGetDto>>(repoResponse);
+            var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
             return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s => s.Model).ToList();
         }
 
@@ -54,7 +54,7 @@ namespace Games4Trade.Services
                 return new OperationResult()
                 {
                     IsSuccessful = true,
-                    Payload = _mapper.Map<Models.System, SystemGetDto>(systemModel)
+                    Payload = _mapper.Map<Models.System, SystemDto>(systemModel)
                 };
             }
             else

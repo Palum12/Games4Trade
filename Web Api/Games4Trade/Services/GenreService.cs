@@ -21,17 +21,17 @@ namespace Games4Trade.Services
             _mapper = mapper;
         }
 
-        public async Task<IList<GenreGetDto>> GetGenres()
+        public async Task<IList<GenreDto>> GetGenres()
         {
             var repoResponse = await _unitOfWork.Genres.GetAllASync();
-            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreGetDto>>(repoResponse);
+            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreDto>>(repoResponse);
             return genres.OrderBy(g => g.Value).ToList();
         }
 
-        public async Task<IList<GenreGetDto>> GetGenresForUser(int userId)
+        public async Task<IList<GenreDto>> GetGenresForUser(int userId)
         {
             var repoResponse = await _unitOfWork.Genres.GetGenresForUser(userId);
-            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreGetDto>>(repoResponse);
+            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreDto>>(repoResponse);
             return genres.OrderBy(g => g.Value).ToList();
         }
 
@@ -88,7 +88,7 @@ namespace Games4Trade.Services
                     return new OperationResult()
                     {
                         IsSuccessful = true,
-                        Payload = _mapper.Map<Genre, GenreGetDto>(genreInDb)
+                        Payload = _mapper.Map<Genre, GenreDto>(genreInDb)
                     };
                 }
                 else

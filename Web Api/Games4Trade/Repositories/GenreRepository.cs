@@ -24,5 +24,6 @@ namespace Games4Trade.Repositories
 
             return genres;
         }
+
     }
 }

@@ -50,5 +50,23 @@ namespace Games4Trade.Repositories
                 ObservedUserId = observedUserId
             });
         }
+
+        public async Task ReplaceGenresForUser(int userId, IList<UserLikedGenre> pairs)
+        {
+            var listOfCurrentRelationships = await Context.UserGenreRelationship
+                .Where(x => x.UserId == userId).ToListAsync();
+
+            Context.UserGenreRelationship.RemoveRange(listOfCurrentRelationships);
+            await Context.UserGenreRelationship.AddRangeAsync(pairs);
+        }
+
+        public async Task ReplaceSystemsForUser(int userId, IList<UserOwnedSystem> pairs)
+        {
+            var listOfCurrentRelationships = await Context.UserSystemRelationship
+                .Where(x => x.UserId == userId).ToListAsync();
+
+            Context.UserSystemRelationship.RemoveRange(listOfCurrentRelationships);
+            await Context.UserSystemRelationship.AddRangeAsync(pairs);
+        }
     }
 }

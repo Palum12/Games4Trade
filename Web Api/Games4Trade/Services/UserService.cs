@@ -161,6 +161,54 @@ namespace Games4Trade.Services
             return result;
         }
 
+        public async Task<OperationResult> ReplaceGenresForUser(int userId, IList<int> genresIds)
+        {
+            var genres = await _unitOfWork.Genres.GetAllASync();
+
+            var areIdsInDatabase = genresIds.All(x => genres.Any(g => g.Id == x));
+            if (!areIdsInDatabase)
+            {
+                return new OperationResult { IsSuccessful = false, IsClientError = true};
+            }
+            var newRelationships = genresIds
+                .Select(x => new UserLikedGenre{UserId = userId, GenreId = x}).ToList();
+            await _unitOfWork.Users.ReplaceGenresForUser(userId, newRelationships);
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            return OtherServices.GetIncorrectDatabaseConnectionResult();
+        }
+
+        public async Task<OperationResult> ReplaceSystemsForUser(int userId, IList<int> systemsIds)
+        {
+            var systems = await _unitOfWork.Systems.GetAllASync();
+
+            var areIdsInDatabase = systemsIds.All(x => systems.Any(g => g.Id == x));
+            if (!areIdsInDatabase)
+            {
+                return new OperationResult { IsSuccessful = false, IsClientError = true };
+            }
+            var newRelationships = systemsIds
+                .Select(x => new UserOwnedSystem { UserId = userId, SystemId = x }).ToList();
+            await _unitOfWork.Users.ReplaceSystemsForUser(userId, newRelationships);
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            return OtherServices.GetIncorrectDatabaseConnectionResult();
+        }
+
         public async Task<OperationResult> CreateUser(UserRegisterDto newUser)
         {
             var result = new OperationResult();
