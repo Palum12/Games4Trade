@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -203,9 +204,31 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> ChangeUserPhoto(int userId, IFormFile photo)
         {
+            var user = await _unitOfWork.Users.GetASync(userId);
+            if (photo == null && user.PhotoId.HasValue)
+            {
+                var oldPhoto = await _unitOfWork.Photos.GetASync(user.PhotoId.Value);
+                if (oldPhoto != null)
+                {
+                    File.Delete(oldPhoto.Path);
+                }
+                _unitOfWork.Photos.Remove(oldPhoto);
+                user.PhotoId = null;
+                var repoRes = await _unitOfWork.CompleteASync();
+                if (repoRes > 0)
+                {
+                    return new OperationResult{IsSuccessful = true};
+                }
+                throw new DataException();
+            }
+
+            if (photo == null)
+            {
+                return new OperationResult { IsSuccessful = true };
+            }
+
             var fileId = Guid.NewGuid().ToString("N").ToUpper();
-            // todo: create nested directory
-            var directory = "user" + userId;
+            var directory = @"photos/user" + userId;
             Directory.CreateDirectory(directory);
 
             var path = Path.Combine(directory, fileId);
@@ -213,10 +236,8 @@ namespace Games4Trade.Services
             {
                 await photo.CopyToAsync(fileStream);
             }
-
             var newPhoto = new Photo {DateCreated = DateTime.Now, Path = path};
 
-            var user = await _unitOfWork.Users.GetASync(userId);
             if (user.PhotoId.HasValue)
             {
                 var oldPhoto = await _unitOfWork.Photos.GetASync(user.PhotoId.Value);
@@ -224,10 +245,19 @@ namespace Games4Trade.Services
                 {
                     File.Delete(oldPhoto.Path);
                 }
+                _unitOfWork.Photos.Remove(oldPhoto);
+                user.PhotoId = null;
+                user.Photo = null;
+                var repoRes = await _unitOfWork.CompleteASync();
+                if (repoRes == 0)
+                {
+                    File.Delete(path);
+                    throw new DataException();
+                }
             }
 
             await _unitOfWork.Photos.AddASync(newPhoto);
-            user.PhotoId = newPhoto.Id;
+            user.Photo = newPhoto;
             var repoResult = await _unitOfWork.CompleteASync();
             if (repoResult > 0)
             {
@@ -236,7 +266,7 @@ namespace Games4Trade.Services
                     IsSuccessful = true
                 };
             }
-
+            File.Delete(path);
             return OtherServices.GetIncorrectDatabaseConnectionResult();
         }
 
