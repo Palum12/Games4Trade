@@ -7,11 +7,27 @@
             </button>
             <div class="collapse navbar-collapse " id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto" >
-                    <li class="nav-item" v-if="isAdmin">
-                        <router-link to="/admin" class="nav-link"><a>Panel administratora</a></router-link>
+                    <li class="nav-item" v-if="isAuthenticated">
+                        <router-link to="/addAd" class="nav-link"><a>Dodaj ogłoszenie</a></router-link>
+                    </li>
+                    <li class="nav-item">
+                            <form class="form-inline">
+                                <input
+                                        class="form-control ml-5 mr-sm-2"
+                                        type="search"
+                                        placeholder="Szukaj ogłoszeń"
+                                        aria-label="Search">
+                                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Szukaj</button>
+                            </form>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
+                    <li class="nav-item" v-if="isAuthenticated">
+                        <router-link to="/userPanel" class="nav-link"><a>Panel użytkownika</a></router-link>
+                    </li>
+                    <li class="nav-item" v-if="isAdmin">
+                        <router-link to="/admin" class="nav-link"><a>Panel administratora</a></router-link>
+                    </li>
                     <li class="nav-item" v-if="!isAuthenticated">
                         <router-link to="/signup" class="nav-link"><a>Utwórz konto</a></router-link>
                     </li>

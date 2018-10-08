@@ -12,6 +12,8 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     Users.CHANGE_PASSWORD,
+    Users.USER_PANEL,
+    Users.USER_PROFILE,
     Navbar.LOGIN,
     Navbar.SIGNUP,
     Annoucements.ADDANNOUNCEMENT,
