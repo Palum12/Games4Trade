@@ -3,7 +3,7 @@
         <tabs :options="{ useUrlFragment: false }">
             <tab name="Mój profil" class="tabs-height">
                 <h5>W tym miejscu możesz modyfikować swój opis widoczny dla innych użytkowników, oraz swoje dane.</h5>
-                <my-profile></my-profile>
+                <my-profile :user-id="userId"></my-profile>
             </tab>
             <tab name="Moje preferencje" class="tabs-height">
                 <h5>W tym miejscu wybierz jakie gatunki gier oraz systemy Cię interesują.</h5>

@@ -199,7 +199,7 @@ namespace Games4Trade.Services
                 return bytes;
             }
 
-            return null;
+            return await File.ReadAllBytesAsync(@"photos/defaultUserPhoto.png");
         }
 
         public async Task<OperationResult> ChangeUserPhoto(int userId, IFormFile photo)
