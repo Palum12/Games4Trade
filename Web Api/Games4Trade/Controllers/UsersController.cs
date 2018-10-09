@@ -27,10 +27,27 @@ namespace Games4Trade.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetUser()
+        public async Task<IActionResult> GetUsers()
         {
             var users = await _userService.Get();
             return Ok(users);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            if (! await IsSelfService(id))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
 
         [HttpPost]
