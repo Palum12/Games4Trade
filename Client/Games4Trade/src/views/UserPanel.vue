@@ -1,17 +1,28 @@
 <template>
-    <div class="row admin no-gutters ">
+    <div v-if="dataLoaded" class="row admin no-gutters ">
         <tabs :options="{ useUrlFragment: false }">
             <tab name="Mój profil" class="tabs-height">
                 <h5>W tym miejscu możesz modyfikować swój opis widoczny dla innych użytkowników, oraz swoje dane.</h5>
+                <my-profile></my-profile>
             </tab>
             <tab name="Moje preferencje" class="tabs-height">
                 <h5>W tym miejscu wybierz jakie gatunki gier oraz systemy Cię interesują.</h5>
+                <div class="row">
+                    <div class="col-md-6 col-12">
+                        <my-genres :user-id="userId"></my-genres>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <my-systems></my-systems>
+                    </div>
+                </div>
             </tab>
             <tab name="Obserwowani użytkownicy" class="tabs-height">
                 <h5>W tym miejscu możesz przeglądać listę obserwowanych przez siebie użytkowników.</h5>
+                <observed-users></observed-users>
             </tab>
             <tab name="Moje ogłoszenia" class="tabs-height">
                 <h5>W tym miejscu możesz przeglądać swoje ogłoszenia.</h5>
+                <my-ads></my-ads>
             </tab>
         </tabs>
     </div>
@@ -22,15 +33,34 @@
 import 'vue-tabs-component/docs/resources/tabs-component.css'
 import ObservedUsers from '../components/users/ObservedUsers'
 import MyProfile from '../components/users/MyProfile'
-import MyPreferences from '../components/users/MyPreferences'
-import MyAnnouncements from '../components/users/MyAnnouncements'
+import MyGenres from '../components/users/MyGenres'
+import MySystems from '../components/users/MySystems'
+import MyAds from '../components/users/MyAdvertisements'
 
 export default {
   name: 'UserPanel',
   components: {
-    MyProfile
+    MyProfile,
+    MyGenres,
+    MySystems,
+    MyAds,
+    ObservedUsers
+  },
+  data () {
+    return {
+      dataLoaded: false,
+      userId: Number
+    }
   },
   methods: {},
+  mounted () {
+    var vm = this
+    this.$store.dispatch('getUserId')
+      .then(response => {
+        vm.userId = response.data
+        vm.dataLoaded = true
+      })
+  },
   beforeRouteEnter (to, from, next) {
     next(vm => {
       if (vm.$store.getters.isAuthenticated) {

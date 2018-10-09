@@ -4,7 +4,7 @@
 
 <script>
   export default {
-    name: 'MyAnnouncements'
+    name: 'MyAdvertisements'
   }
 </script>
 

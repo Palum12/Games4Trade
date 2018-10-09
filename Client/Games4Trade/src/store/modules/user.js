@@ -96,6 +96,12 @@ const actions = {
     commit('clearAuthData')
     router.push('/')
     localStorage.clear()
+  },
+  getUserId () {
+    return axios.get('users/id')
+  },
+  getLikedGenres ({}, userId) {
+    return axios.get(`users/${userId}/genres`)
   }
 }
 

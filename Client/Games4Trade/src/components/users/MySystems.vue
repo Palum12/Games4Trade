@@ -4,7 +4,7 @@
 
 <script>
   export default {
-    name: 'MyPreferences'
+    name: 'MySystems'
   }
 </script>
 

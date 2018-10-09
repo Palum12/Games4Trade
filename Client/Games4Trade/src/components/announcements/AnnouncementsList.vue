@@ -96,9 +96,6 @@ export default {
   mounted () {
     this.getAnnouncements()
     document.getElementById('inner').addEventListener('scroll', this.scrollEnded)
-  },
-  beforeDestroy () {
-    document.getElementById('inner').removeEventListener('scroll', this.scrollEnded)
   }
 }
 </script>
