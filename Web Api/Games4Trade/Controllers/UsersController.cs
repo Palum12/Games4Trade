@@ -26,7 +26,7 @@ namespace Games4Trade.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUser()
         {
             var users = await _userService.Get();
@@ -49,6 +49,15 @@ namespace Games4Trade.Controllers
             }
             return BadRequest(result.Message);
 
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("id")]
+        public async Task<IActionResult> GetLoggedUserId()
+        {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            return Ok(currentUserId);
         }
 
         [HttpPatch]

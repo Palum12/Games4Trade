@@ -3,7 +3,7 @@
     <div class="form rounded m-2 p-3 genres">
         <form v-on:submit.prevent>
             <div v-if="genres!==null" v-for="genre in genres" :key="genre.id">
-                <div class="form-row justify-content-between text-center mb-1">
+                <div class="form-row justify-content-between text-center mb-2">
                     <div class=" col-lg-7 col-md-6 col-12">
                         <input
                                 type="text"
@@ -15,11 +15,11 @@
                     </div>
                     <button
                             v-if="isLiked(genre)"
-                            class="btn btn-success mt-sm-1 ml-sm-1"
+                            class="btn btn-success ml-sm-1"
                             @click="dislike(genre)">Lubisz ten gatunek!</button>
                     <button
                             v-else
-                            class="btn btn-primary mt-sm-1 ml-sm-1"
+                            class="btn btn-primary ml-sm-1"
                             @click="like(genre)">Polub ten gatunek!</button>
                 </div>
             </div>
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import mixins from '../../mixins/mixins'
+import axios from 'axios'
 export default {
   name: 'MyGenres',
   data () {
@@ -41,14 +43,26 @@ export default {
   props: {
     userId: Number
   },
-  computed: {
-    likedGenresId () {
-      return this.likedGenres.map(this.extractId())
-    }
-  },
   methods: {
     saveLikedGenres () {
-      console.log('heya')
+      let vm = this
+      mixins.methods.confirmationDialog(vm)
+        .then(() => {
+          let likedGenresRequest = []
+          vm.likedGenres.forEach(el => {
+            likedGenresRequest.push(el.id)
+          })
+          axios.patch(`users/${vm.userId}/genres`, likedGenresRequest)
+            .then(response => {
+              mixins.methods.simpleSuccessPopUp(vm)
+              vm.$forceUpdate()
+            })
+            .catch(error => {
+              mixins.methods.errorPopUp(error.response.data)
+              vm.$forceUpdate()
+            })
+        })
+        .catch()
     },
     getGenres () {
       let vm = this
@@ -75,9 +89,6 @@ export default {
     },
     dislike (genre) {
       this.likedGenres = this.likedGenres.filter(el => el.id !== genre.id)
-    },
-    extractId (id, value) {
-      return id
     }
   },
   async mounted () {
@@ -90,7 +101,7 @@ export default {
 <style scoped>
     .genres {
         min-height: 200px;
-        height: 65vh;
+        height: 62vh;
         max-height: 90%;
         overflow: hidden;
         overflow-y: auto;

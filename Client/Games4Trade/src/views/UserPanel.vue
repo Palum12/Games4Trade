@@ -7,12 +7,13 @@
             </tab>
             <tab name="Moje preferencje" class="tabs-height">
                 <h5>W tym miejscu wybierz jakie gatunki gier oraz systemy Cię interesują.</h5>
+                <h5>Kliknij przycisk na dole aby zapisać wszelkie zmiany</h5>
                 <div class="row">
                     <div class="col-md-6 col-12">
                         <my-genres :user-id="userId"></my-genres>
                     </div>
                     <div class="col-md-6 col-12">
-                        <my-systems></my-systems>
+                        <my-systems :user-id="userId"></my-systems>
                     </div>
                 </div>
             </tab>
@@ -85,11 +86,6 @@ export default {
     .tabs-component >>> .tabs-component-panels{
         padding-top: 2em !important;
         padding-bottom: 2em !important;
-    }
-    .announcements {
-        min-height: 200px;
-        height: 70vh;
-        max-height: 90%;
     }
     .tabs-height {
         height: 73vh !important;

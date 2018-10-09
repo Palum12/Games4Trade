@@ -102,6 +102,9 @@ const actions = {
   },
   getLikedGenres ({}, userId) {
     return axios.get(`users/${userId}/genres`)
+  },
+  getLikedSystems ({}, userId) {
+    return axios.get(`users/${userId}/systems`)
   }
 }
 
