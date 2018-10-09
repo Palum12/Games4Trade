@@ -7,6 +7,7 @@
                         type="file"
                         style="display: none"
                         ref="fileInput"
+                        accept="image/x-png, image/gif, image/jpeg"
                         @change="changePhoto">
                 <img :src="`http://localhost:5000/api/users/${userId}/photo`">
             </div>
@@ -34,6 +35,7 @@ export default {
   },
   data () {
     return {
+      photoRefresher: true,
       selectedFile: null,
       user: {
         phoneNumber: Number,
@@ -46,6 +48,17 @@ export default {
     changePhoto (event) {
       this.$store.dispatch('setSpinnerLoading')
       this.selectedFile = event.target.files[0]
+      console.log(this.selectedFile)
+      if (!this.selectedFile.type.includes('image')) {
+        this.$store.dispatch('unsetSpinnerLoading')
+        mixins.methods.customErrorPopUp(this, 'Wybrane rozszerzenie pliku nie jest wspierane!')
+        return
+      }
+      if (this.selectedFile.size > 3000000) {
+        this.$store.dispatch('unsetSpinnerLoading')
+        mixins.methods.customErrorPopUp(this, 'Wybrany plik jest zbyt duży!')
+        return
+      }
       const fd = new FormData()
       fd.append('', this.selectedFile, this.selectedFile.name)
       let vm = this
@@ -58,6 +71,7 @@ export default {
         .then(() => {
           mixins.methods.simpleSuccessPopUp(vm)
           vm.$store.dispatch('unsetSpinnerLoading')
+          vm.$router.go(0)
         })
         .catch(() => {
           mixins.methods.errorPopUp(vm)
