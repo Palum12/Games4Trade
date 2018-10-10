@@ -21,6 +21,24 @@
 
         <div class="row mt-2 pl-3">
             <p class="font-weight-bold">Twój opis: </p>
+            <textarea
+                    id="content"
+                    :disabled="!isEditingDescription"
+                    class="form-control"
+                    rows="12"
+                    v-model="user.description">
+            </textarea>
+        </div>
+        <div class="row mt-3 pl-3 d-flex justify-content-end">
+            <button v-if="!isEditingDescription"
+                    class="btn btn-primary"
+                    @click="onEditingDescription">Edytuj opis</button>
+            <button v-if="isEditingDescription"
+                    class="btn btn-warning mr-2">Zapisz opis</button>
+            <button
+                    v-if="isEditingDescription"
+                    class="btn btn-primary"
+                    @click="offEditingDescription">Powrót</button>
         </div>
     </div>
 </template>
@@ -35,8 +53,10 @@ export default {
   },
   data () {
     return {
-      photoRefresher: true,
       selectedFile: null,
+      isEditingDescription: false,
+      isEditingMail: false,
+      isEditingPhone: false,
       user: {
         phoneNumber: Number,
         email: String,
@@ -92,6 +112,14 @@ export default {
             vm.$store.dispatch('unsetSpinnerLoading')
           })
       })
+    },
+    onEditingDescription () {
+      this.isEditingDescription = true
+      this.$emit('somethingChanged', true)
+    },
+    offEditingDescription () {
+      this.isEditingDescription = false
+      this.$emit('somethingChanged', false)
     }
   },
   mounted () {

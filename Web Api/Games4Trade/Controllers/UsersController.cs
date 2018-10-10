@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace Games4Trade.Controllers
 {
@@ -117,6 +117,17 @@ namespace Games4Trade.Controllers
             if (!await IsSelfService(id))
             {
                 return Unauthorized();
+            }
+
+            var acceptedExtensions = new [] { "jpg", "png", "jpeg", "bmp", "svg"};
+            if (!acceptedExtensions.Any(e => photo.FileName.EndsWith(e)))
+            {
+                return BadRequest(
+                    "The photo field only accepts files with the following extensions: .jpg, .png, .jpeg, .bmp, .svg");
+            }
+            if (photo.Length > 3_000_000)
+            {
+                return BadRequest("Too big file size!");
             }
 
             var result = await _userService.ChangeUserPhoto(id, photo);

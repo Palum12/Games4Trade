@@ -34,6 +34,22 @@ export default {
           }
         })
       })
+    },
+    confirmationLeaveDialog (self) {
+      return new Promise((resolve, reject) => {
+        self.$swal({
+          title: 'Czy jesteś pewny ?',
+          text: 'Nie zapisane zmiany zostaną usunięte!',
+          type: 'warning',
+          showCancelButton: true
+        }).then((result) => {
+          if (result.value) {
+            resolve()
+          } else {
+            reject(result.value)
+          }
+        })
+      })
     }
   }
 }

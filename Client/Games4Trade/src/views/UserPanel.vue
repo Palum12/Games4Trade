@@ -3,7 +3,7 @@
         <tabs :options="{ useUrlFragment: false }">
             <tab name="Mój profil" class="tabs-height">
                 <h5>W tym miejscu możesz modyfikować swój opis widoczny dla innych użytkowników, oraz swoje dane.</h5>
-                <my-profile :user-id="userId"></my-profile>
+                <my-profile :user-id="userId" @somethingChanged="onSomethingChanged"></my-profile>
             </tab>
             <tab name="Moje preferencje" class="tabs-height">
                 <h5>W tym miejscu wybierz jakie gatunki gier oraz systemy Cię interesują.</h5>
@@ -37,6 +37,7 @@ import MyProfile from '../components/users/MyProfile'
 import MyGenres from '../components/users/MyGenres'
 import MySystems from '../components/users/MySystems'
 import MyAds from '../components/users/MyAdvertisements'
+import mixins from '../mixins/mixins'
 
 export default {
   name: 'UserPanel',
@@ -50,10 +51,15 @@ export default {
   data () {
     return {
       dataLoaded: false,
+      hasUnSavedChanges: false,
       userId: Number
     }
   },
-  methods: {},
+  methods: {
+    onSomethingChanged (value) {
+      this.hasUnSavedChanges = value
+    }
+  },
   mounted () {
     var vm = this
     this.$store.dispatch('getUserId')
@@ -70,6 +76,20 @@ export default {
         next('/')
       }
     })
+  },
+  async beforeRouteLeave (to, from, next) {
+    if (this.hasUnSavedChanges) {
+      let vm = this
+      await mixins.methods.confirmationLeaveDialog(vm)
+        .then(() => next())
+        .catch(() => {
+          console.log('im done')
+          next(false)
+        }
+        )
+    } else {
+      next()
+    }
   }
 }
 </script>
