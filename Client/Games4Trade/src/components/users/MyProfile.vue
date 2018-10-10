@@ -17,11 +17,10 @@
                     <button class="btn btn-error btn-block" @click="deletePhoto">Usuń</button>
                 </div>
             </div>
-            <div class="col-6 ml-2">
-                <div class="d-flex align-items-end">
-                    <div class="row">
-                        <label class="col-4" for="email">Adres e-mail</label>
-                        <div class="col">
+            <div class="col-6 ml-2 d-flex align-items-end">
+                    <div>
+                        <label  for="email">Adres e-mail</label>
+                        <div >
                             <input
                                     type="text"
                                     class="form-control"
@@ -33,9 +32,9 @@
                             <p v-if="isEmailTaken">Ten adres email został już zajęty.</p>-->
                         </div>
                     </div>
-                    <div class="row mt-1">
-                        <label class="col-4" for="phoneNumber">Numer telefonu</label>
-                        <div class="col">
+                    <div class="mt-1">
+                        <label  for="phoneNumber">Numer telefonu</label>
+                        <div >
                             <input
                                     type="text"
                                     id="phoneNumber"
@@ -44,7 +43,6 @@
                                     v-model="user.phoneNumber">
                         </div>
                     </div>
-                </div>
             </div>
         </div>
 
