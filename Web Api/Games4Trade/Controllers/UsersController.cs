@@ -82,6 +82,7 @@ namespace Games4Trade.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeUserDescription(int id, [FromBody]string userDescription)
         {
+            
             if (!await IsSelfService(id))
             {
                 return Unauthorized();

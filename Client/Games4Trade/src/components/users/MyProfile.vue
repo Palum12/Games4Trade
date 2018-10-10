@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-2" >
+            <div class="col-2">
                 <p class="font-weight-bold">Twoje zdjęcie profilowe:</p>
                 <input
                         type="file"
@@ -14,35 +14,41 @@
             <div class="col-1 d-flex align-items-end">
                 <div>
                     <button class="btn btn-primary btn-block" @click="$refs.fileInput.click()">Zmień</button>
-                    <button class="btn btn-error btn-block" @click="deletePhoto">Usuń</button>
+                    <button class="btn btn-danger btn-block" @click="deletePhoto">Usuń</button>
                 </div>
             </div>
-            <div class="col-6 ml-2 d-flex align-items-end">
-                    <div>
-                        <label  for="email">Adres e-mail</label>
-                        <div >
-                            <input
-                                    type="text"
-                                    class="form-control"
-                                    id="email"
-                                    readonly
-                                    v-model="user.email">
-                            <!--<p v-if="!$v.email.email">Proszę podać prawidłowy adres email.</p>
-                            <p v-if="!$v.email.required">To pole nie może być puste.</p>
-                            <p v-if="isEmailTaken">Ten adres email został już zajęty.</p>-->
+            <div class="col-7 ml-2 d-flex align-items-end">
+                <div>
+                    <div class="row">
+                        <div>
+                            <label for="email">Adres e-mail</label>
+                            <div>
+                                <input
+                                        type="text"
+                                        class="form-control"
+                                        id="email"
+                                        readonly
+                                        v-model="user.email">
+                                <!--<p v-if="!$v.email.email">Proszę podać prawidłowy adres email.</p>
+                                <p v-if="!$v.email.required">To pole nie może być puste.</p>
+                                <p v-if="isEmailTaken">Ten adres email został już zajęty.</p>-->
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-1">
-                        <label  for="phoneNumber">Numer telefonu</label>
-                        <div >
-                            <input
-                                    type="text"
-                                    id="phoneNumber"
-                                    class="form-control"
-                                    readonly
-                                    v-model="user.phoneNumber">
+                    <div class="row mt-1">
+                        <div>
+                            <label for="phoneNumber">Numer telefonu</label>
+                            <div>
+                                <input
+                                        type="text"
+                                        id="phoneNumber"
+                                        class="form-control"
+                                        readonly
+                                        v-model="user.phoneNumber">
+                            </div>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
 
@@ -52,21 +58,24 @@
                     id="content"
                     :disabled="!isEditingDescription"
                     class="form-control"
-                    rows="12"
+                    rows="10"
                     v-model="user.description">
             </textarea>
         </div>
         <div class="row mt-3 pl-3 d-flex justify-content-end">
             <button v-if="!isEditingDescription"
                     class="btn btn-primary"
-                    @click="onEditingDescription">Edytuj opis</button>
+                    @click="onEditingDescription">Edytuj opis
+            </button>
             <button v-if="isEditingDescription"
                     class="btn btn-warning mr-2"
-                    @click="saveChanges('description')">Zapisz opis</button>
+                    @click="saveChanges('description')">Zapisz opis
+            </button>
             <button
                     v-if="isEditingDescription"
                     class="btn btn-primary"
-                    @click="offEditingDescription">Powrót</button>
+                    @click="offEditingDescription">Powrót
+            </button>
         </div>
     </div>
 </template>
