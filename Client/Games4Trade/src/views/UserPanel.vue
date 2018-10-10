@@ -83,7 +83,6 @@ export default {
       await mixins.methods.confirmationLeaveDialog(vm)
         .then(() => next())
         .catch(() => {
-          console.log('im done')
           next(false)
         }
         )

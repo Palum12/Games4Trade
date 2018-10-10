@@ -34,7 +34,8 @@
                     class="btn btn-primary"
                     @click="onEditingDescription">Edytuj opis</button>
             <button v-if="isEditingDescription"
-                    class="btn btn-warning mr-2">Zapisz opis</button>
+                    class="btn btn-warning mr-2"
+                    @click="saveDescription">Zapisz opis</button>
             <button
                     v-if="isEditingDescription"
                     class="btn btn-primary"
@@ -120,6 +121,31 @@ export default {
     offEditingDescription () {
       this.isEditingDescription = false
       this.$emit('somethingChanged', false)
+    },
+    saveDescription () {
+      let vm = this
+      vm.$store.dispatch('setSpinnerLoading')
+      mixins.methods.confirmationDialog(vm)
+        .then(() => {
+          axios.patch(`users/${this.userId}/description`, '"' + this.user.description + '"', {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+            .then(() => {
+              vm.$store.dispatch('unsetSpinnerLoading')
+              mixins.methods.simpleSuccessPopUp(vm)
+              vm.$emit('somethingChanged', false)
+              vm.isEditingDescription = false
+            })
+            .catch(() => {
+              vm.$store.dispatch('unsetSpinnerLoading')
+              mixins.methods.errorPopUp(vm)
+            })
+        })
+        .catch(() => {
+          vm.$store.dispatch('unsetSpinnerLoading')
+        })
     }
   },
   mounted () {
