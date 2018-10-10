@@ -17,6 +17,35 @@
                     <button class="btn btn-error btn-block" @click="deletePhoto">Usuń</button>
                 </div>
             </div>
+            <div class="col-6 ml-2">
+                <div class="d-flex align-items-end">
+                    <div class="row">
+                        <label class="col-4" for="email">Adres e-mail</label>
+                        <div class="col">
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="email"
+                                    readonly
+                                    v-model="user.email">
+                            <!--<p v-if="!$v.email.email">Proszę podać prawidłowy adres email.</p>
+                            <p v-if="!$v.email.required">To pole nie może być puste.</p>
+                            <p v-if="isEmailTaken">Ten adres email został już zajęty.</p>-->
+                        </div>
+                    </div>
+                    <div class="row mt-1">
+                        <label class="col-4" for="phoneNumber">Numer telefonu</label>
+                        <div class="col">
+                            <input
+                                    type="text"
+                                    id="phoneNumber"
+                                    class="form-control"
+                                    readonly
+                                    v-model="user.phoneNumber">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="row mt-2 pl-3">
