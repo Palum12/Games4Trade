@@ -35,7 +35,7 @@
                     @click="onEditingDescription">Edytuj opis</button>
             <button v-if="isEditingDescription"
                     class="btn btn-warning mr-2"
-                    @click="saveDescription">Zapisz opis</button>
+                    @click="saveChanges('description')">Zapisz opis</button>
             <button
                     v-if="isEditingDescription"
                     class="btn btn-primary"
@@ -56,7 +56,7 @@ export default {
     return {
       selectedFile: null,
       isEditingDescription: false,
-      isEditingMail: false,
+      isEditingEmail: false,
       isEditingPhone: false,
       user: {
         phoneNumber: Number,
@@ -122,12 +122,29 @@ export default {
       this.isEditingDescription = false
       this.$emit('somethingChanged', false)
     },
-    saveDescription () {
+    saveChanges (value) {
       let vm = this
       vm.$store.dispatch('setSpinnerLoading')
+      let urlpart = value
+      let valueToSend = null
+
+      switch (value) {
+        case 'description':
+          valueToSend = this.user.description
+          break
+        case 'email':
+          valueToSend = this.user.email
+          break
+        case 'phone':
+          valueToSend = this.user.phoneNumber
+          break
+        default:
+          break
+      }
+
       mixins.methods.confirmationDialog(vm)
         .then(() => {
-          axios.patch(`users/${this.userId}/description`, '"' + this.user.description + '"', {
+          axios.patch(`users/${this.userId}/${urlpart}`, '"' + valueToSend + '"', {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -146,6 +163,14 @@ export default {
         .catch(() => {
           vm.$store.dispatch('unsetSpinnerLoading')
         })
+    },
+    onEditingEmail () {
+      this.isEditingEmail = true
+      this.$emit('somethingChanged', true)
+    },
+    offEditingEmail () {
+      this.isEditingEmail = false
+      this.$emit('somethingChanged', false)
     }
   },
   mounted () {
