@@ -15,10 +15,10 @@
                 <button class="btn btn-primary btn-block" @click="$refs.fileInput.click()">Zmień</button>
                 <button class="btn btn-danger btn-block" @click="deletePhoto">Usuń</button>
             </div>
-            <div class="ml-3 mt-3 d-flex align-items-end">
-                <div>
-                    <div class="row">
-                        <div>
+            <div class="mt-3 pr-1 d-flex align-items-end">
+                <form class="w-100">
+                    <div class="row no-gutters">
+                        <div class="w-100">
                             <label for="email">Adres e-mail</label>
                             <div>
                                 <input
@@ -49,8 +49,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-1">
-                        <div>
+                    <div class="row no-gutters mt-1">
+                        <div class="w-100">
                             <label for="phoneNumber">Numer telefonu</label>
                             <div>
                                 <input
@@ -85,10 +85,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
-        <div class="col-8 ml-1">
+        <div class="col-8 ml-3">
             <div class="row mt-1 pl-3">
                 <p class="font-weight-bold">Twój opis: </p>
                 <textarea
@@ -323,6 +323,5 @@ export default {
     }
     .leftCol {
         border-right: 1px solid lightgray;
-        height: 70vh;
     }
 </style>

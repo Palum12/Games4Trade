@@ -19,7 +19,7 @@
             </tab>
             <tab name="Obserwowani użytkownicy" class="tabs-height">
                 <h5>W tym miejscu możesz przeglądać listę obserwowanych przez siebie użytkowników.</h5>
-                <observed-users></observed-users>
+                <observed-users :user-id="userId" class="users"></observed-users>
             </tab>
             <tab name="Moje ogłoszenia" class="tabs-height">
                 <h5>W tym miejscu możesz przeglądać swoje ogłoszenia.</h5>
@@ -108,5 +108,11 @@ export default {
     }
     .tabs-height {
         height: 73vh !important;
+    }
+
+    .users {
+        min-height: 200px;
+        height: 72vh;
+        max-height: 100%;
     }
 </style>
