@@ -2,20 +2,32 @@
     <div id="inner">
         <div class="list-group" v-for="user in users" :key="user.id">
             <router-link :to="'/user/'+user.id" tag="div">
-                <div class="list-group-item list-group-item-action mb-1">
+                <div class="list-group-item list-group-item-action mb-2">
                     <div class="row">
-                        <div class="col-3">
-                            <img :src="`http://localhost:5000/api/users/${user.id}/photo`">
+                        <div class="col-1">
+                            <div class="row">
+                                <p class="mb-1 font-weight-bold">{{user.login}}</p>
+                            </div>
+                            <div class="row">
+                                <img :src="`http://localhost:5000/api/users/${user.id}/photo`">
+                            </div>
                         </div>
-                        <div class="col-9 d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{user.login}}</h5>
-                            <small>test co</small>
+                        <div class="col-9">
+                            <div class="row">
+                                {{prepareDescription(user.description)}}
+                            </div>
+                            <div class="row mt-2">
+                                {{prepareGenres(user.likedGenres)}}
+                            </div>
+                            <div class="row">
+                                {{prepareSystems(user.interestingSystems)}}
+                            </div>
                         </div>
-                        <p class="mb-1">{{user.description}}</p>
-                        <small>tutaj coś mniejszego</small>
+                        <div class="col-2 d-flex w-100 justify-content-end">
+                            <button class="btn btn-danger mt-1 mb-2 mx-2">Przestań<br>obserwować</button>
+                        </div>
                     </div>
                 </div>
-                <button class="btn btn-danger mt-1 mb-2 mx-2">X</button>
             </router-link>
         </div>
     </div>
@@ -30,7 +42,10 @@ export default {
   },
   data () {
     return {
-      users: []
+      users: [],
+      noDescriptionMessage: 'Wygląda na to, że ten użytkonik nie posiada jeszcze opisu!',
+      noGenresMessage: 'Ten użytkonik nie polubił żadnych gatunków!',
+      noSystemsMessage: 'Tego użytkownika nie interesują żadne systemy!'
     }
   },
   methods: {
@@ -43,6 +58,50 @@ export default {
         .catch(error => {
           console.log(error)
         })
+    },
+    prepareDescription (content) {
+      if (content == null) {
+        return this.noDescriptionMessage
+      }
+      if (content.length > 97) {
+        return content.substring(0, 97) + '...'
+      }
+      return content
+    },
+    prepareGenres (genres) {
+      if (genres.length === 0) {
+        return this.noGenresMessage
+      }
+      let result = 'Gatunki: '
+      let endOfLoop = false
+      for (let i = 0; i < genres.length && !endOfLoop; i++) {
+        if (result.length > 100) {
+          result = result + ' i więcej.....'
+          endOfLoop = true
+        } else {
+          result = result + genres[i] + ', '
+        }
+      }
+      result = result.slice(0, -2)
+      return result
+    },
+    prepareSystems (systems) {
+      if (systems.length === 0) {
+        return this.noGenresMessage
+      }
+      let result = 'Systemy: '
+      let endOfLoop = false
+      for (let i = 0; i < systems.length && !endOfLoop; i++) {
+        if (result.length > 100) {
+          result = result.slice(0, -2)
+          result = result + ' i więcej.....'
+          endOfLoop = true
+        } else {
+          result = result + systems[i] + ', '
+        }
+      }
+      result = result.slice(0, -2)
+      return result
     },
     scrollEnded () {
       var sh = document.getElementById('inner').scrollHeight
@@ -62,9 +121,9 @@ export default {
 
 <style scoped>
     img {
-        width: 3vw;
-        height: 3vw;
-        object-fit: contain;
+        width: 6vw;
+        height: 6vw;
+        object-fit: cover;
         border: 1px solid lightgray;
         border-radius: 5px;
     }
