@@ -97,6 +97,57 @@ namespace Games4Trade.Controllers
             return StatusCode(500, result.Message);
         }
 
+        [HttpPatch]
+        [Route("{id}/phone")]
+        [Authorize]
+        public async Task<IActionResult> ChangeUserPhone(int id,
+            [FromBody]
+            [Phone]
+            [MinLength(7)]
+            [MaxLength(11)]
+            string phoneNumber)
+        {
+
+            if (!await IsSelfService(id))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.ChangeUserPhone(id, phoneNumber);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            return StatusCode(500, result.Message);
+        }
+
+        [HttpPatch]
+        [Route("{id}/email")]
+        [Authorize]
+        public async Task<IActionResult> ChangeUserEmail(int id, [FromBody][EmailAddress]string email)
+        {
+
+            if (!await IsSelfService(id))
+            {
+                return Unauthorized();
+            }
+
+            var isEmailTaken = await _userService.CheckIfEmailExists(email);
+            if (isEmailTaken.IsSuccessful)
+            {
+                return Conflict(isEmailTaken.Message);
+            }
+
+            var result = await _userService.ChangeUserEmail(id, email);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            return StatusCode(500, result.Message);
+        }
+
         [HttpGet]
         [Route("{id}/photo")]
         public async Task<IActionResult> GetUserProfilePhoto(int id)

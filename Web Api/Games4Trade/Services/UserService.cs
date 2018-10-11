@@ -189,6 +189,54 @@ namespace Games4Trade.Services
             return OtherServices.GetIncorrectDatabaseConnectionResult();
         }
 
+        public async Task<OperationResult> ChangeUserEmail(int userId, string email)
+        {
+            var user = await _unitOfWork.Users.GetASync(userId);
+            if (user.Email.Equals(email))
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            user.Email = email;
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            return OtherServices.GetIncorrectDatabaseConnectionResult();
+        }
+
+        public async Task<OperationResult> ChangeUserPhone(int userId, string phone)
+        {
+            var user = await _unitOfWork.Users.GetASync(userId);
+            if (user.PhoneNumber != null && user.PhoneNumber.Equals(phone))
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            user.PhoneNumber = phone;
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+
+            return OtherServices.GetIncorrectDatabaseConnectionResult();
+        }
+
         public async Task<byte[]> GetUserPhoto(int userId)
         {
             var user = await _unitOfWork.Users.GetASync(userId);
