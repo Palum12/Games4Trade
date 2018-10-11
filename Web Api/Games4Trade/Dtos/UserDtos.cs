@@ -1,4 +1,6 @@
-﻿namespace Games4Trade.Dtos
+﻿using System.Collections.Generic;
+
+namespace Games4Trade.Dtos
 {
     public class UserDto
     {
@@ -7,6 +9,15 @@
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public string Description { get; set; }
+    }
+
+    public class ObservedUserDto
+    {
+        public int Id { get; set; }
+        public string Login { get; set; }
+        public string Description { get; set; }
+        public IList<string> LikedGenres { get; set; }
+        public IList<string> InterestingSystems { get; set; }
     }
 
     public class UserLoginDto

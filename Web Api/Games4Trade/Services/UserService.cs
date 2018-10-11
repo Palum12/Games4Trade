@@ -147,10 +147,30 @@ namespace Games4Trade.Services
             return user.Id;
         }
 
-        public async Task<IList<UserDto>> GetObservedUsersForUser(int userId)
+        // todo
+        public async Task<IList<ObservedUserDto>> GetObservedUsersForUser(int userId)
         {
             var users = await _unitOfWork.Users.GetObservedUsersForUser(userId);
-            return _mapper.Map<IList<User>, IList<UserDto>>(users);
+            var resultList = new List<ObservedUserDto>();
+            foreach (var user in users)
+            {
+                var tempUser = new ObservedUserDto();
+                tempUser.Id = user.Id;
+                tempUser.Login = user.Login;
+                tempUser.Description = user.Description;
+
+                tempUser.LikedGenres = 
+                    (await _unitOfWork.Genres.GetGenresForUser(user.Id))
+                    .Select(g => g.Value).ToList();
+
+                var tempSystems = await _unitOfWork.Systems.GetSystemsForUser(user.Id);
+                tempUser.InterestingSystems = 
+                    tempSystems.Select(s => s.Manufacturer + " " + s.Model).ToList();
+
+                resultList.Add(tempUser);
+
+            }
+            return resultList;
         }
 
         public async Task<OperationResult> CheckIfEmailExists(string email)

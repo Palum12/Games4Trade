@@ -97,7 +97,7 @@
                         class="form-control"
                         rows="15"
                         v-model="user.description">
-            </textarea>
+                </textarea>
             </div>
             <div class="row mt-3 pl-3 d-flex justify-content-end">
                 <button v-if="!isEditingDescription"
@@ -138,6 +138,11 @@ export default {
         email: String,
         description: String
       }
+    }
+  },
+  computed: {
+    isUserEditing () {
+      return this.isEditingPhone || this.isEditingEmail || this.isEditingDescription
     }
   },
   methods: {
@@ -204,16 +209,16 @@ export default {
     },
     offEditingEmail () {
       this.isEditingEmail = false
-      this.$emit('somethingChanged', false)
+      this.$emit('somethingChanged', this.isUserEditing)
       this.loadData()
     },
     onEditingPhone () {
       this.isEditingPhone = true
-      this.$emit('somethingChanged', true)
+      this.$emit('somethingChanged', this.isUserEditing)
     },
     offEditingPhone () {
       this.isEditingPhone = false
-      this.$emit('somethingChanged', false)
+      this.$emit('somethingChanged', this.isUserEditing)
       this.loadData()
     },
     loadData () {
