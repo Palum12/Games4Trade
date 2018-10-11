@@ -93,6 +93,7 @@
                 <p class="font-weight-bold">Twój opis: </p>
                 <textarea
                         id="content"
+                        title="Opis użytkownika"
                         :disabled="!isEditingDescription"
                         class="form-control"
                         rows="15"
