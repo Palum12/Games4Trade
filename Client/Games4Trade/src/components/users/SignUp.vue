@@ -125,7 +125,6 @@ export default {
         return axios.head(`login?login=${val}`)
           .then(() => { return false })
           .catch(error => {
-            console.log(error.response.status)
             return error.response.status === 404
           })
       }
