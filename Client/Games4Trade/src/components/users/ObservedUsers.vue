@@ -1,16 +1,17 @@
 <template>
     <div id="inner">
         <div class="list-group" v-for="user in users" :key="user.id">
-            <router-link :to="'/user/'+user.id" tag="div">
                 <div class="list-group-item list-group-item-action mb-2">
                     <div class="row">
                         <div class="col-1">
-                            <div class="row">
-                                <p class="mb-1 font-weight-bold">{{user.login}}</p>
-                            </div>
+                            <router-link :to="'/user/'+user.id" tag="div" class="userLink">
                             <div class="row">
                                 <img :src="`http://localhost:5000/api/users/${user.id}/photo`">
                             </div>
+                            <div class="row">
+                                <p class="mb-1 font-weight-bold">{{user.login}}</p>
+                            </div>
+                            </router-link>
                         </div>
                         <div class="col-9">
                             <div class="row">
@@ -24,16 +25,16 @@
                             </div>
                         </div>
                         <div class="col-2 d-flex w-100 justify-content-end">
-                            <button class="btn btn-danger mt-1 mb-2 mx-2">Przestań<br>obserwować</button>
+                            <button class="btn btn-danger mt-1 mb-2 mx-2" @click="deleteObservedUser(user.id)">Przestań<br>obserwować</button>
                         </div>
                     </div>
                 </div>
-            </router-link>
         </div>
     </div>
 </template>
 
 <script>
+import mixins from '../../mixins/mixins'
 import axios from 'axios'
 export default {
   name: 'ObservedUsers',
@@ -43,6 +44,7 @@ export default {
   data () {
     return {
       users: [],
+      nextPage: 2,
       noDescriptionMessage: 'Wygląda na to, że ten użytkonik nie posiada jeszcze opisu!',
       noGenresMessage: 'Ten użytkonik nie polubił żadnych gatunków!',
       noSystemsMessage: 'Tego użytkownika nie interesują żadne systemy!'
@@ -51,7 +53,7 @@ export default {
   methods: {
     async getObservedUsers () {
       let vm = this
-      await axios.get(`users/${this.userId}/observed`)
+      await axios.get(`users/${this.userId}/observed?page=1`)
         .then(response => {
           vm.users = response.data
         })
@@ -103,12 +105,39 @@ export default {
       result = result.slice(0, -2)
       return result
     },
+    getNextPageUsers () {
+      let vm = this
+      axios.get(`/users/${this.userId}/observed/?page=${this.nextPage}`)
+        .then(response => {
+          vm.users.push(...response.data)
+          vm.nextPage = vm.nextPage + 1
+        })
+    },
+    deleteObservedUser (id) {
+      console.log(id)
+      let vm = this
+      mixins.methods.confirmationDialog(vm)
+        .then(() => {
+          axios.delete(`/users/${vm.userId}/observed/`, { data: {
+            ObservingUserId: vm.userId,
+            ObservedUserId: id
+          }
+          })
+            .then(() => {
+              mixins.methods.simpleSuccessPopUp(vm)
+              vm.users = vm.users.filter(el => el.id !== id)
+            })
+            .catch(() => {
+              mixins.methods.errorPopUp(vm)
+            })
+        })
+    },
     scrollEnded () {
       var sh = document.getElementById('inner').scrollHeight
       var st = document.getElementById('inner').scrollTop
       var oh = document.getElementById('inner').offsetHeight
-      if (sh - st - oh + 1 < 2) {
-        // tutaj odśwież stronę
+      if (sh - st - oh + 1 <= 2) {
+        this.getNextPageUsers()
       }
     }
   },
@@ -131,5 +160,8 @@ export default {
         overflow: hidden;
         overflow-y: auto;
         -webkit-transform: translate3d(0, 0, 0);
+    }
+    .userLink {
+        cursor: pointer;
     }
 </style>
