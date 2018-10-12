@@ -50,6 +50,8 @@ namespace Games4Trade.Controllers
             return Ok(user);
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> PostUser([FromBody] UserRegisterDto newUser)
         {
@@ -276,14 +278,24 @@ namespace Games4Trade.Controllers
         [HttpGet]
         [Route("{id}/observed")]
         [Authorize]
-        public async Task<IActionResult> GetObservedUsersForUser(int id)
+        public async Task<IActionResult> GetObservedUsersForUser(int id, [FromQuery] int? page)
         {
             if (!await IsSelfService(id))
             {
                 return Unauthorized();
             }
 
-            var users = await _userService.GetObservedUsersForUser(id);
+            IList<ObservedUserDto> users;
+            if (page.HasValue)
+            {
+                page = page > 0 ? page - 1 : 0;
+                users = await _userService.GetObservedUsersForUser(id, page);
+            }
+            else
+            {
+                users = await _userService.GetObservedUsersForUser(id);
+            }
+            
             return Ok(users);
         }
 

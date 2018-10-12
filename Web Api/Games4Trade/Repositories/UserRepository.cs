@@ -26,10 +26,18 @@ namespace Games4Trade.Repositories
             return await Context.Users.SingleOrDefaultAsync(u => u.RecoveryAddress.Equals(recoveryAddress));
         }
 
-        public async Task<IList<User>> GetObservedUsersForUser(int userId)
+        public async Task<IList<User>> GetObservedUsersForUser(int userId, int? page = null, int? pageSize = null)
         {
             var idsOfObservedUser = await Context.ObservedUsersRelationship.Where(ou => ou.ObservingUserId == userId)
                 .Select(ou => ou.ObservedUserId).ToArrayAsync();
+            if (page.HasValue && pageSize.HasValue)
+            {
+                var skip = page * pageSize;
+                return await Context.Users
+                    .Where(u => idsOfObservedUser.Contains(u.Id))
+                    .Skip(skip.Value).Take(pageSize.Value)
+                    .ToListAsync();
+            }
             return await Context.Users.Where(u => idsOfObservedUser.Contains(u.Id)).ToListAsync();
         }
 

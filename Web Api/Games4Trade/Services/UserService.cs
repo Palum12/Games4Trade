@@ -19,6 +19,7 @@ namespace Games4Trade.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILoginService _loginService;
+        private const int PageSize = 5;
 
         public UserService(IUnitOfWork unitOfWork, IMapper mapper, ILoginService loginService)
         {
@@ -148,9 +149,17 @@ namespace Games4Trade.Services
         }
 
         // todo
-        public async Task<IList<ObservedUserDto>> GetObservedUsersForUser(int userId)
+        public async Task<IList<ObservedUserDto>> GetObservedUsersForUser(int userId, int? page = null)
         {
-            var users = await _unitOfWork.Users.GetObservedUsersForUser(userId);
+            IList<User> users;
+            if (page.HasValue)
+            {
+                users = await _unitOfWork.Users.GetObservedUsersForUser(userId, page, PageSize);
+            }
+            else
+            {
+                users = await _unitOfWork.Users.GetObservedUsersForUser(userId);
+            }
             var resultList = new List<ObservedUserDto>();
             foreach (var user in users)
             {
