@@ -105,6 +105,9 @@ const actions = {
   },
   getLikedSystems ({}, userId) {
     return axios.get(`users/${userId}/systems`)
+  },
+  getUser ({}, userId) {
+    return axios.get(`users/${userId}`)
   }
 }
 
