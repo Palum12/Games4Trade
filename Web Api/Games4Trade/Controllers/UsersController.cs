@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,23 +35,37 @@ namespace Games4Trade.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetUser(int id)
         {
-            if (! await IsSelfService(id))
+            if (User.Identity.IsAuthenticated && await IsSelfService(id))
             {
-                return Unauthorized();
+                var user = await _userService.GetUserById(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                return Ok(user);
             }
-
-            var user = await _userService.GetUserById(id);
-            if (user == null)
+            else if (User.Identity.IsAuthenticated)
             {
-                return NotFound();
+                var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+                var user = await _userService.GetUserProfile(id, currentUserId);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                return Ok(user);
             }
-            return Ok(user);
+            else
+            {
+                var user = await _userService.GetUserProfile(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                return Ok(user);
+            }
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> PostUser([FromBody] UserRegisterDto newUser)

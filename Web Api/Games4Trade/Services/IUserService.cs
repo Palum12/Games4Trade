@@ -14,6 +14,7 @@ namespace Games4Trade.Services
         Task<OperationResult> DeleteObservedUser(ObservedUsersRelationshipDto pair);
         Task<IList<UserDto>> Get();
         Task<UserDto> GetUserById(int id);
+        Task<UserProfileDto> GetUserProfile(int id, int? currentUser = null);
         Task<int?> GetUserIdByLogin(string login);
         Task<IList<ObservedUserDto>> GetObservedUsersForUser(int userId, int? page = null);
         Task<OperationResult> CreateUser(UserRegisterDto newUser);

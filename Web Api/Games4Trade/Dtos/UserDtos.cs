@@ -20,6 +20,12 @@ namespace Games4Trade.Dtos
         public IList<string> InterestingSystems { get; set; }
     }
 
+    public class UserProfileDto : ObservedUserDto
+    {
+        public bool? IsUserObserved { get; set; }
+        // todo: add ads
+    }
+
     public class UserLoginDto
     {
         public string Login { get; set; }

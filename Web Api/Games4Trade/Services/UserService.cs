@@ -142,13 +142,41 @@ namespace Games4Trade.Services
             return _mapper.Map<User, UserDto>(user);
         }
 
+        // todo: add ads
+        public async Task<UserProfileDto> GetUserProfile(int id, int? currentUser = null)
+        {
+            var user = await _unitOfWork.Users.GetASync(id);
+            if (user == null)
+            {
+                return null;
+            }
+            var result = new UserProfileDto
+            {
+                Id = user.Id,
+                Description = user.Description,
+                Login = user.Login
+            };
+            result.LikedGenres =
+                (await _unitOfWork.Genres.GetGenresForUser(user.Id))
+                .Select(g => g.Value).ToList();
+
+            var tempSystems = await _unitOfWork.Systems.GetSystemsForUser(user.Id);
+            result.InterestingSystems =
+                tempSystems.Select(s => s.Manufacturer + " " + s.Model).ToList();
+            if (currentUser.HasValue)
+            {
+                var observedUsers = await _unitOfWork.Users.GetObservedUsersForUser(currentUser.Value);
+                result.IsUserObserved = observedUsers.Any(u => u.Id == id);
+            }
+            return result;
+        }
+
         public async Task<int?> GetUserIdByLogin(string login)
         {
             var user = await _unitOfWork.Users.GetUserByLogin(login);
             return user.Id;
         }
 
-        // todo
         public async Task<IList<ObservedUserDto>> GetObservedUsersForUser(int userId, int? page = null)
         {
             IList<User> users;
