@@ -23,6 +23,9 @@ const getters = {
     }
     return false
   },
+  getCurrentLogin (state) {
+    return state.userData.name
+  },
   getToken (state) {
     return state.userData.token
   }

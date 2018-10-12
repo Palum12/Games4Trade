@@ -27,17 +27,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isAuthenticated']),
+    ...mapGetters(['isAuthenticated', 'getCurrentLogin']),
     showButtonAddToObserved () {
-      return this.isAuthenticated && !this.user.isUserObserved
+      return this.isAuthenticated && !this.user.isUserObserved && (this.user.login !== this.getCurrentLogin)
     },
     showButtonDeleteFromObserverd () {
-      return this.isAuthenticated && this.user.isUserObserved
+      return this.isAuthenticated && this.user.isUserObserved && (this.user.login !== this.getCurrentLogin)
     }
   },
   methods: {
     ucFirst (string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
+      return string.charAt(0).toUpperCase() + string.slice(1)
     }
   },
   async mounted () {
