@@ -1,16 +1,24 @@
 <template>
-    <div v-if="hasDataLoaded" class="row no-gutters profile">
-        <div class="col-2">
-            <img :src="`http://localhost:5000/api/users/${user.id}/photo`">
-            <button class="btn btn-success btn-block mt-2" v-if="showButtonAddToObserved">Dodaj do obserwowanych! </button>
-            <button class="btn btn-warning btn-block mt-2" v-if="showButtonDeleteFromObserverd">Usuń z obserwowanych</button>
-        </div>
-        <div class="col-9 ml-3">
-            <h3>{{ucFirst(user.login)}}</h3>
-            <h5>Opis: </h5>
-            <div style="white-space: pre-line;">
-                {{user.description}}
+    <div v-if="hasDataLoaded" class="no-gutters profile">
+        <div class="row">
+            <div class="col-3">
+                <img :src="`http://localhost:5000/api/users/${user.id}/photo`">
+                <button class="btn btn-success mt-2" v-if="showButtonAddToObserved">Zacznij obserwować
+                </button>
+                <button class="btn btn-warning mt-2" v-if="showButtonDeleteFromObserved">Przestań obserwować
+                </button>
             </div>
+            <div class="col-8 ml-3">
+                <h3>{{ucFirst(user.login)}}</h3>
+                <!-- tutaj gatunki i systemy-->
+                <h5>Opis: </h5>
+                <div style="white-space: pre-line;">
+                    {{user.description}}
+                </div>
+            </div>
+        </div>
+        <div>
+            <!--here will be users ads-->
         </div>
     </div>
 </template>
@@ -31,7 +39,7 @@ export default {
     showButtonAddToObserved () {
       return this.isAuthenticated && !this.user.isUserObserved && (this.user.login !== this.getCurrentLogin)
     },
-    showButtonDeleteFromObserverd () {
+    showButtonDeleteFromObserved () {
       return this.isAuthenticated && this.user.isUserObserved && (this.user.login !== this.getCurrentLogin)
     }
   },
@@ -59,8 +67,8 @@ export default {
 
 <style scoped>
     img {
-        width: 15vw;
-        height: 15vw;
+        width: 17vw;
+        height: 17vw;
         object-fit: contain;
         border: 1px solid lightgray;
         border-radius: 5px;
