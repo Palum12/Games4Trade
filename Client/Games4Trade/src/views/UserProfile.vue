@@ -10,14 +10,18 @@
             </div>
             <div class="col-8 ml-3">
                 <h3>{{ucFirst(user.login)}}</h3>
-                <!-- tutaj gatunki i systemy-->
+                <p>
+                    {{prepareGenres(user.likedGenres)}}<br>
+                    {{prepareSystems(user.interestingSystems)}}
+                </p>
                 <h5>Opis: </h5>
                 <div style="white-space: pre-line;">
-                    {{user.description}}
+                    {{prepareDescription(user.description)}}
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mt-4">
+            <h2>Najnowsze ogłoszenia użytkownika:</h2>
             <!--here will be users ads-->
         </div>
     </div>
@@ -30,6 +34,9 @@ export default {
   name: 'UserProfile',
   data () {
     return {
+      noDescriptionMessage: 'Wygląda na to, że ten użytkonik nie posiada jeszcze opisu!',
+      noGenresMessage: 'Ten użytkonik nie polubił żadnych gatunków!',
+      noSystemsMessage: 'Tego użytkownika nie interesują żadne systemy!',
       hasDataLoaded: false,
       user: null
     }
@@ -46,6 +53,26 @@ export default {
   methods: {
     ucFirst (string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
+    },
+    prepareDescription (descrption) {
+      if (descrption.length === 0) {
+        return this.noDescriptionMessage
+      }
+      return descrption
+    },
+    prepareGenres (genres) {
+      if (genres.length === 0) {
+        return this.noGenresMessage
+      }
+      let result = 'Lubię gatunki: ' + genres.join(', ')
+      return result
+    },
+    prepareSystems (systems) {
+      if (systems.length === 0) {
+        return this.noSystemsMessage
+      }
+      let result = 'Interesują mnie: ' + systems.join(', ')
+      return result
     }
   },
   async mounted () {
