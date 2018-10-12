@@ -26,6 +26,7 @@ export default {
   data () {
     return {
       announcements: [],
+      isNextPage: true,
       nextPage: 2
     }
   },
@@ -76,7 +77,12 @@ export default {
       axios.get(`/announcements/page/${this.nextPage}`)
         .then(response => {
           vm.announcements.push(...response.data)
-          vm.nextPage = vm.nextPage + 1
+          let data = response.data
+          if (data.length === 0) {
+            vm.isNextPage = false
+          } else {
+            vm.nextPage = vm.nextPage + 1
+          }
         })
     },
     scrollEnded () {
@@ -84,7 +90,9 @@ export default {
       var st = document.getElementById('inner').scrollTop
       var oh = document.getElementById('inner').offsetHeight
       if (sh - st - oh + 1 < 2) {
-        this.getNextPageAnnouncements()
+        if (this.isNextPage) {
+          this.getNextPageAnnouncements()
+        }
       }
     }
   },

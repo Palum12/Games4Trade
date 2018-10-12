@@ -45,6 +45,7 @@ export default {
     return {
       users: [],
       nextPage: 2,
+      isNextPage: true,
       noDescriptionMessage: 'Wygląda na to, że ten użytkonik nie posiada jeszcze opisu!',
       noGenresMessage: 'Ten użytkonik nie polubił żadnych gatunków!',
       noSystemsMessage: 'Tego użytkownika nie interesują żadne systemy!'
@@ -110,7 +111,12 @@ export default {
       axios.get(`/users/${this.userId}/observed/?page=${this.nextPage}`)
         .then(response => {
           vm.users.push(...response.data)
-          vm.nextPage = vm.nextPage + 1
+          let data = response.data
+          if (data.length === 0) {
+            vm.isNextPage = false
+          } else {
+            vm.nextPage = vm.nextPage + 1
+          }
         })
     },
     deleteObservedUser (id) {
@@ -137,7 +143,9 @@ export default {
       var st = document.getElementById('inner').scrollTop
       var oh = document.getElementById('inner').offsetHeight
       if (sh - st - oh + 1 <= 2) {
-        this.getNextPageUsers()
+        if (this.isNextPage) {
+          this.getNextPageUsers()
+        }
       }
     }
   },
