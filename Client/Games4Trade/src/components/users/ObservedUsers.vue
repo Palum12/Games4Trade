@@ -120,7 +120,6 @@ export default {
         })
     },
     deleteObservedUser (id) {
-      console.log(id)
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
