@@ -48,8 +48,8 @@ export default {
 <style scoped>
 .announcement {
     margin: 0 2vw;
+    padding-bottom: 2vh;
     width: 90vw;
-    height: 90vh;
     text-justify: newspaper;
 }
 </style>
