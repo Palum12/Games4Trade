@@ -2,10 +2,14 @@
 
 namespace Games4Trade.Dtos
 {
-    public class UserDto
+    public class UserSimpleDto
     {
         public int Id { get; set; }
         public string Login { get; set; }
+    }
+
+    public class UserDto : UserSimpleDto
+    {
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public string Description { get; set; }

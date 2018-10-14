@@ -3,15 +3,17 @@ using System;
 using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Games4Trade.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20181014105115_messages")]
+    partial class messages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,11 +147,11 @@ namespace Games4Trade.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("Now()");
 
-                    b.Property<bool>("IsDelivered");
-
                     b.Property<int>("ReciverId");
 
                     b.Property<int>("SenderId");
+
+                    b.Property<int>("Status");
 
                     b.HasKey("Id");
 
