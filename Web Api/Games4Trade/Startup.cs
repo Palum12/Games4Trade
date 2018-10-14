@@ -5,6 +5,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Games4Trade.Data;
 using Games4Trade.Dtos;
+using Games4Trade.Hub;
 using Games4Trade.Repositories;
 using Games4Trade.Services;
 using Games4Trade.Validators;
@@ -31,6 +32,7 @@ namespace Games4Trade
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc().AddFluentValidation();
             services.AddSingleton(Configuration);
@@ -108,6 +110,11 @@ namespace Games4Trade
                 .AllowCredentials());
             app.UseCors("AnyOrigin");
             app.UseAuthentication();
+
+            app.UseSignalR((options) =>
+            {
+                options.MapHub<MessagesHub>("/Hubs/Messages");
+            });
 
             app.UseMvc();
         }

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
+using Games4Trade.Hub;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Games4Trade.Services
 {
@@ -12,14 +14,15 @@ namespace Games4Trade.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private IHubContext<MessagesHub> _context;
         private const int PageSize = 20;
 
-        public MessageService(IUnitOfWork unitOfWork, IMapper mapper)
+        public MessageService(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<MessagesHub> hub)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _context = hub;
         }
-
 
         public async Task<IEnumerable<MessageDto>> GetMessagesWithUser(int currentUserId, int selectedUserId, int page)
         {
@@ -43,6 +46,7 @@ namespace Games4Trade.Services
             var response = await _unitOfWork.CompleteASync();
             if (response > 0)
             {
+                await _context.Clients.All.SendAsync("Add", message);
                 return new OperationResult(){IsSuccessful = true};
             }
             else
@@ -69,6 +73,26 @@ namespace Games4Trade.Services
             }
 
             return result;
+        }
+
+        public async Task<OperationResult> SetMessagesAsRead(int currentUserId, int selectedUserId)
+        {
+            var messages =
+                await _unitOfWork.Messages
+                    .FindASync(m => m.ReciverId == currentUserId && m.SenderId == selectedUserId && !m.IsDelivered);
+            foreach (var message in messages)
+            {
+                message.IsDelivered = true;
+            }
+
+            var repoResponse = await _unitOfWork.CompleteASync();
+            if (repoResponse > 0)
+            {
+                return new OperationResult{IsSuccessful = true};
+            }
+
+            return OtherServices.GetIncorrectDatabaseConnectionResult();
+
         }
     }
 }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Games4Trade.Controllers
@@ -17,11 +13,13 @@ namespace Games4Trade.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMessageService _messageService;
+        
 
         public MessagesController(IMessageService messageService, IUserService userService)
         {
             _messageService = messageService;
             _userService = userService;
+            
         }
 
         [HttpGet]
@@ -61,6 +59,24 @@ namespace Games4Trade.Controllers
             }
 
             return StatusCode(500, result.Message);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetMessagesUnActive([FromQuery] int otherUserId)
+        {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            if (otherUserId > 0)
+            {
+                var result = await _messageService.SetMessagesAsRead(currentUserId.Value, otherUserId);
+                if (result.IsSuccessful)
+                {
+                    return Ok();
+                }
+
+                return StatusCode(500, result.Message);
+            }
+
+            return BadRequest("Incorrect Id");
         }
 
     }
