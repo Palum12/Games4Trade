@@ -27,6 +27,8 @@ namespace Games4Trade
                 .ForMember(a => a.Author,
                     opt => opt.MapFrom(src => src.User.Login));
 
+            CreateMap<Message, MessageDto>();
+
         }
     }
 }

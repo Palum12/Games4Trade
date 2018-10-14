@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
@@ -11,6 +12,7 @@ namespace Games4Trade.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private const int PageSize = 20;
 
         public MessageService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -18,24 +20,54 @@ namespace Games4Trade.Services
             _mapper = mapper;
         }
 
-        public async Task<OperationResult> GetMessagesWithUser(int currentUserId, int selectedUserId, int? page = null)
+
+        public async Task<IEnumerable<MessageDto>> GetMessagesWithUser(int currentUserId, int selectedUserId, int page)
         {
-            throw new System.NotImplementedException();
+            var repoResponse =
+                await _unitOfWork.Messages.GetMessagesWithReciver(currentUserId, selectedUserId, page, PageSize);
+            var result = _mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(repoResponse);
+            return result;
         }
 
-        public async Task<OperationResult> AddMessage(MessagePostDto message)
+        public async Task<OperationResult> AddMessage(int currentUserId, MessagePostDto message)
         {
-            throw new System.NotImplementedException();
+            var messageModel = new Message()
+            {
+                Content = message.Content,
+                DateCreated = DateTime.Now,
+                IsDelivered = false,
+                ReciverId = message.ReciverId,
+                SenderId = currentUserId
+            };
+            await _unitOfWork.Messages.AddASync(messageModel);
+            var response = await _unitOfWork.CompleteASync();
+            if (response > 0)
+            {
+                return new OperationResult(){IsSuccessful = true};
+            }
+            else
+            {
+                return OtherServices.GetIncorrectDatabaseConnectionResult();
+            }
         }
 
-        public async Task<OperationResult> GetNewestMessages(IList<NewestMessageDto> messages)
+        public async Task<IEnumerable<NewestMessageDto>> GetNewestMessages(int currentUserId)
         {
-            throw new System.NotImplementedException();
-        }
+            var repoResponse = await _unitOfWork.Messages.GetNewestMessagesForUser(currentUserId);
+            var result = new List<NewestMessageDto>();
+            foreach (var message in repoResponse)
+            {
+                var temp  = new NewestMessageDto
+                {
+                    Content = message.Content,
+                    IsDelivered = message.IsDelivered,
+                    ReciverId = message.ReciverId
+                };
+                temp.Reciver = _mapper.Map<User, UserSimpleDto>(message.Reciver);
+                result.Add(temp);
+            }
 
-        public async Task<OperationResult> DeleteMessagesForUser(int currentUserId, int selectedUserId)
-        {
-            throw new System.NotImplementedException();
+            return result;
         }
     }
 }

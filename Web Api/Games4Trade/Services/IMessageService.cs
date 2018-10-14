@@ -7,8 +7,8 @@ namespace Games4Trade.Services
 {
     public interface IMessageService
     {
-        Task<OperationResult> GetMessagesWithUser(int currentUserId, int selectedUserId, int? page = null);
-        Task<OperationResult> AddMessage(MessagePostDto message);
-        Task<OperationResult> GetNewestMessages(IList<NewestMessageDto> messages);
+        Task<IEnumerable<MessageDto>> GetMessagesWithUser(int currentUserId, int selectedUserId, int page);
+        Task<OperationResult> AddMessage(int currentUserId, MessagePostDto message);
+        Task<IEnumerable<NewestMessageDto>> GetNewestMessages(int currentUserId);
     }
 }

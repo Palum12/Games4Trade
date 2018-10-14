@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,19 +12,23 @@ namespace Games4Trade.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MessagesController : ControllerBase
     {
+        private readonly IUserService _userService;
         private readonly IMessageService _messageService;
 
-        public MessagesController(IMessageService messageService)
+        public MessagesController(IMessageService messageService, IUserService userService)
         {
             _messageService = messageService;
+            _userService = userService;
         }
 
         // GET: api/Messages
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            _userService.GetUserIdByLogin(User.Identity.Name);
             return new string[] { "value1", "value2" };
         }
 

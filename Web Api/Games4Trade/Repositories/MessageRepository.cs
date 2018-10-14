@@ -23,8 +23,8 @@ namespace Games4Trade.Repositories
                 return normal || reversed;
             }
 
-            var messages = await Context.Messages.Include(m=> m.Reciver).Include(m=>m.Sender)
-                .Where(m => m.SenderId == currentUserId || m.ReciverId == currentUserId).ToArrayAsync();
+            var messages = await Context.Messages.Include(m=> m.Reciver)
+                .Where(m => m.SenderId == currentUserId || m.ReciverId == currentUserId).OrderByDescending(m => m.DateCreated).ToArrayAsync();
 
             foreach (var message in messages)
             {
@@ -47,7 +47,7 @@ namespace Games4Trade.Repositories
                     (m.SenderId == reciverId && m.ReciverId == senderId))
                 .OrderByDescending(a => a.DateCreated)
                 .Skip(skip).Take(pageSize)
-                .Include(m => m.Reciver).ToListAsync();
+                .ToListAsync();
         }
 
     }
