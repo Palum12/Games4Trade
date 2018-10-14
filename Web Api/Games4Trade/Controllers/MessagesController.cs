@@ -61,21 +61,15 @@ namespace Games4Trade.Controllers
             return StatusCode(500, result.Message);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SetMessagesUnActive([FromQuery] int otherUserId)
+        [HttpPatch]
+        public async Task<IActionResult> SetMessagesUnActive(int otherUserId)
         {
             var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
             if (otherUserId > 0)
             {
-                var result = await _messageService.SetMessagesAsRead(currentUserId.Value, otherUserId);
-                if (result.IsSuccessful)
-                {
-                    return Ok();
-                }
-
-                return StatusCode(500, result.Message);
+                await _messageService.SetMessagesAsRead(currentUserId.Value, otherUserId);
+                return Ok();
             }
-
             return BadRequest("Incorrect Id");
         }
 

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
-using Games4Trade.Hub;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Games4Trade.Services
 {
@@ -14,14 +12,12 @@ namespace Games4Trade.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private IHubContext<MessagesHub> _context;
         private const int PageSize = 20;
 
-        public MessageService(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<MessagesHub> hub)
+        public MessageService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _context = hub;
         }
 
         public async Task<IEnumerable<MessageDto>> GetMessagesWithUser(int currentUserId, int selectedUserId, int page)
@@ -46,7 +42,6 @@ namespace Games4Trade.Services
             var response = await _unitOfWork.CompleteASync();
             if (response > 0)
             {
-                await _context.Clients.All.SendAsync("Add", message);
                 return new OperationResult(){IsSuccessful = true};
             }
             else
@@ -84,15 +79,8 @@ namespace Games4Trade.Services
             {
                 message.IsDelivered = true;
             }
-
-            var repoResponse = await _unitOfWork.CompleteASync();
-            if (repoResponse > 0)
-            {
-                return new OperationResult{IsSuccessful = true};
-            }
-
-            return OtherServices.GetIncorrectDatabaseConnectionResult();
-
+            await _unitOfWork.CompleteASync();
+            return new OperationResult{IsSuccessful = true};
         }
     }
 }
