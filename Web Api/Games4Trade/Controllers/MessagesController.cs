@@ -24,37 +24,44 @@ namespace Games4Trade.Controllers
             _userService = userService;
         }
 
-        // GET: api/Messages
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> GetMessages([FromQuery]int? otherUserId, [FromQuery]int? page)
         {
-            _userService.GetUserIdByLogin(User.Identity.Name);
-            return new string[] { "value1", "value2" };
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            if (otherUserId.HasValue && page.HasValue)
+            {
+                page = page > 0 ? page - 1 : 0;
+                var converstaion = await _messageService
+                    .GetMessagesWithUser(currentUserId.Value, otherUserId.Value, page.Value);
+                return Ok(converstaion);
+            }
+            var messages = await _messageService.GetNewestMessages(currentUserId.Value);
+            return Ok(messages);
         }
 
-        // GET: api/Messages/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST: api/Messages
         [HttpPost]
-        public void Post(MessagePostDto message)
+        public async Task<IActionResult> Post(MessagePostDto message)
         {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            var targetUser = await _userService.GetUserById(message.ReciverId);
+            if (targetUser == null)
+            {
+                return BadRequest("Target user doesnt exist !");
+            }
+
+            if (currentUserId.Value == targetUser.Id)
+            {
+                return BadRequest("Cannot send message to yourself!");
+            }
+
+            var result = await _messageService.AddMessage(currentUserId.Value, message);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            return StatusCode(500, result.Message);
         }
 
-        // PUT: api/Messages/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }

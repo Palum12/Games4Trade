@@ -61,7 +61,8 @@ namespace Games4Trade.Services
                 {
                     Content = message.Content,
                     IsDelivered = message.IsDelivered,
-                    ReciverId = message.ReciverId
+                    ReciverId = message.ReciverId,
+                    DateCreated = message.DateCreated
                 };
                 temp.Reciver = _mapper.Map<User, UserSimpleDto>(message.Reciver);
                 result.Add(temp);
