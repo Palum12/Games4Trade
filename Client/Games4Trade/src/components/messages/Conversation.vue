@@ -6,7 +6,9 @@
                      v-for="message in conversation"
                      :key="message.id"
                 >
-                    <p>{{message.content}} </p>
+                    <p
+                            :class="{myMessage: message.receiverId !== id, notMyMessage: message.receiverId === id}">
+                        {{message.content}} </p>
                 </div>
             </div>
         </div>
@@ -30,6 +32,7 @@ export default {
   name: 'Conversation',
   data () {
     return {
+      id: null,
       conversation: [],
       isNextPage: true,
       nextPage: 2,
@@ -43,17 +46,22 @@ export default {
   },
   methods: {
     async refreshData () {
-      let id = this.$route.params.otherUserId
+      this.id = this.$route.params.otherUserId
       let vm = this
       this.nextPage = 2
       this.isNextPage = true
-      axios.get(`Messages?otherUserId=${id}&page=1`)
+      axios.get(`Messages?otherUserId=${this.id}&page=1`)
         .then(response => {
           vm.conversation = response.data
         })
     },
     sendMessage () {
-      console.log(this.newMessage)
+      let vm = this
+      axios.post('Messages', {receiverId: this.id, content: this.newMessage})
+        .then(() => {
+          vm.newMessage = ''
+          vm.refreshData()
+        })
       this.newMessage = ''
     }
   },
@@ -66,6 +74,12 @@ export default {
 <style scoped>
     textarea {
         resize: none;
+    }
+    .myMessage {
+        text-align: right;
+    }
+    .notMyMessage {
+        text-align: left;
     }
     .inner {
         min-height: 200px;
