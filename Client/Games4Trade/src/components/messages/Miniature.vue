@@ -5,9 +5,15 @@
         </div>
         <div class="col-9">
             <div class="row">
-                <p style="font-weight: bold">
-                    {{message.reciver.login}}
-                </p>
+                <div class="col-6">
+                    <p style="font-weight: bold">
+                        {{message.reciver.login}}
+                    </p>
+                </div>
+                <div class="col-6">
+                    <small>{{message.dateCreated.substring(2,10)}} </small>
+                    <small>{{message.dateCreated.substring(11,16)}}</small>
+                </div>
             </div>
             <div class="row">
                 <p :class="{newMessage: !message.isDelivered && message.ReciverId === userId}">

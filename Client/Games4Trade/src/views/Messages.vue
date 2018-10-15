@@ -4,16 +4,22 @@
             <div class="row">
                 <h5>Najnowsze wiadmości</h5>
             </div>
-            <div class="list-group row newest" v-if="dataLoaded" >
-                <div class="list-group-item list-group-item-action scrollable"
+            <div class="list-group row newest miniatures" v-if="dataLoaded" >
+                <div class="list-group-item list-group-item-action"
                      v-for="message in conversations"
                      :key="message.reciverId"
                      @click="readMessage(message)">
-                    <Miniature
-                            :message="message"
-                            :user-id="userId"></Miniature>
+                        <Miniature
+                                :message="message"
+                                :user-id="userId"></Miniature>
                 </div>
             </div>
+        </div>
+        <div class="col-8 ml-5">
+            <div class="row">
+                <h5>Rozmowa</h5>
+            </div>
+            <router-view class="conversation"></router-view>
         </div>
     </div>
 </template>
@@ -49,6 +55,7 @@ export default {
     readMessage (message) {
       message.isDelivered = true
       axios.patch(`Messages?otherUserId=${message.reciverId}`)
+      this.$router.push(`/messages/${message.reciverId}/conversation`)
     }
   },
   async mounted () {
@@ -76,9 +83,19 @@ export default {
         border: solid 1px black;
         border-radius: 5px;
     }
-    #scrollable {
+    .miniatures {
+        min-height: 200px;
+        height: 78vh;
+        max-height: 100%;
         overflow: hidden;
         overflow-y: auto;
         -webkit-transform: translate3d(0, 0, 0);
+    }
+    .conversation{
+        min-height: 200px;
+        height: 78vh;
+        max-height: 100%;
+        border: solid 1px darkgrey;
+        border-radius: 5px;
     }
 </style>
