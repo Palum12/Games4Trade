@@ -1,6 +1,6 @@
 <template>
-    <div class="inner">
-        <div >
+    <div >
+        <div class="inner">
             <div class="list-group row">
                 <div class="list-group-item list-group-item-action"
                      v-for="message in conversation"
@@ -11,7 +11,15 @@
             </div>
         </div>
         <div>
-            <textarea></textarea>
+            <textarea
+            class = "form-control rounded-0 mt-3 mb-1"
+            v-model="newMessage"
+            rows="3"></textarea>
+        </div>
+        <div class="d-flex justify-content-end">
+            <button
+                class="btn btn-primary"
+                @click="sendMessage">Wyślij</button>
         </div>
     </div>
 </template>
@@ -24,7 +32,8 @@ export default {
     return {
       conversation: [],
       isNextPage: true,
-      nextPage: 2
+      nextPage: 2,
+      newMessage: ''
     }
   },
   watch: {
@@ -42,6 +51,10 @@ export default {
         .then(response => {
           vm.conversation = response.data
         })
+    },
+    sendMessage () {
+      console.log(this.newMessage)
+      this.newMessage = ''
     }
   },
   async mounted () {
@@ -51,7 +64,13 @@ export default {
 </script>
 
 <style scoped>
+    textarea {
+        resize: none;
+    }
     .inner {
+        min-height: 200px;
+        height: 61vh;
+        max-height: 100%;
         overflow: hidden;
         overflow-y: auto;
         -webkit-transform: translate3d(0, 0, 0);

@@ -13,6 +13,7 @@ namespace Games4Trade.Dtos
 
     public class MessageDto
     {
+        public int Id { get; set; }
         public string Content { get; set; }
         public bool IsDelivered { get; set; }
         public DateTime DateCreated { get; set; }
