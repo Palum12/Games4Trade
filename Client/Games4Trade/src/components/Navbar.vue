@@ -10,6 +10,9 @@
                     <li class="nav-item" v-if="isAuthenticated">
                         <router-link to="/addAd" class="nav-link"><a>Dodaj ogłoszenie</a></router-link>
                     </li>
+                    <li class="nav-item" v-if="isAuthenticated">
+                        <router-link to="/messages" class="nav-link"><a>Wiadomości</a></router-link>
+                    </li>
                     <li class="nav-item">
                             <form class="form-inline">
                                 <input
