@@ -3,15 +3,17 @@ using System;
 using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Games4Trade.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20181014120218_deleted useless archive")]
+    partial class deleteduselessarchive
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,13 +149,13 @@ namespace Games4Trade.Data.Migrations
 
                     b.Property<bool>("IsDelivered");
 
-                    b.Property<int>("ReceiverId");
+                    b.Property<int>("ReciverId");
 
                     b.Property<int>("SenderId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReceiverId");
+                    b.HasIndex("ReciverId");
 
                     b.HasIndex("SenderId");
 
@@ -384,6 +386,8 @@ namespace Games4Trade.Data.Migrations
 
                     b.Property<int>("GenreId");
 
+                    b.Property<string>("Title");
+
                     b.HasIndex("GameRegionId");
 
                     b.HasIndex("GenreId");
@@ -429,9 +433,9 @@ namespace Games4Trade.Data.Migrations
 
             modelBuilder.Entity("Games4Trade.Models.Message", b =>
                 {
-                    b.HasOne("Games4Trade.Models.User", "Receiver")
+                    b.HasOne("Games4Trade.Models.User", "Reciver")
                         .WithMany("MessagesRecived")
-                        .HasForeignKey("ReceiverId")
+                        .HasForeignKey("ReciverId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Games4Trade.Models.User", "Sender")

@@ -11,6 +11,7 @@ namespace Games4Trade
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<User, UserLoginDto>().ReverseMap();
             CreateMap<User, UserRegisterDto>().ReverseMap();
+            CreateMap<User, UserSimpleDto>();
 
             CreateMap<Genre, GenreCreateOrUpdateDto>();
             CreateMap<GenreCreateOrUpdateDto, Genre>().ForMember(s => s.Id, opt => opt.Ignore());
@@ -25,6 +26,8 @@ namespace Games4Trade
             CreateMap<Announcement, AnnouncementGetDto>()
                 .ForMember(a => a.Author,
                     opt => opt.MapFrom(src => src.User.Login));
+
+            CreateMap<Message, MessageDto>();
 
         }
     }

@@ -21,6 +21,7 @@ namespace Games4Trade.Data
         public virtual DbSet<Console> Consoles { get; set; }
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<Accessory> Accessories { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
         public DbContextOptions<ApplicationContext> Options { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -209,6 +210,25 @@ namespace Games4Trade.Data
                 entity.HasOne(g => g.Genre).WithMany(ge => ge.Games).HasForeignKey(g => g.GenreId);
                 entity.HasOne(g => g.GameRegion).WithMany(r => r.Games).HasForeignKey(g => g.GameRegionId);
             });
+
+            modelBuilder.Entity<Message>(entity =>
+                {
+                    entity.Property(m => m.Id).UseNpgsqlIdentityByDefaultColumn();
+                    entity.HasKey(m => m.Id);
+                    entity.Property(m => m.Content).HasColumnType("text").IsRequired();
+                    entity.Property(m => m.DateCreated).HasDefaultValueSql("Now()");
+                    entity.Property(m => m.SenderId).IsRequired();
+                    entity.Property(m => m.ReceiverId).IsRequired();
+                    entity
+                        .HasOne(m => m.Sender)
+                        .WithMany(u => u.MessagesSent)
+                        .HasForeignKey(m => m.SenderId);
+                    entity
+                        .HasOne(m => m.Receiver)
+                        .WithMany(u => u.MessagesRecived)
+                        .HasForeignKey(m => m.ReceiverId);
+
+                });
 
             base.OnModelCreating(modelBuilder);
         }

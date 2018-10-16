@@ -1,5 +1,4 @@
-﻿
-namespace Games4Trade.Dtos
+﻿namespace Games4Trade.Dtos
 {
     public class GenreDto
     {

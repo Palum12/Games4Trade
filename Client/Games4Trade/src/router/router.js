@@ -5,6 +5,7 @@ import Admin from '../views/AdminPanel'
 import Navbar from './navbar/navbar'
 import Annoucements from './announcements/announcements'
 import Users from './users/users'
+import Messages from './users/messages'
 Vue.use(Router)
 
 export default new Router({
@@ -19,6 +20,7 @@ export default new Router({
     Annoucements.ADDANNOUNCEMENT,
     Annoucements.EDITANNOUNCEMENT,
     Annoucements.ANNOUNCEMENT,
+    Messages.MESSAGES,
     {
       path: '/',
       name: 'home',
@@ -28,7 +30,7 @@ export default new Router({
       path: '/admin',
       name: 'admin',
       component: Admin
-    },
-    {path: '*', redirect: '/'}
+    }/*,
+    {path: '*', redirect: '/'}*/
   ]
 })
