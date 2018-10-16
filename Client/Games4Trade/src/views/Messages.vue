@@ -7,7 +7,7 @@
             <div class="list-group row newest miniatures" v-if="dataLoaded" >
                 <div class="list-group-item list-group-item-action"
                      v-for="message in conversations"
-                     :key="message.receiverId"
+                     :key="message.id"
                      @click="readMessage(message)">
                         <Miniature
                                 :message="message"
@@ -36,6 +36,7 @@ export default {
     return {
       dataLoaded: false,
       conversations: [],
+      interval: null,
       hasUnSavedChanges: false,
       userId: Number
     }
@@ -54,8 +55,8 @@ export default {
     },
     readMessage (message) {
       message.isDelivered = true
-      axios.patch(`Messages?otherUserId=${message.receiverId}`)
-      this.$router.push(`/messages/${message.receiverId}/conversation`)
+      axios.patch(`Messages?otherUserId=${message.otherUserId}`)
+      this.$router.push(`/messages/${message.otherUserId}/conversation`)
     }
   },
   async mounted () {
@@ -65,6 +66,12 @@ export default {
         vm.userId = response.data
       })
     await this.getNewestMessages()
+    this.interval = setInterval(() => {
+      vm.getNewestMessages()
+    }, 5000)
+  },
+  beforeDestroy () {
+    clearInterval(this.interval)
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {

@@ -35,7 +35,7 @@ namespace Games4Trade.Services
                 Content = message.Content,
                 DateCreated = DateTime.Now,
                 IsDelivered = false,
-                ReciverId = message.ReciverId,
+                ReceiverId = message.ReceiverId,
                 SenderId = currentUserId
             };
             await _unitOfWork.Messages.AddASync(messageModel);
@@ -56,15 +56,33 @@ namespace Games4Trade.Services
             var result = new List<NewestMessageDto>();
             foreach (var message in repoResponse)
             {
-                var temp  = new NewestMessageDto
+                var otherUser = new User();   
+                if (message.SenderId == currentUserId)
                 {
-                    Content = message.Content,
-                    IsDelivered = message.IsDelivered,
-                    ReciverId = message.ReciverId,
-                    DateCreated = message.DateCreated
-                };
-                temp.Reciver = _mapper.Map<User, UserSimpleDto>(message.Reciver);
-                result.Add(temp);
+                    var newestMessageSent = new NewestMessageDto
+                    {
+                        Content = message.Content,
+                        IsDelivered = message.IsDelivered,
+                        OtherUserId = message.ReceiverId,
+                        DateCreated = message.DateCreated
+                    };
+                    otherUser = await _unitOfWork.Users.GetASync(message.ReceiverId);
+                    newestMessageSent.OtherUser = _mapper.Map<User, UserSimpleDto>(otherUser);
+                    result.Add(newestMessageSent);
+                }
+                else
+                {
+                    var newestMessageRecieved = new NewestMessageDto
+                    {
+                        Content = message.Content,
+                        IsDelivered = message.IsDelivered,
+                        OtherUserId = message.SenderId,
+                        DateCreated = message.DateCreated
+                    };
+                    otherUser = await _unitOfWork.Users.GetASync(message.SenderId);
+                    newestMessageRecieved.OtherUser = _mapper.Map<User, UserSimpleDto>(otherUser);
+                    result.Add(newestMessageRecieved);
+                }
             }
 
             return result;
@@ -74,13 +92,18 @@ namespace Games4Trade.Services
         {
             var messages =
                 await _unitOfWork.Messages
-                    .FindASync(m => m.ReciverId == currentUserId && m.SenderId == selectedUserId && !m.IsDelivered);
+                    .FindASync(m => m.ReceiverId == currentUserId && m.SenderId == selectedUserId && !m.IsDelivered);
             foreach (var message in messages)
             {
                 message.IsDelivered = true;
             }
             await _unitOfWork.CompleteASync();
             return new OperationResult{IsSuccessful = true};
+        }
+
+        public async Task<bool> CheckIfThereAreNewMessages(int senderId, int reciverId)
+        {
+            return await _unitOfWork.Messages.CheckIfThereAreNewMessages(senderId, reciverId);
         }
     }
 }

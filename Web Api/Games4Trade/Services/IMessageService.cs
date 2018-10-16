@@ -11,5 +11,6 @@ namespace Games4Trade.Services
         Task<OperationResult> AddMessage(int currentUserId, MessagePostDto message);
         Task<IEnumerable<NewestMessageDto>> GetNewestMessages(int currentUserId);
         Task<OperationResult> SetMessagesAsRead(int currentUserId, int selectedUserId);
+        Task<bool> CheckIfThereAreNewMessages(int senderId, int reciverId);
     }
 }

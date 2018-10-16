@@ -218,15 +218,15 @@ namespace Games4Trade.Data
                     entity.Property(m => m.Content).HasColumnType("text").IsRequired();
                     entity.Property(m => m.DateCreated).HasDefaultValueSql("Now()");
                     entity.Property(m => m.SenderId).IsRequired();
-                    entity.Property(m => m.ReciverId).IsRequired();
+                    entity.Property(m => m.ReceiverId).IsRequired();
                     entity
                         .HasOne(m => m.Sender)
                         .WithMany(u => u.MessagesSent)
                         .HasForeignKey(m => m.SenderId);
                     entity
-                        .HasOne(m => m.Reciver)
+                        .HasOne(m => m.Receiver)
                         .WithMany(u => u.MessagesRecived)
-                        .HasForeignKey(m => m.ReciverId);
+                        .HasForeignKey(m => m.ReceiverId);
 
                 });
 

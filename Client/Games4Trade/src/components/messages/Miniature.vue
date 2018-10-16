@@ -1,13 +1,13 @@
 <template>
     <div class="row">
         <div class="col-3">
-            <img :src="`http://localhost:5000/api/users/${message.receiverId}/photo`">
+            <img :src="`http://localhost:5000/api/users/${message.otherUserId}/photo`">
         </div>
         <div class="col-9">
             <div class="row">
                 <div class="col-6">
                     <p style="font-weight: bold">
-                        {{message.receiver.login}}
+                        {{message.otherUser.login}}
                     </p>
                 </div>
                 <div class="col-6">
@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="row">
-                <p :class="{newMessage: !message.isDelivered && message.receiverId === userId}">
+                <p :class="{newMessage: !message.isDelivered && message.otherUserId === userId}">
                     {{shortenString(message.content)}}</p>
             </div>
         </div>

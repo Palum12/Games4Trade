@@ -13,27 +13,14 @@ namespace Games4Trade.Repositories
 
         public async Task<IEnumerable<Message>> GetNewestMessagesForUser(int currentUserId)
         {
-            var exisitngTuples = new List<(int, int)>();
-            var result = new List<Message>();
 
-            bool wasSelected((int, int) tuple)
-            {
-                var normal = exisitngTuples.Contains(tuple);
-                var reversed = exisitngTuples.Contains((tuple.Item2, tuple.Item1));
-                return normal || reversed;
-            }
-
-            var messages = await Context.Messages.Include(m=> m.Reciver)
-                .Where(m => m.SenderId == currentUserId || m.ReciverId == currentUserId).OrderByDescending(m => m.DateCreated).ToArrayAsync();
-
-            foreach (var message in messages)
-            {
-                if (!wasSelected((message.SenderId, message.ReciverId)))
-                {
-                    exisitngTuples.Add((message.SenderId, message.ReciverId));
-                    result.Add(message);
-                }
-            }
+            var query = from m in Context.Messages
+                let msgTo = m.ReceiverId == currentUserId
+                let msgFrom = m.SenderId == currentUserId
+                where msgTo || msgFrom
+                group m by msgTo ? m.SenderId : m.ReceiverId into g
+                select g.OrderByDescending(x => x.DateCreated).First();
+            var result = await query.OrderByDescending(m => m.DateCreated).ToListAsync();
 
             return result;
         }
@@ -43,12 +30,17 @@ namespace Games4Trade.Repositories
             var skip = page * pageSize;
             return await Context.Messages
                 .Where(m => 
-                    (m.ReciverId == reciverId && m.SenderId == senderId) || 
-                    (m.SenderId == reciverId && m.ReciverId == senderId))
+                    (m.ReceiverId == reciverId && m.SenderId == senderId) || 
+                    (m.SenderId == reciverId && m.ReceiverId == senderId))
                 .OrderByDescending(a => a.DateCreated)
                 .Skip(skip).Take(pageSize)
                 .ToListAsync();
         }
 
+        public async Task<bool> CheckIfThereAreNewMessages(int senderId, int reciverId)
+        {
+            return await Context.Messages
+                .AnyAsync(m => m.SenderId == senderId && m.ReceiverId == reciverId && !m.IsDelivered);
+        }
     }
 }

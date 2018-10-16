@@ -8,5 +8,6 @@ namespace Games4Trade.Repositories
     {
         Task<IEnumerable<Message>> GetNewestMessagesForUser(int currentUserId);
         Task<IEnumerable<Message>> GetMessagesWithReciver(int senderId, int reciverId, int page, int pageSize);
+        Task<bool> CheckIfThereAreNewMessages(int senderId, int reciverId);
     }
 }

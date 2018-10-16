@@ -41,7 +41,7 @@ namespace Games4Trade.Controllers
         public async Task<IActionResult> Post(MessagePostDto message)
         {
             var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-            var targetUser = await _userService.GetUserById(message.ReciverId);
+            var targetUser = await _userService.GetUserById(message.ReceiverId);
             if (targetUser == null)
             {
                 return BadRequest("Target user doesnt exist !");
@@ -71,6 +71,15 @@ namespace Games4Trade.Controllers
                 return Ok();
             }
             return BadRequest("Incorrect Id");
+        }
+
+        [HttpGet]
+        [Route("{otherUserId}/isUpdate")]
+        public async Task<IActionResult> CheckIfThereAreNewMessages(int otherUserId)
+        {
+            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            var result = await _messageService.CheckIfThereAreNewMessages(otherUserId, currentUserId.Value);
+            return Ok(result);
         }
 
     }

@@ -1,13 +1,12 @@
 <template>
-    <div >
+    <div v-if="isDataLoaded" >
         <div class="inner">
             <div class="list-group row">
-                <div class="list-group-item list-group-item-action"
+                <div class="list-group-item list-group-item-action message my-2"
                      v-for="message in conversation"
                      :key="message.id"
                 >
-                    <p
-                            :class="{myMessage: message.receiverId !== id, notMyMessage: message.receiverId === id}">
+                    <p :class="{myMessage: message.receiverId == otherUserId}">
                         {{message.content}} </p>
                 </div>
             </div>
@@ -32,9 +31,11 @@ export default {
   name: 'Conversation',
   data () {
     return {
-      id: null,
+      otherUserId: null,
+      interval: null,
       conversation: [],
       isNextPage: true,
+      isDataLoaded: false,
       nextPage: 2,
       newMessage: ''
     }
@@ -46,18 +47,18 @@ export default {
   },
   methods: {
     async refreshData () {
-      this.id = this.$route.params.otherUserId
+      this.otherUserId = this.$route.params.otherUserId
       let vm = this
       this.nextPage = 2
       this.isNextPage = true
-      axios.get(`Messages?otherUserId=${this.id}&page=1`)
+      axios.get(`Messages?otherUserId=${this.otherUserId}&page=1`)
         .then(response => {
           vm.conversation = response.data
         })
     },
     sendMessage () {
       let vm = this
-      axios.post('Messages', {receiverId: this.id, content: this.newMessage})
+      axios.post('Messages', {receiverId: this.otherUserId, content: this.newMessage})
         .then(() => {
           vm.newMessage = ''
           vm.refreshData()
@@ -67,6 +68,21 @@ export default {
   },
   async mounted () {
     await this.refreshData()
+    this.isDataLoaded = true
+    let vm = this
+    this.interval = setInterval(() => {
+      axios.get(`Messages/${vm.otherUserId}/isUpdate`)
+        .then(response => {
+          if (response.data === true) {
+            console.log('time to update')
+          } else {
+            console.log('not updatin')
+          }
+        })
+    }, 2000)
+  },
+  beforeDestroy () {
+    clearInterval(this.interval)
   }
 }
 </script>
@@ -74,6 +90,13 @@ export default {
 <style scoped>
     textarea {
         resize: none;
+    }
+    .message {
+        margin-left: 5vh;
+        margin-right: 5vh;
+        width: auto !important;
+        border: solid 1px lightgray;
+        border-radius: 5px;
     }
     .myMessage {
         text-align: right;
