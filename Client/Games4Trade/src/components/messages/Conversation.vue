@@ -1,6 +1,6 @@
 <template>
-    <div v-if="isDataLoaded" >
-        <div class="inner">
+    <div>
+        <div id="inner">
             <div class="list-group row">
                 <div class="list-group-item list-group-item-action message my-2"
                      v-for="message in conversation"
@@ -35,7 +35,7 @@ export default {
       interval: null,
       conversation: [],
       isNextPage: true,
-      isDataLoaded: false,
+      isLoading: false,
       nextPage: 2,
       newMessage: ''
     }
@@ -49,11 +49,11 @@ export default {
     async refreshData () {
       this.otherUserId = this.$route.params.otherUserId
       let vm = this
-      this.nextPage = 2
-      this.isNextPage = true
       axios.get(`Messages?otherUserId=${this.otherUserId}&page=1`)
         .then(response => {
           vm.conversation = response.data
+          vm.nextPage = 2
+          vm.isNextPage = true
         })
     },
     sendMessage () {
@@ -64,28 +64,59 @@ export default {
           vm.refreshData()
         })
       this.newMessage = ''
+    },
+    getNextPageMessages () {
+      let vm = this
+      vm.isLoading = true
+      axios.get(`Messages?otherUserId=${this.otherUserId}&page=${this.nextPage}`)
+        .then(response => {
+          vm.conversation.push(...response.data)
+          let data = response.data
+          if (data.length === 0) {
+            vm.isNextPage = false
+          } else {
+            vm.nextPage = vm.nextPage + 1
+          }
+          vm.isLoading = false
+        })
+    },
+    scrollEnded () {
+      var sh = document.getElementById('inner').scrollHeight
+      var st = document.getElementById('inner').scrollTop
+      var oh = document.getElementById('inner').offsetHeight
+      if (sh - st - oh + 1 <= 2) {
+        if (this.isNextPage && !this.isLoading) {
+          this.getNextPageMessages()
+        }
+      }
+    },
+    addInterval () {
+      let vm = this
+      this.interval = setInterval(() => {
+        axios.get(`Messages/${vm.otherUserId}/isUpdate`)
+          .then(response => {
+            if (response.data === true) {
+              var latestId = vm.conversation[0].id
+              let messages
+              axios.get(`Messages?otherUserId=${this.otherUserId}&page=1`)
+                .then(response => {
+                  messages = response.data
+                  messages = messages.filter(el => el.id > latestId)
+                  vm.conversation.unshift(...messages)
+                  while (vm.conversation.length / 20 > vm.nextPage - 1) {
+                    vm.nextPage = vm.nextPage + 1
+                  }
+                })
+              axios.patch(`Messages?otherUserId=${vm.otherUserId}`)
+            }
+          })
+      }, 2000)
     }
   },
   async mounted () {
     await this.refreshData()
-    this.isDataLoaded = true
-    let vm = this
-    this.interval = setInterval(() => {
-      axios.get(`Messages/${vm.otherUserId}/isUpdate`)
-        .then(response => {
-          if (response.data === true) {
-            var latestId = vm.conversation[0].id
-            let messages
-            axios.get(`Messages?otherUserId=${this.otherUserId}&page=1`)
-              .then(response => {
-                messages = response.data
-                messages = messages.filter(el => el.id > latestId)
-                vm.conversation.unshift(...messages)
-              })
-            axios.patch(`Messages?otherUserId=${vm.otherUserId}`)
-          }
-        })
-    }, 2000)
+    document.getElementById('inner').addEventListener('scroll', this.scrollEnded)
+    this.addInterval()
   },
   beforeDestroy () {
     clearInterval(this.interval)
@@ -110,7 +141,7 @@ export default {
     .notMyMessage {
         text-align: left;
     }
-    .inner {
+    #inner {
         min-height: 200px;
         height: 61vh;
         max-height: 100%;
