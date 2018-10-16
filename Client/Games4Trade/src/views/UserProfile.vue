@@ -63,7 +63,7 @@ export default {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
     prepareDescription (descrption) {
-      if (descrption.length === 0) {
+      if (descrption == null) {
         return this.noDescriptionMessage
       }
       return descrption

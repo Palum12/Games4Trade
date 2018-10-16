@@ -74,9 +74,15 @@ export default {
       axios.get(`Messages/${vm.otherUserId}/isUpdate`)
         .then(response => {
           if (response.data === true) {
-            console.log('time to update')
-          } else {
-            console.log('not updatin')
+            var latestId = vm.conversation[0].id
+            let messages
+            axios.get(`Messages?otherUserId=${this.otherUserId}&page=1`)
+              .then(response => {
+                messages = response.data
+                messages = messages.filter(el => el.id > latestId)
+                vm.conversation.unshift(...messages)
+              })
+            axios.patch(`Messages?otherUserId=${vm.otherUserId}`)
           }
         })
     }, 2000)
