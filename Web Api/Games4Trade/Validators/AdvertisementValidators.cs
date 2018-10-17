@@ -21,7 +21,9 @@ namespace Games4Trade.Validators
             RuleFor(a => a.Title).NotNull();
             RuleFor(a => a.AccessoryManufacturer).NotNull().When(a => a.Discriminator.Equals("Accessory"));
             RuleFor(a => a.AccessoryModel).NotNull().When(a => a.Discriminator.Equals("Accessory"));
-    
+            RuleFor(a => a.ShowUserEmail).NotNull();
+            RuleFor(a => a.ShowUserPhoneNumber).NotNull();
+
             RuleFor(a => a.StateId).NotNull().GreaterThan(0);
             RuleFor(a => a.SystemId).NotNull().GreaterThan(0);
             RuleFor(a => a.UserId).NotNull().GreaterThan(0);

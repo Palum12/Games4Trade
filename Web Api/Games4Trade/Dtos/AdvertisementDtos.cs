@@ -9,6 +9,8 @@ namespace Games4Trade.Dtos
         public string Discriminator { get; set; }
         public bool ExchangeActive {get;set;}
         public decimal Price { get; set; }
+        public bool ShowUserEmail { get; set; }
+        public bool ShowUserPhoneNumber { get; set; }
         public int UserId { get; set; }
         public int StateId { get; set; }
         public int SystemId { get; set; }
