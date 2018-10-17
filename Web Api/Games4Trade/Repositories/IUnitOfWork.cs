@@ -14,6 +14,8 @@ namespace Games4Trade.Repositories
         IRepository<Photo> Photos { get; }
         IMessageRepository Messages { get; }
         IAdvertisementReposiotry Advertisements { get; }
+        IRepository<Region> Regions { get; }
+        IRepository<State> States { get;}
         Task<int> CompleteASync();
     }
 }

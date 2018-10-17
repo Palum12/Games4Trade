@@ -14,6 +14,8 @@ namespace Games4Trade.Repositories
         public IRepository<Photo> Photos { get; private set; }
         public IMessageRepository Messages { get; private set; }
         public IAdvertisementReposiotry Advertisements { get; private set; }
+        public IRepository<Region> Regions { get; private set; }
+        public IRepository<State> States { get; private set; }
 
         public UnitOfWork(ApplicationContext context)
         {
@@ -25,6 +27,8 @@ namespace Games4Trade.Repositories
             Photos = new Repository<Photo>(context);
             Messages = new MessageRepository(context);
             Advertisements = new AdvertisementRepository(context);
+            Regions = new Repository<Region>(context);
+            States = new Repository<State>(context);
         }
 
         public async Task<int> CompleteASync()
