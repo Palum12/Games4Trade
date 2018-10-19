@@ -19,7 +19,7 @@ namespace Games4Trade.Dtos
         //game part
         public DateTime DateDeveloped { get; set; }
         public string Developer { get; set; }
-        public string GenreId { get; set; }
+        public int GenreId { get; set; }
         //console & accessory part
         public DateTime DateManufactured { get; set; }
         //accessory part
