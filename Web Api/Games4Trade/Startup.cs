@@ -54,6 +54,7 @@ namespace Games4Trade
             services.AddTransient<IValidator<AnnouncementSaveDto>, AnnoucementSaveValidator>();
             services.AddTransient<IValidator<ObservedUsersRelationshipDto>, ObservedUsersRelationshipValidator>();
             services.AddTransient<IValidator<AdvertisementSaveDto>, AdvertisementSaveValidator>();
+            services.AddTransient<IValidator<AdvertisementPutDto>, AdvertisementPutValidator>();
 
             services.AddCors(options =>
             {

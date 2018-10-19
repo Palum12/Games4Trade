@@ -16,6 +16,9 @@ namespace Games4Trade.Repositories
         IAdvertisementReposiotry Advertisements { get; }
         IRepository<Region> Regions { get; }
         IRepository<State> States { get;}
+        Repository<Console> Consoles { get;}
+        Repository<Game> Games { get;}
+        Repository<Accessory> Accessories { get;}
         Task<int> CompleteASync();
     }
 }

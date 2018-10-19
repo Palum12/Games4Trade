@@ -11,7 +11,6 @@ namespace Games4Trade.Dtos
         public decimal Price { get; set; }
         public bool ShowUserEmail { get; set; }
         public bool ShowUserPhoneNumber { get; set; }
-        public int UserId { get; set; }
         public int StateId { get; set; }
         public int SystemId { get; set; }
         // game & console
@@ -25,5 +24,11 @@ namespace Games4Trade.Dtos
         //accessory part
         public string AccessoryManufacturer { get; set; }
         public string AccessoryModel { get; set; }
+    }
+
+    public class AdvertisementPutDto : AdvertisementSaveDto
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
     }
 }
