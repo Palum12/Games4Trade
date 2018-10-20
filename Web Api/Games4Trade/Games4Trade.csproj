@@ -18,6 +18,8 @@
     <Compile Remove="Data\Migrations\20180909170818_consoles and regions.Designer.cs" />
     <Compile Remove="Data\Migrations\20181007154117_fixed photos.cs" />
     <Compile Remove="Data\Migrations\20181007154117_fixed photos.Designer.cs" />
+    <Compile Remove="Data\Migrations\20181020115807_dates nullable.cs" />
+    <Compile Remove="Data\Migrations\20181020115807_dates nullable.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

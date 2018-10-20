@@ -13,8 +13,6 @@ namespace Games4Trade.Models
         public string Title { get; set; }
         public bool? IsActive { get; set; }
         public bool? ExchangeActive { get; set; }
-        public bool ShowUserEmail { get; set; }
-        public bool ShowUserPhoneNumber { get; set; }
         public decimal Price { get; set; }
         public int UserId { get; set; }
         public virtual User User { get; set; }

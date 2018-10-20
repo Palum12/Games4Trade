@@ -38,9 +38,7 @@ namespace Games4Trade.Services
                 Title = ad.Title,
                 ExchangeActive = ad.ExchangeActive,
                 IsActive = true,
-                Price = ad.Price,
-                ShowUserPhoneNumber = ad.ShowUserPhoneNumber,
-                ShowUserEmail = ad.ShowUserEmail
+                Price = ad.Price
             };
 
 
@@ -99,10 +97,27 @@ namespace Games4Trade.Services
             };
         }
 
-        public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, bool isAdmin = false, string message = null)
+        public async Task<AdvertisementGetDto> GetAdvertisement(int id)
+        {
+            var ad =  await _unitOfWork.Advertisements.GetAdvertisementWithItem(id);
+            var result = new AdvertisementGetDto();
+            result.System = "test";
+            result.State = "test state";
+            result.Id = ad.Id;
+            result.DateCreated = ad.DateCreated;
+            result.Description = ad.Description;
+            result.Discriminator = ad.Item.GetType().Name;
+            result.ExchangeActive = ad.ExchangeActive.GetValueOrDefault();
+            result.Title = ad.Title;
+            result.Price = ad.Price;
+            return result;
+        }
+
+        public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, string message = null)
         {
             var ad = await _unitOfWork.Advertisements.GetASync(adId);
-            if (!isAdmin && ad.UserId != userId)
+            // todo admin delete
+            if (ad.UserId != userId)
             {
                 return new OperationResult()
                 {
@@ -110,10 +125,6 @@ namespace Games4Trade.Services
                     IsClientError = true,
                     Message = "You cannot delete someone's ad!"
                 };
-            }
-            if (isAdmin)
-            {
-                throw new NotImplementedException();
             }
             _unitOfWork.Advertisements.Remove(ad);
             var result = await _unitOfWork.CompleteASync();

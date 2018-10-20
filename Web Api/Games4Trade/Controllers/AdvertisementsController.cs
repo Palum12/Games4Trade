@@ -26,7 +26,7 @@ namespace Games4Trade.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            throw new NotImplementedException();
+            return Ok(await _advertisementService.GetAdvertisement(id));
         }
 
         [HttpGet]
