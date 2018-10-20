@@ -30,10 +30,16 @@ namespace Games4Trade.Controllers
         }
 
         [HttpGet]
-        [Route("{id}/photos")]
-        public async Task<IActionResult> GetPhotos(int id)
+        [Route("{adId}/photos/{photoId}")]
+        public async Task<IActionResult> GetPhotos(int adId, int photoId)
         {
-            throw new NotImplementedException();
+            var bytes = await _advertisementService.GetAdPhoto(adId, photoId);
+            if (bytes != null)
+            {
+                return File(bytes, "image/jpeg");
+            }
+
+            return NotFound();
         }
 
         [HttpPost]
