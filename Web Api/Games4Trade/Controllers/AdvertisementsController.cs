@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Games4Trade.Controllers
@@ -79,9 +81,30 @@ namespace Games4Trade.Controllers
         [HttpPatch]
         [Route("{id}/photos")]
         [Authorize]
-        public async Task<IActionResult> ChangeAdPhotos(int id)
+        public async Task<IActionResult> ChangeAdPhotos(int id, [FromForm]IFormFileCollection photos)
         {
-            throw new NotImplementedException();
+            var acceptedExtensions = new[] { "jpg", "png", "jpeg", "bmp", "svg" };
+            foreach (var photo in photos)
+            {
+                if (!acceptedExtensions.Any(e => photo.FileName.EndsWith(e)))
+                {
+                    return BadRequest(
+                        "The photo field only accepts files with the following extensions: .jpg, .png, .jpeg, .bmp, .svg");
+                }
+                if (photo.Length > 3_000_000)
+                {
+                    return BadRequest("Too big file size!");
+                }
+            }
+
+            var userId = await GetCurrentUserId();
+            var result = await _advertisementService.ChangeAdPhotos(id, userId, photos);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            return StatusCode(500);
         }
 
         [HttpDelete("{id}")]

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace Games4Trade.Services
 {
@@ -96,6 +99,113 @@ namespace Games4Trade.Services
             };
         }
 
+        public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, bool isAdmin = false, string message = null)
+        {
+            var ad = await _unitOfWork.Advertisements.GetASync(adId);
+            if (!isAdmin && ad.UserId != userId)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "You cannot delete someone's ad!"
+                };
+            }
+            if (isAdmin)
+            {
+                throw new NotImplementedException();
+            }
+            _unitOfWork.Advertisements.Remove(ad);
+            var result = await _unitOfWork.CompleteASync();
+            if (result > 0)
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = true
+                };
+            }
+
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true
+                };
+        }
+
+        public async Task<byte[]> GetAdPhoto(int adId, int photoId)
+        {
+            var photo = await _unitOfWork.Photos.GetASync(photoId);
+            if (!photo.AdvertisementId.HasValue || photo.AdvertisementId != adId)
+            {
+                return null;
+            }
+            var bytes = await File.ReadAllBytesAsync(photo.Path);
+            return bytes;
+        }
+
+        public async Task<OperationResult> ChangeAdPhotos(int adId, int userId, IFormFileCollection photos)
+        {
+            var user = await _unitOfWork.Users.GetASync(userId);
+            var ad = await _unitOfWork.Advertisements.GetASync(adId);
+            if (! await IsSelfService(userId, adId))
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Nie można edytować zdjęć innego użytkownika"
+                };
+            }
+            var temp = await _unitOfWork.Photos
+                .FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
+            var oldPhotos = temp.ToArray();
+            // here delete old photos
+            foreach (var oldPhoto in oldPhotos)
+            {
+                File.Delete(oldPhoto.Path);
+                _unitOfWork.Photos.Remove(oldPhoto);
+            }
+
+            int repoRes;
+            if (photos.Count == 0)
+            {
+                repoRes = await _unitOfWork.CompleteASync();
+                if (repoRes == oldPhotos.Length)
+                {
+                    return new OperationResult { IsSuccessful = true };
+                }
+                throw new DataException();
+            }
+            // here add new photos
+            foreach (var photo in photos)
+            {
+                var fileId = Guid.NewGuid().ToString("N").ToUpper();
+                var directory = @"photos/ad" + adId;
+                Directory.CreateDirectory(directory);
+
+                var path = Path.Combine(directory, fileId);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await photo.CopyToAsync(fileStream);
+                }
+                var newPhoto = new Photo { DateCreated = DateTime.Now, Path = path, AdvertisementId = adId};
+                await _unitOfWork.Photos.AddASync(newPhoto);
+            }
+            repoRes = await _unitOfWork.CompleteASync();
+            // todo analise this and delete files if something went wrong
+            if (repoRes > 0)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true
+                };
+            }
+            else
+            {
+                throw new DataException();
+            }
+        }
+
         private async Task<(bool, string)> CheckIfRelationshipsAreCorrect(AdvertisementSaveDto ad)
         {
             IList<Object> objects;
@@ -142,6 +252,12 @@ namespace Games4Trade.Services
                 }
             }
             return (true, null);
+        }
+
+        private async Task<bool> IsSelfService(int userId, int adId)
+        {
+            var ad = await _unitOfWork.Advertisements.GetASync(adId);
+            return ad.UserId == userId;
         }
 
     }
