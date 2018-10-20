@@ -97,9 +97,40 @@ namespace Games4Trade.Services
             };
         }
 
+        public async Task<OperationResult> ArchiveAdvertisement(int userId, int adId)
+        {           
+            if (!await IsSelfService(userId, adId))
+            {
+                return new OperationResult()
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Nie można archwizować cudzego ogłoszenia!"
+                };
+            }
+            var ad = await _unitOfWork.Advertisements.GetASync(adId);
+            ad.IsActive = false;
+            var result = await _unitOfWork.CompleteASync();
+            if (result > 0)
+            {
+                return new OperationResult(){IsSuccessful = true};
+            }
+
+            return OtherServices.GetIncorrectDatabaseConnectionResult();
+        }
+
+        public async Task<OperationResult> EditAdvertisement(int userId, AdvertisementPutDto ad)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<AdvertisementGetDto> GetAdvertisement(int id)
         {
             var ad =  await _unitOfWork.Advertisements.GetAdvertisementWithItem(id);
+            if (ad == null)
+            {
+                return null;
+            }
             var result = new AdvertisementGetDto();
             result.System = "test";
             result.State = "test state";
@@ -116,37 +147,67 @@ namespace Games4Trade.Services
         public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, string message = null)
         {
             var ad = await _unitOfWork.Advertisements.GetASync(adId);
-            // todo admin delete
             if (ad.UserId != userId)
             {
-                return new OperationResult()
+                var user = await _unitOfWork.Users.GetASync(userId);
+                if (user.Role.Equals("Admin"))
                 {
-                    IsSuccessful = false,
-                    IsClientError = true,
-                    Message = "You cannot delete someone's ad!"
-                };
-            }
-            _unitOfWork.Advertisements.Remove(ad);
-            var result = await _unitOfWork.CompleteASync();
-            if (result > 0)
-            {
-                return new OperationResult()
-                {
-                    IsSuccessful = true
-                };
-            }
+                    if (message == null)
+                    {
+                        return new OperationResult()
+                        {
+                            IsSuccessful = false,
+                            IsClientError = true,
+                            Message = "Proszę dodać wiadomość !"
+                        };
+                    }                   
+                    
+                    var otherUser = await _unitOfWork.Users.GetASync(ad.UserId);
+                    var text = string.Format(
+                        @"Witaj. </br> Twoje ogłoszenie z serwisu Games4Trade zostało usunięte. Oto powód usunięcia ogłoszenia:<br>{0}",
+                        message);
+                    var emailResult = await OtherServices.SendEmail(otherUser.Email, "Wiadomość o usunięciu ogłoszenia.", text);
+                    if (emailResult)
+                    {
+                        var repoResult = await RemoveAdWithPhotos(ad);
+                        if (repoResult > 0)
+                        {
+                            return new OperationResult()
+                            {
+                                IsSuccessful = true
+                            };
+                        }
+
+                        return OtherServices.GetIncorrectDatabaseConnectionResult();
+                    }
+                    return new OperationResult()
+                    {
+                        IsSuccessful = false,
+                        IsClientError = false
+                    };
+                }
 
                 return new OperationResult()
                 {
                     IsSuccessful = false,
-                    IsClientError = true
+                    IsClientError = true,
+                    Message = "Tylko administrator może usunąć cudze ogłoszenie!"
                 };
+            }
+
+            var result = await RemoveAdWithPhotos(ad);
+            if (result > 0)
+            {
+                return new OperationResult() {IsSuccessful = true};
+            }
+
+            return new OperationResult() {IsSuccessful = false, IsClientError = true};
         }
 
         public async Task<byte[]> GetAdPhoto(int adId, int photoId)
         {
             var photo = await _unitOfWork.Photos.GetASync(photoId);
-            if (!photo.AdvertisementId.HasValue || photo.AdvertisementId != adId)
+            if (photo?.AdvertisementId == null || photo.AdvertisementId != adId)
             {
                 return null;
             }
@@ -187,6 +248,8 @@ namespace Games4Trade.Services
                 }
                 throw new DataException();
             }
+
+            var photosAdded = new List<Photo>();
             // here add new photos
             foreach (var photo in photos)
             {
@@ -200,11 +263,11 @@ namespace Games4Trade.Services
                     await photo.CopyToAsync(fileStream);
                 }
                 var newPhoto = new Photo { DateCreated = DateTime.Now, Path = path, AdvertisementId = adId};
+                photosAdded.Add(newPhoto);
                 await _unitOfWork.Photos.AddASync(newPhoto);
             }
             repoRes = await _unitOfWork.CompleteASync();
-            // todo analise this and delete files if something went wrong
-            if (repoRes > 0)
+            if (repoRes == oldPhotos.Length + photos.Count)
             {
                 return new OperationResult
                 {
@@ -213,54 +276,80 @@ namespace Games4Trade.Services
             }
             else
             {
+                foreach (var photo in photosAdded)
+                {
+                    File.Delete(photo.Path);
+                }
                 throw new DataException();
             }
+        }
+
+        private async Task<int> RemoveAdWithPhotos(Advertisement ad)
+        {
+            var photos = await _unitOfWork.Photos
+                .FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
+            _unitOfWork.Advertisements.Remove(ad);
+            var repoResult = await _unitOfWork.CompleteASync();
+            if (repoResult > 0)
+            {
+                foreach (var photo in photos)
+                {
+                    File.Delete(photo.Path);
+                }
+                return repoResult;
+            }
+
+            return 0;
         }
 
         private async Task<(bool, string)> CheckIfRelationshipsAreCorrect(AdvertisementSaveDto ad)
         {
             IList<Object> objects;
-            //todo change to switch
-            if (ad.Discriminator.Equals("Game"))
+            Models.System system;
+            State state;
+            Region region;
+            switch (ad.Discriminator)
             {
-                var region = await _unitOfWork.Regions.GetASync(ad.RegionId);
-                var state = await _unitOfWork.States.GetASync(ad.StateId);
-                var genre = await _unitOfWork.Genres.GetASync(ad.GenreId);
-                var system = await _unitOfWork.Systems.GetASync(ad.SystemId);
-                objects = new List<object> { region, system, state, genre };
+                case "Game":
+                    region = await _unitOfWork.Regions.GetASync(ad.RegionId);
+                    state = await _unitOfWork.States.GetASync(ad.StateId);
+                    var genre = await _unitOfWork.Genres.GetASync(ad.GenreId);
+                    system = await _unitOfWork.Systems.GetASync(ad.SystemId);
+                    objects = new List<object> { region, system, state, genre };
 
-                if (objects.Any(o => o == null))
-                {
-                    var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
-                    return (false, message);
-                }
-            }
+                    if (objects.Any(o => o == null))
+                    {
+                        var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
+                        return (false, message);
+                    }
 
-            if (ad.Discriminator.Equals("Console"))
-            {
-                var region = await _unitOfWork.Regions.GetASync(ad.RegionId);
-                var state = await _unitOfWork.States.GetASync(ad.StateId);
-                var system = await _unitOfWork.Systems.GetASync(ad.SystemId);
-                objects = new List<object> { region, system, state };
+                    break;
+                case "Console":
+                    region = await _unitOfWork.Regions.GetASync(ad.RegionId);
+                    state = await _unitOfWork.States.GetASync(ad.StateId);
+                    system = await _unitOfWork.Systems.GetASync(ad.SystemId);
+                    objects = new List<object> { region, system, state };
 
-                if (objects.Any(o => o == null))
-                {
-                    var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
-                    return (false, message);
-                }
-            }
+                    if (objects.Any(o => o == null))
+                    {
+                        var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
+                        return (false, message);
+                    }
+                    break;
+                case "Accessory":
+                    state = await _unitOfWork.States.GetASync(ad.StateId);
+                    system = await _unitOfWork.Systems.GetASync(ad.SystemId);
+                    objects = new List<object> { system, state };
 
-            if (ad.Discriminator.Equals("Accessory"))
-            {
-                var state = await _unitOfWork.States.GetASync(ad.StateId);
-                var system = await _unitOfWork.Systems.GetASync(ad.SystemId);
-                objects = new List<object> { system, state };
+                    if (objects.Any(o => o == null))
+                    {
+                        var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
+                        return (false, message);
+                    }
 
-                if (objects.Any(o => o == null))
-                {
-                    var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
-                    return (false, message);
-                }
+                    break;
+                default:
+                    return (false, "Wrong discriminator!");
             }
             return (true, null);
         }

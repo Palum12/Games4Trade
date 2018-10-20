@@ -103,45 +103,15 @@ namespace Games4Trade.Services
                 result.Message = "Nie ma takiego adresu w bazie !";
                 return result;
             }
-            
-            MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress("noreply@games4trade.pl"));
-            message.To.Add(new MailboxAddress(user.Email));
-            message.Subject = "Przywracanie hasla.";
 
-            user.RecoveryAddress = GetSalt().Substring(0, 32);
-
-            var bodyBuilder = new BodyBuilder
-            {
-                HtmlBody = string.Format(@"Witaj. </br> Wysłana została prośba o zresetowanie hasła. Oto twój <a href=""http://localhost:8080/password/change?recoveryString={0}""> link</a>", user.RecoveryAddress)
-            };
-            message.Body = bodyBuilder.ToMessageBody();
-
-            using (var client = new MailKit.Net.Smtp.SmtpClient())
-            {
-                try
-                {
-                    // Accept all SSL certificates (in case the server supports STARTTLS)
-                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-
-                    await client.ConnectAsync("serwer1845771.home.pl", 465, true);
-
-                    // Authenticate email with server
-                    await client.AuthenticateAsync("noreply@games4trade.pl", "Mocne12\\");
-                    // Send message to receiver
-                    await client.SendAsync(message);
-                    // Disconect to unlock unnecessary resources
-                    await client.DisconnectAsync(true);
-                }
-                catch (Exception exception)
-                {
-                    WriteLine(exception.Message);
-                }
-            }
+            var text = string.Format(
+                @"Witaj. </br> Wysłana została prośba o zresetowanie hasła. Oto twój <a href=""http://localhost:8080/password/change?recoveryString={0}""> link</a>",
+                user.RecoveryAddress);
+            var emailResult = await OtherServices.SendEmail(user.Email, "Przywracanie hasla", text);
 
 
             var repoResult = await _unitOfWork.CompleteASync();
-            if (repoResult > 0)
+            if (repoResult > 0 && emailResult)
             {
                 result.IsSuccessful = true;
                 result.Message = "Wysłano wiadomość odnawiającą hasło.";

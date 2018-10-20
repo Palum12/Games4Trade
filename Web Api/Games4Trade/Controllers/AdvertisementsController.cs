@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
@@ -81,7 +80,19 @@ namespace Games4Trade.Controllers
         [Authorize]
         public async Task<IActionResult> Archive(int id)
         {
-            throw new NotImplementedException();
+            var userId = await GetCurrentUserId();
+            var result = await _advertisementService.ArchiveAdvertisement(userId, id);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            if (result.IsClientError)
+            {
+                return Forbid();
+            }
+
+            return StatusCode(500);
         }
 
         [HttpPatch]
