@@ -111,11 +111,20 @@ namespace Games4Trade.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int id, [FromQuery] string reason)
         {
-            if (User.IsInRole("Admin") && reason == null)
+            var userId = await GetCurrentUserId();
+
+            var result = await _advertisementService.DeleteAdvertisement(userId, id, reason);
+            if (result.IsSuccessful)
             {
-                return BadRequest("Reason for deleting must be added !");
+                return Ok();
             }
-            throw new NotImplementedException();
+
+            if (result.IsClientError)
+            {
+                return Forbid();
+            }
+
+            return StatusCode(500);
         }
         
 
