@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,14 +16,17 @@ namespace Games4Trade.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IAdvertisementService _advertisementService;
         private readonly IGenreService _genreService;
         private readonly ISystemService _systemService;
 
-        public UsersController(IUserService userService, IGenreService genreService, ISystemService systemService)
+        public UsersController(IUserService userService, IGenreService genreService,
+            ISystemService systemService, IAdvertisementService advertisementService)
         {
             _userService = userService;
             _genreService = genreService;
             _systemService = systemService;
+            _advertisementService = advertisementService;
         }
 
         [HttpGet]
@@ -365,10 +369,38 @@ namespace Games4Trade.Controllers
             return StatusCode(500, result.Message);
         }
 
+        [HttpGet]
+        [Route("{id}/advertisements")]
+        public async Task<IActionResult> GetUsersAds(int id, [FromQuery]int page)
+        {
+            page = page > 0 ? page - 1 : 0;
+            var selfService = await IsSelfService(id);
+            var result = await _advertisementService.GetAdvetisementsForUser(id, page, selfService);
+            return Ok(result.Payload);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("{id}/advertisements/recommended")]
+        public async Task<IActionResult> GetRecommendedAds(int id)
+        {
+            if (!await IsSelfService(id))
+            {
+                return Forbid();
+            }
+            var result = await _advertisementService.GetRecommendedAdsForUser(id);
+            return Ok(result.Payload);
+        }
+
         private async Task<bool> IsSelfService(int userId)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-            return currentUserId.Value == userId;
+            if (User.Identity.IsAuthenticated)
+            {
+                var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+                return currentUserId.Value == userId;
+            }
+
+            return false;
         }
       
     }

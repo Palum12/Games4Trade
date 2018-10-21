@@ -8,7 +8,7 @@ namespace Games4Trade.Repositories
     {
         Task<Advertisement> GetAdvertisementWithItem(int id, int? userId = null);
         Task<IEnumerable<Advertisement>> Get(int page, int pageSize);
-        Task<IEnumerable<Advertisement>> GetRecommendedAdvertisements(int userId);
-        Task<IEnumerable<Advertisement>> GetAdsForUser(int userId, int page, int pageSize);
+        Task<IEnumerable<Advertisement>> GetRecommendedAdvertisements(int userId, int howMany);
+        Task<IEnumerable<Advertisement>> GetAdsForUser(int userId, int page, int pageSize, bool skipInActive);
     }
 }

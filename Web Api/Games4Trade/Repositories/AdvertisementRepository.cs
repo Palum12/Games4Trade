@@ -28,7 +28,7 @@ namespace Games4Trade.Repositories
                 .Include(a => a.Item).ToListAsync();
         }
 
-        public async Task<IEnumerable<Advertisement>> GetRecommendedAdvertisements(int userId)
+        public async Task<IEnumerable<Advertisement>> GetRecommendedAdvertisements(int userId, int howMany)
         {
             var genres = await Context.UserGenreRelationship
                 .Where(x => x.UserId == userId).Select(x => x.GenreId).ToArrayAsync();
@@ -38,20 +38,20 @@ namespace Games4Trade.Repositories
                 .Where(u => u.ObservingUserId == userId).Select(x => x.ObservedUserId).ToArrayAsync();
 
             var ads = await Context.Advertisements.Include(a => a.Item)
-                .Where( a => a.IsActive && (observedUsers.Contains(a.UserId) || systems.Contains(a.Item.SystemId) || 
+                .Where( a => a.IsActive && a.UserId != userId && (observedUsers.Contains(a.UserId) || systems.Contains(a.Item.SystemId) || 
                             (a.Item is Game && genres.Contains(((Game)a.Item).GenreId)))  )
-                .Take(10)
+                .Take(howMany)
                 .OrderByDescending(a => a.DateCreated)
                 .ToArrayAsync();
 
             return ads;
         }
 
-        public async Task<IEnumerable<Advertisement>> GetAdsForUser(int userId, int page, int pageSize)
+        public async Task<IEnumerable<Advertisement>> GetAdsForUser(int userId, int page, int pageSize, bool skipInactive)
         {
             var skip = page * pageSize;
             return await Context.Advertisements
-                .Where(a => a.UserId == userId)
+                .Where(a => a.UserId == userId && (a.IsActive || skipInactive))
                 .OrderByDescending(a => a.DateCreated)
                 .Skip(skip).Take(pageSize)
                 .ToListAsync();

@@ -17,6 +17,7 @@ namespace Games4Trade.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private const int DefaultPageSize = 10;
 
         public AdvertisementService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -252,9 +253,20 @@ namespace Games4Trade.Services
             }
         }
 
-        public async Task<OperationResult> GetAdvetisementsForUser(int userId, int page, int pageSize)
+        public async Task<OperationResult> GetRecommendedAdsForUser(int userId)
         {
-            var ads = await _unitOfWork.Advertisements.GetAdsForUser(userId, page, pageSize);
+            var ads = await _unitOfWork.Advertisements.GetRecommendedAdvertisements(userId, DefaultPageSize);
+            var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
+            return new OperationResult()
+            {
+                IsSuccessful = true,
+                Payload = result
+            };
+        }
+
+        public async Task<OperationResult> GetAdvetisementsForUser(int userId, int page, bool selfSerive)
+        {
+            var ads = await _unitOfWork.Advertisements.GetAdsForUser(userId, page, DefaultPageSize, selfSerive);
             var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable< AdvertisementWithoutItemDto>>(ads);
             return new OperationResult
             {
