@@ -49,6 +49,8 @@ namespace Games4Trade
             services.AddScoped<IAnnouncementService, AnnouncementService>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IAdvertisementService, AdvertisementService>();
+            services.AddScoped<IRegionService, RegionService>();
+            services.AddScoped<IStateService, StateService>();
             services.AddTransient<IValidator<UserRegisterDto>, UserRegisterDtoValidator> ();
             services.AddTransient<IValidator<UserRecoverDto>, UserRecoverDtoValidator> ();
             services.AddTransient<IValidator<AnnouncementSaveDto>, AnnoucementSaveValidator>();
