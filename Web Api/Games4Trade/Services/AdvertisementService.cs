@@ -9,6 +9,7 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.AspNetCore.Http;
+using Console = Games4Trade.Models.Console;
 
 namespace Games4Trade.Services
 {
@@ -22,78 +23,84 @@ namespace Games4Trade.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
+        
         public async Task<OperationResult> AddAdvertisement(int userId, AdvertisementSaveDto ad)
         {
             var isCorrectResultTuple = await CheckIfRelationshipsAreCorrect(ad);
             if (isCorrectResultTuple.Item1)
             {
-
-            }
-            var advertisement = new Advertisement()
-            {
-                UserId = userId,
-                DateCreated = DateTime.Now,
-                Description = ad.Description,
-                Title = ad.Title,
-                ExchangeActive = ad.ExchangeActive,
-                IsActive = true,
-                Price = ad.Price
-            };
+                var advertisement = new Advertisement()
+                {
+                    UserId = userId,
+                    DateCreated = DateTime.Now,
+                    Description = ad.Description,
+                    Title = ad.Title,
+                    ExchangeActive = ad.ExchangeActive,
+                    IsActive = true,
+                    Price = ad.Price
+                };
 
 
-            switch (ad.Discriminator)
-            {
-                case "Game":
-                    var game = new Game();
-                    game.DateDeveloped = ad.DateDeveloped;
-                    game.Developer = ad.Developer;
-                    game.GameRegionId = ad.RegionId;
-                    game.GenreId = ad.GenreId;
-                    game.SystemId = ad.SystemId;
-                    game.StateId = ad.StateId;
-                    await _unitOfWork.Games.AddASync(game);
-                    advertisement.Item = game;
-                    break;
-                case "Accessory":
-                    var accessory= new Accessory();
-                    accessory.AccessoryManufacturer = ad.AccessoryManufacturer;
-                    accessory.AccessoryModel = ad.AccessoryModel;
-                    accessory.StateId = ad.StateId;
-                    accessory.SystemId = ad.SystemId;
-                    await _unitOfWork.Accessories.AddASync(accessory);
-                    advertisement.Item = accessory;
-                    break;
-                case "Console":
-                    var console = new Games4Trade.Models.Console();
-                    console.ConsoleRegionId = ad.RegionId;
-                    console.DateManufactured = ad.DateManufactured;
-                    console.StateId = ad.StateId;
-                    console.SystemId = ad.SystemId;
-                    await _unitOfWork.Consoles.AddASync(console);
-                    advertisement.Item = console;
-                    break;
-                default: 
+                switch (ad.Discriminator)
+                {
+                    case "Game":
+                        var game = new Game();
+                        game.DateReleased = ad.DateReleased;
+                        game.Developer = ad.Developer;
+                        game.GameRegionId = ad.RegionId;
+                        game.GenreId = ad.GenreId;
+                        game.SystemId = ad.SystemId;
+                        game.StateId = ad.StateId;
+                        await _unitOfWork.Games.AddASync(game);
+                        advertisement.Item = game;
+                        break;
+                    case "Accessory":
+                        var accessory = new Accessory();
+                        accessory.AccessoryManufacturer = ad.AccessoryManufacturer;
+                        accessory.AccessoryModel = ad.AccessoryModel;
+                        accessory.StateId = ad.StateId;
+                        accessory.SystemId = ad.SystemId;
+                        accessory.DateReleased = ad.DateReleased;
+                        await _unitOfWork.Accessories.AddASync(accessory);
+                        advertisement.Item = accessory;
+                        break;
+                    case "Console":
+                        var console = new Games4Trade.Models.Console();
+                        console.ConsoleRegionId = ad.RegionId;
+                        console.DateReleased = ad.DateReleased;
+                        console.StateId = ad.StateId;
+                        console.SystemId = ad.SystemId;
+                        await _unitOfWork.Consoles.AddASync(console);
+                        advertisement.Item = console;
+                        break;
+                    default:
+                        return new OperationResult
+                        {
+                            IsSuccessful = false,
+                            IsClientError = true,
+                            Message = "Invalid discriminator!"
+                        };
+                }
+                await _unitOfWork.Advertisements.AddASync(advertisement);
+
+                var result = await _unitOfWork.CompleteASync();
+                if (result > 0)
+                {
                     return new OperationResult
                     {
-                        IsSuccessful = false,
-                        IsClientError = true,
-                        Message = "Invalid discriminator!"
+                        IsSuccessful = true
                     };
-            }
-            await _unitOfWork.Advertisements.AddASync(advertisement);
-
-            var result = await _unitOfWork.CompleteASync();
-            if (result > 0)
-            {
-                return new OperationResult
+                }
+                return new OperationResult()
                 {
-                    IsSuccessful = true
+                    IsSuccessful = false
                 };
             }
             return new OperationResult()
             {
-                IsSuccessful = false
+                IsSuccessful = false,
+                IsClientError = true,
+                Message = isCorrectResultTuple.Item2
             };
         }
 
@@ -119,29 +126,73 @@ namespace Games4Trade.Services
             return OtherServices.GetIncorrectDatabaseConnectionResult();
         }
 
+        //todo
         public async Task<OperationResult> EditAdvertisement(int userId, AdvertisementPutDto ad)
-        {
+        {           
+            if (!await IsSelfService(userId, ad.Id))
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "Nie można edytować cudzych ogłoszeń"
+                };
+            }
+            var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithItem(ad.Id);
+            if (currentAd.Item.GetType().Name.Equals(ad.Discriminator))
+            {
+                // here its okey
+            }
+            else
+            {
+                // here delete existing and add new maybe ad.Item = new Game() ?
+            }
             throw new NotImplementedException();
         }
 
-        public async Task<AdvertisementGetDto> GetAdvertisement(int id)
+        public async Task<OperationResult> GetAdvertisement(int id)
         {
             var ad =  await _unitOfWork.Advertisements.GetAdvertisementWithItem(id);
             if (ad == null)
             {
-                return null;
+                return new OperationResult()
+                {
+                    IsSuccessful = false
+                };
             }
-            var result = new AdvertisementGetDto();
-            result.System = "test";
-            result.State = "test state";
-            result.Id = ad.Id;
-            result.DateCreated = ad.DateCreated;
-            result.Description = ad.Description;
-            result.Discriminator = ad.Item.GetType().Name;
-            result.ExchangeActive = ad.ExchangeActive.GetValueOrDefault();
-            result.Title = ad.Title;
-            result.Price = ad.Price;
-            return result;
+
+            switch (ad.Item.GetType().Name)
+            {
+                case "Game":
+                {
+                    var game =  await MapToGame(ad);
+                    return new OperationResult()
+                    {
+                        IsSuccessful = true,
+                        Payload = game
+                    };
+                }
+                case "Accessory":
+                {
+                    var accessory =  await MapToAccessory(ad);
+                    return new OperationResult()
+                    {
+                        IsSuccessful = true,
+                        Payload = accessory
+                    };
+                }
+                case "Console":
+                {
+                    var console = await MapToConsole(ad);
+                    return new OperationResult()
+                    {
+                        IsSuccessful = true,
+                        Payload = console
+                    };
+                }
+                default:
+                    throw new DataException("Invalid discriminator !");
+            }
         }
 
         public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, string message = null)
@@ -358,6 +409,115 @@ namespace Games4Trade.Services
         {
             var ad = await _unitOfWork.Advertisements.GetASync(adId);
             return ad.UserId == userId;
+        }
+
+        private async Task<AdvertisementGameDto> MapToGame(Advertisement ad)
+        {
+            Game game = ad.Item as Game;
+            var result = new AdvertisementGameDto()
+            {
+                Id = ad.Id,
+                UserId = ad.UserId,
+                Discriminator = ad.Item.GetType().Name,
+                DateCreated = ad.DateCreated,
+                Description = ad.Description,               
+                ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
+                Price = ad.Price,
+                Title = ad.Title,
+
+                DateReleased = game.DateReleased,
+                Developer = game.Developer
+            };
+            var tempGenre = await _unitOfWork.Genres.GetASync(game.GenreId);
+            var tempRegion = await _unitOfWork.Regions.GetASync(game.GameRegionId);
+            var tempState = await _unitOfWork.States.GetASync(game.StateId);
+            var tempSystem = await _unitOfWork.Systems.GetASync(game.SystemId);
+            var tempPhotos =
+                await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
+
+            result.Genre = _mapper.Map<Genre, GenreDto>(tempGenre);
+            result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
+            result.State = _mapper.Map<State, StateDto>(tempState);
+            result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
+
+            result.Photos = new List<PhotoDto>();
+            foreach (var photo in tempPhotos)
+            {
+                result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
+            }
+
+            return result;
+        }
+
+        private async Task<AdvertisementConsoleDto> MapToConsole(Advertisement ad)
+        {
+            Console console = ad.Item as Console;
+            var result = new AdvertisementConsoleDto()
+            {
+                Id = ad.Id,
+                UserId = ad.UserId,
+                Discriminator = ad.Item.GetType().Name,
+                DateCreated = ad.DateCreated,
+                Description = ad.Description,
+                ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
+                Price = ad.Price,
+                Title = ad.Title,
+
+                DateReleased = console.DateReleased
+            };
+            var tempRegion = await _unitOfWork.Regions.GetASync(console.ConsoleRegionId);
+            var tempState = await _unitOfWork.States.GetASync(console.StateId);
+            var tempSystem = await _unitOfWork.Systems.GetASync(console.SystemId);
+            var tempPhotos =
+                await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
+
+
+            result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
+            result.State = _mapper.Map<State, StateDto>(tempState);
+            result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
+
+            result.Photos = new List<PhotoDto>();
+            foreach (var photo in tempPhotos)
+            {
+                result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
+            }
+
+            return result;
+        }
+
+        private async Task<AdvertisementAccessoryDto> MapToAccessory(Advertisement ad)
+        {
+            Accessory accessory = ad.Item as Accessory;
+            var result = new AdvertisementAccessoryDto()
+            {
+                Id = ad.Id,
+                UserId = ad.UserId,
+                Discriminator = ad.Item.GetType().Name,
+                DateCreated = ad.DateCreated,
+                Description = ad.Description,
+                ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
+                Price = ad.Price,
+                Title = ad.Title,
+
+                AccessoryManufacturer = accessory.AccessoryManufacturer,
+                AccessoryModel = accessory.AccessoryModel,
+                DateReleased = accessory.DateReleased
+            };
+            var tempState = await _unitOfWork.States.GetASync(accessory.StateId);
+            var tempSystem = await _unitOfWork.Systems.GetASync(accessory.SystemId);
+            var tempPhotos =
+                await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
+
+            result.State = _mapper.Map<State, StateDto>(tempState);
+            result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
+
+            result.Photos = new List<PhotoDto>();
+            foreach (var photo in tempPhotos)
+            {
+                result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
+            }
+
+            return result;
         }
 
     }

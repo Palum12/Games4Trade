@@ -1,10 +1,7 @@
-﻿using System;
-
-namespace Games4Trade.Models
+﻿namespace Games4Trade.Models
 {
     public class Game : AdvertisementItem
     {
-        public DateTime? DateDeveloped { get; set; }
         public string Developer { get; set; }
         public int GameRegionId { get; set; }
         public virtual Region GameRegion { get; set; }

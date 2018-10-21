@@ -25,7 +25,12 @@ namespace Games4Trade.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            return Ok(await _advertisementService.GetAdvertisement(id));
+            var result = await _advertisementService.GetAdvertisement(id);
+            if (result.IsSuccessful)
+            {
+                return Ok(result.Payload);
+            }
+            return NotFound();
         }
 
         [HttpGet]

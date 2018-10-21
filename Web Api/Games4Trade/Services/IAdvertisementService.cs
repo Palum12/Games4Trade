@@ -10,7 +10,7 @@ namespace Games4Trade.Services
     {
         Task<OperationResult> AddAdvertisement(int userId, AdvertisementSaveDto ad);
         Task<OperationResult> ArchiveAdvertisement(int userId, int adId);
-        Task<AdvertisementGetDto> GetAdvertisement(int id);
+        Task<OperationResult> GetAdvertisement(int id);
         Task<OperationResult> DeleteAdvertisement(int userId, int adId, string reason = null);
         Task<Byte[]> GetAdPhoto(int adId, int photoId);
         Task<OperationResult> ChangeAdPhotos(int adId, int userId, IFormFileCollection photos);

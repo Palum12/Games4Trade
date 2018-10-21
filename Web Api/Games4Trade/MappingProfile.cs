@@ -22,12 +22,15 @@ namespace Games4Trade
             CreateMap<SystemCreateOrUpdateDto, Models.System>().ForMember(s => s.Id, opt => opt.Ignore());
 
             CreateMap<AnnouncementSaveDto, Announcement>();
-
             CreateMap<Announcement, AnnouncementGetDto>()
                 .ForMember(a => a.Author,
                     opt => opt.MapFrom(src => src.User.Login));
 
             CreateMap<Message, MessageDto>();
+
+            CreateMap<Photo, PhotoDto>();
+            CreateMap<Region, RegionDto>().ReverseMap();
+            CreateMap<State, StateDto>().ReverseMap();
 
         }
     }
