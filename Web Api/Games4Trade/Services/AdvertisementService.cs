@@ -44,32 +44,17 @@ namespace Games4Trade.Services
                 switch (ad.Discriminator)
                 {
                     case "Game":
-                        var game = new Game();
-                        game.DateReleased = ad.DateReleased;
-                        game.Developer = ad.Developer;
-                        game.GameRegionId = ad.RegionId;
-                        game.GenreId = ad.GenreId;
-                        game.SystemId = ad.SystemId;
-                        game.StateId = ad.StateId;
+                        var game = _mapper.Map<AdvertisementSaveDto, Game>(ad);
                         await _unitOfWork.Games.AddASync(game);
                         advertisement.Item = game;
                         break;
                     case "Accessory":
-                        var accessory = new Accessory();
-                        accessory.AccessoryManufacturer = ad.AccessoryManufacturer;
-                        accessory.AccessoryModel = ad.AccessoryModel;
-                        accessory.StateId = ad.StateId;
-                        accessory.SystemId = ad.SystemId;
-                        accessory.DateReleased = ad.DateReleased;
+                        var accessory = _mapper.Map<AdvertisementSaveDto, Accessory>(ad);
                         await _unitOfWork.Accessories.AddASync(accessory);
                         advertisement.Item = accessory;
                         break;
                     case "Console":
-                        var console = new Games4Trade.Models.Console();
-                        console.ConsoleRegionId = ad.RegionId;
-                        console.DateReleased = ad.DateReleased;
-                        console.StateId = ad.StateId;
-                        console.SystemId = ad.SystemId;
+                        var console = _mapper.Map<AdvertisementSaveDto, Console>(ad);
                         await _unitOfWork.Consoles.AddASync(console);
                         advertisement.Item = console;
                         break;
@@ -126,10 +111,9 @@ namespace Games4Trade.Services
             return OtherServices.GetIncorrectDatabaseConnectionResult();
         }
 
-        //todo
-        public async Task<OperationResult> EditAdvertisement(int userId, AdvertisementPutDto ad)
+        public async Task<OperationResult> EditAdvertisement(int userId, int adId, AdvertisementSaveDto ad)
         {           
-            if (!await IsSelfService(userId, ad.Id))
+            if (!await IsSelfService(userId, adId))
             {
                 return new OperationResult
                 {
@@ -138,16 +122,89 @@ namespace Games4Trade.Services
                     Message = "Nie można edytować cudzych ogłoszeń"
                 };
             }
-            var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithItem(ad.Id);
+
+            var isCorrectResultTuple = await CheckIfRelationshipsAreCorrect(ad);
+            if (!isCorrectResultTuple.Item1)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = isCorrectResultTuple.Item2
+                };
+            }
+
+            var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithItem(adId);
+
+            currentAd.Description = ad.Description;
+            currentAd.ExchangeActive = ad.ExchangeActive;
+            currentAd.Price = ad.Price;
+            currentAd.Title = ad.Title;
+
             if (currentAd.Item.GetType().Name.Equals(ad.Discriminator))
             {
-                // here its okey
+                if (currentAd.Item.GetType() == typeof(Game))
+                {
+                    var game = currentAd.Item as Game;
+                    game.Developer = ad.Developer;
+                    game.GameRegionId = ad.RegionId;
+                    game.GenreId = ad.GenreId;
+                    game.DateReleased = ad.DateReleased;
+                    game.StateId = ad.StateId;
+                    game.SystemId = ad.SystemId;
+                }
+                else if (currentAd.Item.GetType() == typeof(Accessory))
+                {
+                    var accessory = currentAd.Item as Accessory;
+                    accessory.AccessoryManufacturer = ad.AccessoryManufacturer;
+                    accessory.AccessoryModel = ad.AccessoryModel;
+                    accessory.DateReleased = ad.DateReleased;
+                    accessory.StateId = ad.StateId;
+                    accessory.SystemId = ad.SystemId;
+                }
+                else if (currentAd.Item.GetType() == typeof(Console))
+                {
+                    var console = currentAd.Item as Console;
+                    console.DateReleased = ad.DateReleased;
+                    console.StateId = ad.StateId;
+                    console.SystemId = ad.SystemId;
+                }
+                
             }
             else
             {
-                // here delete existing and add new maybe ad.Item = new Game() ?
+                _unitOfWork.AdvertisementItems.Remove(currentAd.Item);
+                switch (ad.Discriminator)
+                {
+                    case "Game":
+                        var game = _mapper.Map<AdvertisementSaveDto, Game>(ad);
+                        await _unitOfWork.Games.AddASync(game);
+                        currentAd.Item = game;
+                        break;
+                    case "Accessory":
+                        var accessory = _mapper.Map<AdvertisementSaveDto, Accessory>(ad);
+                        await _unitOfWork.Accessories.AddASync(accessory);
+                        currentAd.Item = accessory;
+                        break;
+                    case "Console":
+                        var console = _mapper.Map<AdvertisementSaveDto, Console>(ad);
+                        await _unitOfWork.Consoles.AddASync(console);
+                        currentAd.Item = console;
+                        break;
+                    default:
+                        return new OperationResult
+                        {
+                            IsSuccessful = false,
+                            IsClientError = true,
+                            Message = "Invalid discriminator!"
+                        };
+                }
+
             }
-            throw new NotImplementedException();
+
+            var repoResult = await _unitOfWork.CompleteASync();
+            
+            return new OperationResult(){IsSuccessful = true};
         }
 
         public async Task<OperationResult> GetAdvertisement(int id)

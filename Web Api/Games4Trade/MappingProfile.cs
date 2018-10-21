@@ -32,6 +32,10 @@ namespace Games4Trade
             CreateMap<Region, RegionDto>().ReverseMap();
             CreateMap<State, StateDto>().ReverseMap();
 
+            CreateMap<AdvertisementSaveDto, Game>().ForMember(g => g.GameRegionId, opt => opt.MapFrom(a => a.RegionId));
+            CreateMap<AdvertisementSaveDto, Console>().ForMember(c => c.ConsoleRegionId, opt => opt.MapFrom(a => a.RegionId));
+            CreateMap<AdvertisementSaveDto, Accessory>();
+
         }
     }
 }

@@ -58,10 +58,4 @@ namespace Games4Trade.Dtos
         public string AccessoryManufacturer { get; set; }
         public string AccessoryModel { get; set; }
     }
-
-    public class AdvertisementPutDto : AdvertisementSaveDto
-    {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-    }
 }

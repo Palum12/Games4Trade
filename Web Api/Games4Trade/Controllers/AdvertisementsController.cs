@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Services;
@@ -71,11 +70,23 @@ namespace Games4Trade.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> Put(int id, AdvertisementPutDto ad)
+        public async Task<IActionResult> Put(int id, AdvertisementSaveDto ad)
         {
             if (ModelState.IsValid)
             {
-                throw new NotImplementedException();
+                var currentId = await GetCurrentUserId();
+                var result = await _advertisementService.EditAdvertisement(currentId, id, ad);
+                if (result.IsSuccessful)
+                {
+                    return Ok();
+                }
+
+                if (result.IsClientError)
+                {
+                    return BadRequest(result.Message);
+                }
+
+                return StatusCode(500);
             }
             return BadRequest(OtherServices.ReturnAllModelErrors(ModelState));
         }

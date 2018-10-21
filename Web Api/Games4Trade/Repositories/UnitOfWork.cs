@@ -14,11 +14,13 @@ namespace Games4Trade.Repositories
         public IRepository<Photo> Photos { get; private set; }
         public IMessageRepository Messages { get; private set; }
         public IAdvertisementReposiotry Advertisements { get; private set; }
-        public Repository<Console>Consoles { get; private set; }
-        public Repository<Game> Games { get; private set; }
-        public Repository<Accessory> Accessories { get; private set; }
+        public IRepository<Console>Consoles { get; private set; }
+        public IRepository<Game> Games { get; private set; }
+        public IRepository<Accessory> Accessories { get; private set; }
         public IRepository<Region> Regions { get; private set; }
         public IRepository<State> States { get; private set; }
+        public IRepository<AdvertisementItem> AdvertisementItems { get; private set; }
+
 
         public UnitOfWork(ApplicationContext context)
         {
@@ -35,6 +37,7 @@ namespace Games4Trade.Repositories
             Games = new Repository<Game>(context);
             Consoles = new Repository<Console>(context);
             Accessories = new Repository<Accessory>(context);
+            AdvertisementItems = new Repository<AdvertisementItem>(context);
         }
 
         public async Task<int> CompleteASync()
