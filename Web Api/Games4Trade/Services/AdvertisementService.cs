@@ -9,6 +9,7 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.AspNetCore.Http;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
 using Console = Games4Trade.Models.Console;
 
 namespace Games4Trade.Services
@@ -275,9 +276,15 @@ namespace Games4Trade.Services
             };
         }
 
-        public async Task<OperationResult> GetAdvetisements()
+        public async Task<OperationResult> GetAdvetisements(AdQueryOptions queryOptions)
         {
-            throw new NotImplementedException();
+            var ads = await _unitOfWork.Advertisements.GetQueriedAds(queryOptions);
+            var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
+            return new OperationResult()
+            {
+                IsSuccessful = true,
+                Payload = result
+            };
         }
 
         public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, string message = null)

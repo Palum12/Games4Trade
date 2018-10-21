@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
+using Games4Trade.Models;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +41,27 @@ namespace Games4Trade.Controllers
                 return Ok(result.Payload);
             }
             return NotFound();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery]string search, [FromQuery]string sort, [FromQuery]int? page, [FromQuery]int? size,[FromQuery]bool? desc,
+            [FromQuery]string type, [FromQuery]int? genre, [FromQuery]int? state, [FromQuery]int? region, [FromQuery]int? system)
+        {
+            var query = new AdQueryOptions
+            {
+                Desc = desc,
+                Genre = genre,
+                Page = page.GetValueOrDefault() > 0 ? page.GetValueOrDefault() - 1 : 0,
+                PageSize = size,
+                System = system,
+                Region = region,
+                Search = search,
+                Sort = sort,
+                State = state,
+                Type = type
+            };
+            var result = await _advertisementService.GetAdvetisements(query);
+            return Ok(result.Payload);
         }
 
         [HttpGet]
