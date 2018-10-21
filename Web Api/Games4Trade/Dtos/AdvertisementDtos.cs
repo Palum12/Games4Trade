@@ -3,6 +3,18 @@ using System.Collections.Generic;
 
 namespace Games4Trade.Dtos
 {
+    public class AdvertisementWithoutItemDto
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Discriminator { get; set; }
+        public DateTime? DateCreated { get; set; }
+        public bool ExchangeActive { get; set; }
+        public decimal Price { get; set; }
+    }
+
     public class AdvertisementBasicDto
     {
         public int Id { get; set; }

@@ -24,7 +24,16 @@ namespace Games4Trade.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var result = await _advertisementService.GetAdvertisement(id);
+            int? userId;
+            if (User.Identity.IsAuthenticated)
+            {
+                userId = await GetCurrentUserId();
+            }
+            else
+            {
+                userId = null;
+            }
+            var result = await _advertisementService.GetAdvertisement(id, userId);
             if (result.IsSuccessful)
             {
                 return Ok(result.Payload);
@@ -160,7 +169,6 @@ namespace Games4Trade.Controllers
             return StatusCode(500);
         }
         
-
         private async Task<int> GetCurrentUserId()
         {
             var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);

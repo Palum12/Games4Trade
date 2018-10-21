@@ -11,7 +11,7 @@ namespace Games4Trade.Models
         public DateTime DateCreated { get; set; }
         public string Description { get; set; }
         public string Title { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
         public bool? ExchangeActive { get; set; }
         public decimal Price { get; set; }
         public int UserId { get; set; }

@@ -134,7 +134,7 @@ namespace Games4Trade.Services
                 };
             }
 
-            var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithItem(adId);
+            var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithItem(adId, userId);
 
             currentAd.Description = ad.Description;
             currentAd.ExchangeActive = ad.ExchangeActive;
@@ -207,9 +207,9 @@ namespace Games4Trade.Services
             return new OperationResult(){IsSuccessful = true};
         }
 
-        public async Task<OperationResult> GetAdvertisement(int id)
+        public async Task<OperationResult> GetAdvertisement(int id, int? userId = null)
         {
-            var ad =  await _unitOfWork.Advertisements.GetAdvertisementWithItem(id);
+            var ad =  await _unitOfWork.Advertisements.GetAdvertisementWithItem(id, userId);
             if (ad == null)
             {
                 return new OperationResult()
@@ -250,6 +250,22 @@ namespace Games4Trade.Services
                 default:
                     throw new DataException("Invalid discriminator !");
             }
+        }
+
+        public async Task<OperationResult> GetAdvetisementsForUser(int userId, int page, int pageSize)
+        {
+            var ads = await _unitOfWork.Advertisements.GetAdsForUser(userId, page, pageSize);
+            var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable< AdvertisementWithoutItemDto>>(ads);
+            return new OperationResult
+            {
+                IsSuccessful = true,
+                Payload = result
+            };
+        }
+
+        public async Task<OperationResult> GetAdvetisements()
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, string message = null)
