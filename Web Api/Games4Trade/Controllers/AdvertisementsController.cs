@@ -54,6 +54,19 @@ namespace Games4Trade.Controllers
             return NotFound();
         }
 
+        [HttpGet]
+        [Route("{adId}/photos/default")]
+        public async Task<IActionResult> GetPhotos(int adId)
+        {
+            var bytes = await _advertisementService.GetAdPhoto(adId);
+            if (bytes != null)
+            {
+                return File(bytes, "image/jpeg");
+            }
+
+            return NotFound();
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post(AdvertisementSaveDto ad)

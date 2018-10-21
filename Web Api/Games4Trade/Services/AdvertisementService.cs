@@ -340,15 +340,28 @@ namespace Games4Trade.Services
             return new OperationResult() {IsSuccessful = false, IsClientError = true};
         }
 
-        public async Task<byte[]> GetAdPhoto(int adId, int photoId)
+        public async Task<byte[]> GetAdPhoto(int adId, int? photoId = null)
         {
-            var photo = await _unitOfWork.Photos.GetASync(photoId);
-            if (photo?.AdvertisementId == null || photo.AdvertisementId != adId)
+            if (photoId.HasValue)
             {
-                return null;
+                var photo = await _unitOfWork.Photos.GetASync(photoId.Value);
+                if (photo?.AdvertisementId == null || photo.AdvertisementId != adId)
+                {
+                    return null;
+                }
+                var bytes = await File.ReadAllBytesAsync(photo.Path);
+                return bytes;
             }
-            var bytes = await File.ReadAllBytesAsync(photo.Path);
-            return bytes;
+            else
+            {
+                var photos =
+                    await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
+                if (photos.Any())
+                {
+                    return await File.ReadAllBytesAsync(photos.OrderBy(p => p.Id).ElementAt(0).Path);
+                }
+                return await File.ReadAllBytesAsync(@"photos/adPhoto.png");
+            }
         }
 
         public async Task<OperationResult> ChangeAdPhotos(int adId, int userId, IFormFileCollection photos)

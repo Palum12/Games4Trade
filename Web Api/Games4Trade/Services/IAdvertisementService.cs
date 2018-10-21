@@ -16,7 +16,7 @@ namespace Games4Trade.Services
         Task<OperationResult> GetAdvetisementsForUser(int userId, int page, bool selfService);
         Task<OperationResult> GetAdvetisements();
         Task<OperationResult> DeleteAdvertisement(int userId, int adId, string reason = null);
-        Task<Byte[]> GetAdPhoto(int adId, int photoId);
+        Task<Byte[]> GetAdPhoto(int adId, int? photoId = null);
         Task<OperationResult> ChangeAdPhotos(int adId, int userId, IFormFileCollection photos);
     }
 }
