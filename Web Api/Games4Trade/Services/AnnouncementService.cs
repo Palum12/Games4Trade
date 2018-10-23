@@ -21,17 +21,15 @@ namespace Games4Trade.Services
             _mapper = mapper;
         }
 
-        public async Task<IList<AnnouncementGetDto>> GetAnnouncements()
+        public async Task<AnnouncementGetDto> GetAnnouncement(int id, bool isAdmin)
         {
-            var result = await _unitOfWork.Announcements.GetAnnouncementsWithAuthors();
-            var response = _mapper.Map<IEnumerable<Announcement>, IEnumerable<AnnouncementGetDto>>(result)
-                .ToList();
-            return response;
+            var result = await _unitOfWork.Announcements.GetAnnouncementWithAuthor(id, isAdmin);
+            return _mapper.Map<Announcement, AnnouncementGetDto>(result);
         }
 
-        public async Task<IList<AnnouncementGetDto>> GetAnnouncementsPage(int page)
+        public async Task<IList<AnnouncementGetDto>> GetAnnouncementsPage(int page, bool isAdmin)
         {
-            var result = await _unitOfWork.Announcements.GetAnnouncementsPageWithAuthors(page, PageSize);
+            var result = await _unitOfWork.Announcements.GetAnnouncementsPageWithAuthors(page, PageSize, isAdmin);
             var response = _mapper.Map<IEnumerable<Announcement>, IEnumerable<AnnouncementGetDto>>(result);
             return response.ToList();
         }
@@ -55,12 +53,6 @@ namespace Games4Trade.Services
                 IsSuccessful = false,
                 IsClientError = true
             };
-        }
-
-        public async Task<AnnouncementGetDto> GetAnnouncement(int id)
-        {
-            var result = await _unitOfWork.Announcements.GetAnnouncementWithAuthor(id);
-            return _mapper.Map<Announcement, AnnouncementGetDto>(result);
         }
 
         public async Task<OperationResult> CreateAnnouncement(AnnouncementSaveDto announcement, string login)

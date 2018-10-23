@@ -11,20 +11,17 @@ namespace Games4Trade.Repositories
     {
         public AnnouncementRepository(ApplicationContext context) : base(context) {}
 
-        public async Task<Announcement> GetAnnouncementWithAuthor(int id)
+        public async Task<Announcement> GetAnnouncementWithAuthor(int id, bool isAdmin)
         {
-            return await Context.Announcements.Include(a => a.User).SingleOrDefaultAsync(a => a.Id == id);
+            return await Context.Announcements.Include(a => a.User)
+                .SingleOrDefaultAsync(a => a.Id == id && (isAdmin || a.IsActive));
         }
 
-        public async Task<IEnumerable<Announcement>> GetAnnouncementsWithAuthors()
-        {
-            return await Context.Announcements.Include(a => a.User).OrderByDescending(a => a.DateCreated).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Announcement>> GetAnnouncementsPageWithAuthors(int page, int pageSize)
+        public async Task<IEnumerable<Announcement>> GetAnnouncementsPageWithAuthors(int page, int pageSize, bool isAdmin)
         {
             var skip = page * pageSize;
             return await Context.Announcements
+                .Where(a => isAdmin || a.IsActive)
                 .OrderByDescending(a => a.DateCreated)
                 .Skip(skip).Take(pageSize)
                 .Include(a => a.User).ToListAsync();

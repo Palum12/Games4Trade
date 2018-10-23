@@ -6,8 +6,7 @@ namespace Games4Trade.Repositories
 {
     public interface IAnnouncementReposiotry : IRepository<Announcement>
     {
-        Task<Announcement> GetAnnouncementWithAuthor(int id);
-        Task<IEnumerable<Announcement>> GetAnnouncementsWithAuthors();
-        Task<IEnumerable<Announcement>> GetAnnouncementsPageWithAuthors(int page, int pageSize);
+        Task<Announcement> GetAnnouncementWithAuthor(int id, bool isAdmin);
+        Task<IEnumerable<Announcement>> GetAnnouncementsPageWithAuthors(int page, int pageSize, bool isAdmin);
     }
 }

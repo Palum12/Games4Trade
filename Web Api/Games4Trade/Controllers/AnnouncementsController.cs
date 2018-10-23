@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Services;
@@ -18,25 +19,34 @@ namespace Games4Trade.Controllers
             _announcementService = announcementService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var announcements = await _announcementService.GetAnnouncements();
-            return Ok(announcements);
-        }
-
         [HttpGet("page/{page}")]
         public async Task<IActionResult> GetPage(int page)
         {
             page = page > 0 ? page - 1 : 0;
-            var announcements = await _announcementService.GetAnnouncementsPage(page);
+            IList<AnnouncementGetDto> announcements;
+            if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                announcements = await _announcementService.GetAnnouncementsPage(page, true);
+            }
+            else
+            {
+                announcements = await _announcementService.GetAnnouncementsPage(page, false);
+            }
             return Ok(announcements);
         }
 
         [HttpGet("{id}", Name = "Get")]
         public async Task<IActionResult> Get(int id)
         {
-            var announcement = await _announcementService.GetAnnouncement(id);
+            AnnouncementGetDto announcement;
+            if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                announcement = await _announcementService.GetAnnouncement(id, true);
+            }
+            else
+            {
+                announcement = await _announcementService.GetAnnouncement(id, false);
+            }
             if (announcement != null)
             {
                 return Ok(announcement);
