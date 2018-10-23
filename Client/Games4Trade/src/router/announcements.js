@@ -1,5 +1,5 @@
-import ShowAnnouncement from '../../views/announcements/ShowAnnouncement'
-import CreateOrUpdateAnnouncement from '../../views/announcements/CreateOrUpdateAnnouncement'
+import ShowAnnouncement from '../views/announcements/ShowAnnouncement'
+import CreateOrUpdateAnnouncement from '../views/announcements/CreateOrUpdateAnnouncement'
 
 export default {
   ADDANNOUNCEMENT: {

@@ -2,11 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home.vue'
 import Admin from '../views/AdminPanel'
-import Navbar from './navbar/navbar'
-import Annoucements from './announcements/announcements'
-import Advertisements from './advertisements/advetisements'
-import Users from './users/users'
-import Messages from './users/messages'
+import Navbar from './navbar'
+import Annoucements from './announcements'
+import Advertisements from './advetisements'
+import Users from './users'
+import Messages from './messages'
 Vue.use(Router)
 
 export default new Router({

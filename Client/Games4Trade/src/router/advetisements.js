@@ -1,4 +1,4 @@
-import AddAdvertisement from '../../views/advertisements/AddAdvertisement'
+import AddAdvertisement from '../views/advertisements/AddAdvertisement'
 export default {
   ADDADVERTISEMENT: {
     path: '/advertisements/add',

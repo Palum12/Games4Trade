@@ -1,5 +1,5 @@
-import Messages from '../../views/Messages'
-import Conversation from '../../components/messages/Conversation'
+import Messages from '../views/Messages'
+import Conversation from '../components/messages/Conversation'
 
 export default {
   MESSAGES: {
