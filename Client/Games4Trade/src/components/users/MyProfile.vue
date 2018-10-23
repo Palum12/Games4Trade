@@ -33,11 +33,13 @@
                                 <button
                                         v-if="!isEditingEmail"
                                         class="btn btn-primary btn-block mt-1"
+                                        type="button"
                                         @click="onEditingEmail">Zmień adres email
                                 </button>
                                 <button
                                         v-if="isEditingEmail"
                                         class="btn btn-primary mt-1"
+                                        type="button"
                                         @click="offEditingEmail">Powrót
                                 </button>
                                 <button
@@ -69,11 +71,13 @@
                                 <button
                                         v-if="!isEditingPhone"
                                         class="btn btn-primary btn-block mt-1"
+                                        type="button"
                                         @click="onEditingPhone">Zmień numer telefonu
                                 </button>
                                 <button
                                         v-if="isEditingPhone"
                                         class="btn btn-primary mt-1"
+                                        type="button"
                                         @click="offEditingPhone">Powrót
                                 </button>
                                 <button
