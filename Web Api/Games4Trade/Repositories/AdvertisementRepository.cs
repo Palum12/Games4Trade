@@ -36,9 +36,9 @@ namespace Games4Trade.Repositories
         {
             var query = Context.Advertisements.AsQueryable();
             query = query.Where(a => a.IsActive);
-            if (options.System.HasValue)
+            if (options.Systems.Any())
             {
-                query = query.Where(a => a.Item.SystemId == options.System.Value);
+                query = query.Where(a => options.Systems.Contains(a.Item.SystemId));
             }
 
             if (options.State.HasValue)
@@ -75,9 +75,9 @@ namespace Games4Trade.Repositories
                     case "game":
                     {
                         query = query.Where(a => a.Item is Game);
-                        if (options.Genre.HasValue)
+                        if (options.Genres.Any())
                         {
-                            query = query.Where(a => ((Game) a.Item).GenreId == options.Genre.Value);
+                            query = query.Where(a => options.Genres.Contains(((Game)a.Item).GenreId));
                         }
 
                         if (options.Region.HasValue)

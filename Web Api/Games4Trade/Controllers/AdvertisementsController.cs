@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
@@ -44,15 +45,15 @@ namespace Games4Trade.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery]string search, [FromQuery]string sort, [FromQuery]int? page, [FromQuery]int? size,[FromQuery]bool? desc,
-            [FromQuery]string type, [FromQuery]int? genre, [FromQuery]int? state, [FromQuery]int? region, [FromQuery]int? system)
+            [FromQuery]string type, [FromQuery(Name="genres")]int[] genres, [FromQuery]int? state, [FromQuery]int? region, [FromQuery]int[] systems)
         {
             var query = new AdQueryOptions
             {
                 Desc = desc,
-                Genre = genre,
+                Genres = genres,
                 Page = page.GetValueOrDefault() > 0 ? page.GetValueOrDefault() - 1 : 0,
                 PageSize = size,
-                System = system,
+                Systems = systems,
                 Region = region,
                 Search = search,
                 Sort = sort,

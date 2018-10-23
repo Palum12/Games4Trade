@@ -1,4 +1,6 @@
-﻿namespace Games4Trade.Models
+﻿using System.Collections.Generic;
+
+namespace Games4Trade.Models
 {
     public class AdQueryOptions
     {
@@ -8,9 +10,9 @@
         public int? PageSize { get; set; }
         public bool? Desc { get; set; }
         public string Type { get; set; }
-        public int? Genre { get; set; }
+        public int[] Genres { get; set; }
         public int? State { get; set; }
         public int? Region { get; set; }
-        public int? System { get; set; }
+        public int[] Systems { get; set; }
     }
 }
