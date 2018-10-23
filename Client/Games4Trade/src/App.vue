@@ -22,6 +22,9 @@ export default {
   created () {
     this.$store.dispatch('tryAutoLogin')
     this.$store.dispatch('getGenres')
+    this.$store.dispatch('getSystems')
+    this.$store.dispatch('getRegions')
+    this.$store.dispatch('getStates')
   }
 }
 </script>

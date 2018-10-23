@@ -4,7 +4,7 @@
                 <div class="list-group-item list-group-item-action mb-2">
                     <div class="row">
                         <div class="col-1">
-                            <router-link :to="'/user/'+user.id" tag="div" class="userLink">
+                            <router-link :to="'/users/'+user.id" tag="div" class="userLink">
                             <div class="row">
                                 <img :src="`http://localhost:5000/api/users/${user.id}/photo`">
                             </div>

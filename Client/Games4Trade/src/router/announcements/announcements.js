@@ -3,17 +3,17 @@ import CreateOrUpdateAnnouncement from '../../views/announcements/CreateOrUpdate
 
 export default {
   ADDANNOUNCEMENT: {
-    path: '/announcement/add',
+    path: '/announcements/add',
     name: 'AddAnnouncement',
     component: CreateOrUpdateAnnouncement
   },
   EDITANNOUNCEMENT: {
-    path: '/announcement/:id/edit',
+    path: '/announcements/:id/edit',
     name: 'EditAnnouncement',
     component: CreateOrUpdateAnnouncement
   },
   ANNOUNCEMENT: {
-    path: '/announcement/:id',
+    path: '/announcements/:id',
     name: 'announcement',
     component: ShowAnnouncement
   }

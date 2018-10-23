@@ -8,7 +8,7 @@
             <div class="collapse navbar-collapse " id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto" >
                     <li class="nav-item" v-if="isAuthenticated">
-                        <router-link to="/addAd" class="nav-link"><a>Dodaj ogłoszenie</a></router-link>
+                        <router-link to="/advertisements/add" class="nav-link"><a>Dodaj ogłoszenie</a></router-link>
                     </li>
                     <li class="nav-item" v-if="isAuthenticated">
                         <router-link to="/messages" class="nav-link"><a>Wiadomości</a></router-link>

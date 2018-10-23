@@ -14,7 +14,7 @@ export default {
     component: UserPanel
   },
   USER_PROFILE: {
-    path: '/user/:id',
+    path: '/users/:id',
     name: 'UserProfile',
     component: UserProfile
   }
