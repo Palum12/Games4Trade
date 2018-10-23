@@ -150,6 +150,29 @@ export default {
       accessoryModel: null
     }
   },
+  watch: {
+    discriminator (newVal) {
+      switch (newVal) {
+        case 'Game':
+          this.accessoryManufacturer = null
+          this.accessoryModel = null
+          break
+        case 'Console':
+          this.accessoryManufacturer = null
+          this.accessoryModel = null
+          this.genreId = null
+          this.developer = null
+          break
+        case 'Accessory':
+          this.genreId = null
+          this.developer = null
+          this.regionId = null
+          break
+        default:
+          break
+      }
+    }
+  },
   methods: {
   },
   computed: {
