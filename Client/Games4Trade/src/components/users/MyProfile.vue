@@ -46,6 +46,7 @@
                                         v-if="isEditingEmail"
                                         class="btn btn-warning mt-1 ml-3"
                                         :disabled="$v.$invalid"
+                                        type="button"
                                         @click="saveChanges('email')">Zapisz zmiany
                                 </button>
                             </div>
@@ -84,6 +85,7 @@
                                         v-if="isEditingPhone"
                                         class="btn btn-warning mt-1 ml-3"
                                         :disabled="$v.$invalid"
+                                        type="button"
                                         @click="saveChanges('phone')">Zapisz zmiany
                                 </button>
                             </div>

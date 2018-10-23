@@ -30,29 +30,6 @@
                 </div>
                 <p v-if="!$v.login.unique">Ten login jest już zajęty!.</p>
                 <p v-if="!$v.login.required">To pole nie może być puste.</p>
-                <div class="form-group">
-                    <label for="password">Hasło</label>
-                    <input
-                            type="password"
-                            id="password"
-                            v-bind:class="[$v.password.$error ? invalidClass : '',
-                                !$v.password.$invalid ? validClass : '', formClass]"
-                            @blur="$v.password.$touch()"
-                            v-model="password">
-                </div>
-                <p v-if="!$v.password.minLen">Hasło musi mieć nie mniej niż {{ $v.password.$params.minLen.min }} znaków!</p>
-                <p v-if="!$v.password.required">To pole nie może być puste.</p>
-                <div class="form-group">
-                    <label for="confirmPassword">Powtórz hasło</label>
-                    <input
-                            type="password"
-                            id="confirmPassword"
-                            v-bind:class="[$v.confirmPassword.$error ? invalidClass : '',
-                                !$v.confirmPassword.$invalid && $v.confirmPassword.$dirty ? validClass : '', formClass]"
-                            @blur="$v.confirmPassword.$touch()"
-                            v-model="confirmPassword">
-                </div>
-                <p v-if="!$v.confirmPassword.sameAs">Hasła muszą sie zgadzać !</p>
                 <div class="submit">
                     <button
                         type="submit"
@@ -67,15 +44,13 @@
 </template>
 
 <script>
-import { required, email, sameAs, minLength } from 'vuelidate/lib/validators'
+import { required, email } from 'vuelidate/lib/validators'
 import axios from 'axios'
 export default {
   name: 'signup',
   data () {
     return {
       login: '',
-      password: '',
-      confirmPassword: '',
       email: '',
       isEmailTaken: false,
       invalidClass: 'is-invalid',
@@ -88,15 +63,14 @@ export default {
       this.$store.dispatch('setSpinnerLoading')
       this.$store.dispatch('signUp', {
         email: this.email,
-        login: this.login,
-        password: this.password
+        login: this.login
       })
         .then(() => {
           this.$store.dispatch('unsetSpinnerLoading')
           this.$swal({
             title: 'Gratulacje !',
             text: 'Super, udało Ci się zakończyć proces tworzenia konta,' +
-              'teraz tylko się na nie zaloguj i korzystaj z naszego serwisu.',
+              'na podany adres e-mail została wiadmość z linkiem do resetowania hasła.',
             type: 'success'
           })
             .then(() => {
@@ -132,13 +106,6 @@ export default {
     email: {
       required,
       email
-    },
-    password: {
-      required,
-      minLen: minLength(6)
-    },
-    confirmPassword: {
-      sameAs: sameAs('password')
     }
   }
 }
