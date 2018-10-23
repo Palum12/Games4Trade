@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="row">
-                <p :class="{newMessage: !message.isDelivered && message.otherUserId !== userId}">
+                <p :class="{newMessage: !message.isDelivered && message.otherUserId === userId}">
                     {{shortenString(message.content)}}</p>
             </div>
         </div>
