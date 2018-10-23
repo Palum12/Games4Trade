@@ -104,6 +104,8 @@ namespace Games4Trade.Services
                 return result;
             }
 
+            user.RecoveryAddress = GetSalt().Substring(0, 32);
+
             var text = string.Format(
                 @"Witaj. </br> Wysłana została prośba o zresetowanie hasła. Oto twój <a href=""http://localhost:8080/password/change?recoveryString={0}""> link</a>",
                 user.RecoveryAddress);

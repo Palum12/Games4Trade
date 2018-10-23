@@ -429,7 +429,7 @@ namespace Games4Trade.Services
             var mappedUser = _mapper.Map<UserRegisterDto, User>(newUser);
             mappedUser.Salt = _loginService.GetSalt();
             mappedUser.Password = _loginService.ComputeHash(
-                mappedUser.Salt, mappedUser.Password);
+                mappedUser.Salt, Guid.NewGuid().ToString("N").ToUpper());
 
             await _unitOfWork.Users.AddASync(mappedUser);
 
@@ -438,11 +438,20 @@ namespace Games4Trade.Services
             if (repoResult > 0)
             {
                 result.IsSuccessful = true;
+                var mailPassword = await _loginService.RecoverPassword(mappedUser.Email);
+                if (mailPassword.IsSuccessful)
+                {
+                    result.IsSuccessful = true;
+                }
+                else
+                {
+                    result.IsSuccessful = false;
+                    result.Message = "Ups! Coś poszło nie tak podczas wysyłania wiadomości z hasłem!";
+                }
             }
             else
             {
-                result.IsSuccessful = false;
-                result.Message = "Something went wrong with db connection!";
+                return OtherServices.GetIncorrectDatabaseConnectionResult();
             }
             return result;
         }

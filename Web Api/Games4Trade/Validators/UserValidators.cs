@@ -9,7 +9,6 @@ namespace Games4Trade.Validators
         {
             RuleFor(u => u.Email).EmailAddress().MinimumLength(5).MaximumLength(128).NotEmpty();
             RuleFor(u => u.Login).MinimumLength(4).MaximumLength(32).NotEmpty();
-            RuleFor(u => u.Password).MinimumLength(4).MaximumLength(64).NotEmpty();
         }       
     }
 
