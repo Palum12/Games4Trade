@@ -19,6 +19,13 @@ export default {
         type: 'success'
       })
     },
+    customSuccessPopUp (self, message) {
+      self.$swal({
+        title: 'Akcja zakończona sukcesem !',
+        text: message,
+        type: 'success'
+      })
+    },
     confirmationDialog (self) {
       return new Promise((resolve, reject) => {
         self.$swal({

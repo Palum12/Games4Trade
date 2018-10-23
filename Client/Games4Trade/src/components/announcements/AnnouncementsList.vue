@@ -14,11 +14,11 @@
                     <button
                             v-if="isAdminLook && !announcement.isActive"
                             class="btn btn-primary mt-1 mb-2 mr-2"
-                            @click="share(announcement.id)">Udostępnij</button>
+                            @click="changeStatus(announcement)">Udostępnij</button>
                     <button
                             v-if="isAdminLook && announcement.isActive"
                             class="btn btn-warning mt-1 mb-2 mr-2"
-                            @click="archive(announcement.id)">Archiwizuj</button>
+                            @click="changeStatus(announcement)">Archiwizuj</button>
                     <button v-if="isAdminLook" class="btn btn-info mt-1 mb-2" @click="modify(announcement.id)">Modyfikuj</button>
                     <button v-if="isAdminLook" class="btn btn-danger mt-1 mb-2 mx-2" @click="remove(announcement.id)">X</button>
                 </router-link>
@@ -48,11 +48,21 @@ export default {
     modify (id) {
       this.$router.push({name: 'EditAnnouncement', params: {id: id}})
     },
-    share (id) {
-      console.log(id)
-    },
-    archive (id) {
-      console.log(id)
+    changeStatus (announcement) {
+      let vm = this
+      mixins.methods.confirmationDialog(vm)
+        .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
+          axios.patch(`announcements/${announcement.id}`, {isActive: !announcement.isActive})
+            .then(() => {
+              announcement.isActive = !announcement.isActive
+              vm.$store.dispatch('unsetSpinnerLoading')
+            })
+            .catch(() => {
+              mixins.methods.errorPopUp(vm)
+              vm.$store.dispatch('unsetSpinnerLoading')
+            })
+        })
     },
     remove (id) {
       this.$store.dispatch('setSpinnerLoading')

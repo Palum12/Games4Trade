@@ -21,13 +21,19 @@
                         </textarea>
                     </div>
                     <div v-if="isEditing" class="form-group d-flex justify-content-end">
-                        <div>
-                            <button type="button" class="btn btn-info ml-1" @click="goBack">Powrót</button>
+                        <div v-if="!announcement.isActive">
+                            <button type="button" class="btn btn-info btn-primary btn-block" @click="changeStatus">Udostępnij</button>
                         </div>
-                        <div class="mx-3">
+                        <div v-if="announcement.isActive">
+                            <button type="button" class="btn btn-info btn-warning btn-block" @click="changeStatus">Archiwizuj</button>
+                        </div>
+                        <div class="ml-2">
+                            <button type="button" class="btn btn-info btn-block" @click="goBack">Powrót</button>
+                        </div>
+                        <div class="ml-2">
                             <button type="button" class="btn btn-info btn-block" @click="modyfi">Modyfikuj</button>
                         </div>
-                        <div>
+                        <div class="ml-2">
                             <button type="button" class="btn btn-danger btn-block" @click="remove">Usuń</button>
                         </div>
                     </div>
@@ -49,10 +55,12 @@ export default {
     return {
       isEditing: false,
       announcement: {
+        id: 0,
         title: '',
         content: '',
         author: '',
-        dateCreated: ''
+        dateCreated: '',
+        isActive: ''
       }
     }
   },
@@ -61,11 +69,29 @@ export default {
       let vm = this
       axios.post('announcements', {title: this.announcement.title, content: this.announcement.content})
         .then(() => {
-          mixins.methods.simpleSuccessPopUp(vm)
+          mixins.methods.customSuccessPopUp(vm, 'Ogłoszenie zostało dodane, ' +
+            'ale jeżeli chcesz, żeby pokazało się ono innym użytkownikom ' +
+            'to kliknij przycisk "Udostępnij" w liście ogłoszeń')
           vm.$router.go(-1)
         })
         .catch(() => {
           mixins.methods.errorPopUp(vm)
+        })
+    },
+    changeStatus () {
+      let vm = this
+      mixins.methods.confirmationDialog(vm)
+        .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
+          axios.patch(`announcements/${vm.announcement.id}`, {isActive: !vm.announcement.isActive})
+            .then(() => {
+              vm.announcement.isActive = !vm.announcement.isActive
+              vm.$store.dispatch('unsetSpinnerLoading')
+            })
+            .catch(() => {
+              mixins.methods.errorPopUp(vm)
+              vm.$store.dispatch('unsetSpinnerLoading')
+            })
         })
     },
     modyfi () {
