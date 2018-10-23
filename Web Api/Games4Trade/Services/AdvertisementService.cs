@@ -35,7 +35,6 @@ namespace Games4Trade.Services
                 {
                     UserId = userId,
                     DateCreated = DateTime.Now,
-                    Description = ad.Description,
                     Title = ad.Title,
                     ExchangeActive = ad.ExchangeActive,
                     IsActive = true,
@@ -138,7 +137,6 @@ namespace Games4Trade.Services
 
             var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithItem(adId, userId);
 
-            currentAd.Description = ad.Description;
             currentAd.ExchangeActive = ad.ExchangeActive;
             currentAd.Price = ad.Price;
             currentAd.Title = ad.Title;
@@ -154,6 +152,7 @@ namespace Games4Trade.Services
                     game.DateReleased = ad.DateReleased;
                     game.StateId = ad.StateId;
                     game.SystemId = ad.SystemId;
+                    game.Description = ad.Description;
                 }
                 else if (currentAd.Item.GetType() == typeof(Accessory))
                 {
@@ -163,6 +162,7 @@ namespace Games4Trade.Services
                     accessory.DateReleased = ad.DateReleased;
                     accessory.StateId = ad.StateId;
                     accessory.SystemId = ad.SystemId;
+                    accessory.Description = ad.Description;
                 }
                 else if (currentAd.Item.GetType() == typeof(Console))
                 {
@@ -170,6 +170,7 @@ namespace Games4Trade.Services
                     console.DateReleased = ad.DateReleased;
                     console.StateId = ad.StateId;
                     console.SystemId = ad.SystemId;
+                    console.Description = ad.Description;
                 }
                 
             }
@@ -525,7 +526,7 @@ namespace Games4Trade.Services
                 UserId = ad.UserId,
                 Discriminator = ad.Item.GetType().Name,
                 DateCreated = ad.DateCreated,
-                Description = ad.Description,               
+                Description = ad.Item.Description,               
                 ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
                 Price = ad.Price,
                 Title = ad.Title,
@@ -563,7 +564,7 @@ namespace Games4Trade.Services
                 UserId = ad.UserId,
                 Discriminator = ad.Item.GetType().Name,
                 DateCreated = ad.DateCreated,
-                Description = ad.Description,
+                Description = ad.Item.Description,
                 ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
                 Price = ad.Price,
                 Title = ad.Title,
@@ -599,7 +600,7 @@ namespace Games4Trade.Services
                 UserId = ad.UserId,
                 Discriminator = ad.Item.GetType().Name,
                 DateCreated = ad.DateCreated,
-                Description = ad.Description,
+                Description = ad.Item.Description,
                 ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
                 Price = ad.Price,
                 Title = ad.Title,

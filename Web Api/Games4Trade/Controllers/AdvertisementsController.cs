@@ -136,7 +136,7 @@ namespace Games4Trade.Controllers
             return BadRequest(OtherServices.ReturnAllModelErrors(ModelState));
         }
 
-        [HttpPatch]
+        [HttpDelete]
         [Route("{id}/archived")]
         [Authorize]
         public async Task<IActionResult> Archive(int id)

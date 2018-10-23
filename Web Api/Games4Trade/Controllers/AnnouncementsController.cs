@@ -18,7 +18,6 @@ namespace Games4Trade.Controllers
             _announcementService = announcementService;
         }
 
-        // GET: api/Announcements
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -34,7 +33,6 @@ namespace Games4Trade.Controllers
             return Ok(announcements);
         }
 
-        // GET: api/Announcements/5
         [HttpGet("{id}", Name = "Get")]
         public async Task<IActionResult> Get(int id)
         {
@@ -45,11 +43,10 @@ namespace Games4Trade.Controllers
             }
             else
             {
-                return NotFound();
+                return BadRequest("Resource doesnt exists");
             }
         }
 
-        // POST: api/Announcements
         [HttpPost]
         [Authorize(Roles="Admin")]
         public async Task<IActionResult> Post([FromBody] AnnouncementSaveDto value)
@@ -73,7 +70,24 @@ namespace Games4Trade.Controllers
             }
         }
 
-        // PUT: api/Announcements/5
+        [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeArchive(int id, [FromBody] AnnouncementArchiveDto value)
+        {
+            var result = await _announcementService.ChangeStatus(id, value);
+            if (result.IsSuccessful)
+            {
+                return Ok();
+            }
+
+            if (result.IsClientError)
+            {
+                return BadRequest("Resource doesnt exists!");
+            }
+
+            return StatusCode(500, result.Message);
+        }
+
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Put(int id, [FromBody] AnnouncementSaveDto value)
@@ -92,7 +106,7 @@ namespace Games4Trade.Controllers
                     {
                         return Ok();
                     }
-                    return NotFound();
+                    return BadRequest("Resource doesnt exists!");
                 }
                 else
                 {
@@ -105,7 +119,6 @@ namespace Games4Trade.Controllers
             }
         }
 
-        // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -119,7 +132,7 @@ namespace Games4Trade.Controllers
             {
                 if (response.IsClientError)
                 {
-                    return NotFound();
+                    return BadRequest("Resource doesnt exists!");
                 }
                 else
                 {

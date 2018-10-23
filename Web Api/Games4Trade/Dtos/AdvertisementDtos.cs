@@ -7,8 +7,7 @@ namespace Games4Trade.Dtos
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string Title { get; set; }      
         public DateTime? DateCreated { get; set; }
         public bool ExchangeActive { get; set; }
         public decimal Price { get; set; }
@@ -20,12 +19,12 @@ namespace Games4Trade.Dtos
         public int UserId { get; set; }
 
         public string Title { get; set; }
-        public string Description { get; set; }
         public string Discriminator { get; set; }
         public DateTime? DateCreated { get; set; }
         public bool ExchangeActive { get; set; }
         public decimal Price { get; set; }
 
+        public string Description { get; set; }
         public DateTime? DateReleased { get; set; }
         public StateDto State { get; set; }                
         public SystemDto System { get; set; }
@@ -53,12 +52,12 @@ namespace Games4Trade.Dtos
     public class AdvertisementSaveDto
     {
         public string Title { get; set; }
-        public string Description { get; set; }
         public string Discriminator { get; set; }
         public bool ExchangeActive {get;set;}
         public decimal Price { get; set; }
         public int StateId { get; set; }
         public int SystemId { get; set; }
+        public string Description { get; set; }
         public DateTime? DateReleased { get; set; }
         // game & console
         public int RegionId { get; set; }

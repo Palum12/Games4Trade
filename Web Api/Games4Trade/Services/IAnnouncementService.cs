@@ -10,7 +10,7 @@ namespace Games4Trade.Services
         Task<IList<AnnouncementGetDto>> GetAnnouncements();
         Task<AnnouncementGetDto> GetAnnouncement(int id);
         Task<IList<AnnouncementGetDto>> GetAnnouncementsPage(int page);
-
+        Task<OperationResult> ChangeStatus(int id, AnnouncementArchiveDto value);
         Task<OperationResult> CreateAnnouncement(AnnouncementSaveDto announcement, string login);
         Task<OperationResult> EditAnnouncement(int id, AnnouncementSaveDto announcement);
         Task<OperationResult> DeleteAnnouncement(int id);

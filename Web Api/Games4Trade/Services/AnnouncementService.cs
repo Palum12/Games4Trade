@@ -36,6 +36,27 @@ namespace Games4Trade.Services
             return response.ToList();
         }
 
+        public async Task<OperationResult> ChangeStatus(int id, AnnouncementArchiveDto value)
+        {
+            var announcement = await _unitOfWork.Announcements.GetASync(id);
+            if (announcement != null)
+            {
+                announcement.IsActive = value.IsActive;
+                var result = await _unitOfWork.CompleteASync();
+
+                return new OperationResult()
+                {
+                    IsSuccessful = true
+                };
+
+            }
+            return new OperationResult()
+            {
+                IsSuccessful = false,
+                IsClientError = true
+            };
+        }
+
         public async Task<AnnouncementGetDto> GetAnnouncement(int id)
         {
             var result = await _unitOfWork.Announcements.GetAnnouncementWithAuthor(id);

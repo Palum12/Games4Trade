@@ -175,8 +175,7 @@ namespace Games4Trade.Data
             modelBuilder.Entity<Advertisement>(entity =>
             {
                 entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
-                entity.HasKey(a => a.Id);
-                entity.Property(a => a.Description).HasColumnType("text").IsRequired();
+                entity.HasKey(a => a.Id);               
                 entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
                 entity.Property(a => a.IsActive).IsRequired().HasDefaultValue(true);
                 entity.Property(a => a.ExchangeActive).IsRequired().HasDefaultValue(true);
@@ -193,6 +192,7 @@ namespace Games4Trade.Data
                 entity.Property(a => a.AdvertisementId).IsRequired();
                 entity.Property(a => a.StateId).IsRequired();
                 entity.Property(a => a.SystemId).IsRequired();
+                entity.Property(a => a.Description).HasColumnType("text").IsRequired();
 
                 entity.HasOne(a => a.State).WithMany(s => s.AdvertisementItems).HasForeignKey(a => a.StateId);
                 entity.HasOne(a => a.System).WithMany(s => s.AdvertisementItems).HasForeignKey(a => a.SystemId);
