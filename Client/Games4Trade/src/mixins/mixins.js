@@ -23,7 +23,6 @@ export default {
       return new Promise((resolve, reject) => {
         self.$swal({
           title: 'Czy jesteś pewny ?',
-          text: 'Uwaga tej akcji nie można cofnąć !',
           type: 'warning',
           showCancelButton: true
         }).then((result) => {

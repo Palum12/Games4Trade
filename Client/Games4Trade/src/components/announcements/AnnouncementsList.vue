@@ -11,6 +11,14 @@
                         <p class="mb-1">{{shortenString(announcement.content)}}</p>
                         <small>{{announcement.author}}</small>
                     </a>
+                    <button
+                            v-if="isAdminLook && !announcement.isActive"
+                            class="btn btn-primary mt-1 mb-2 mr-2"
+                            @click="share(announcement.id)">Udostępnij</button>
+                    <button
+                            v-if="isAdminLook && announcement.isActive"
+                            class="btn btn-warning mt-1 mb-2 mr-2"
+                            @click="archive(announcement.id)">Archiwizuj</button>
                     <button v-if="isAdminLook" class="btn btn-info mt-1 mb-2" @click="modify(announcement.id)">Modyfikuj</button>
                     <button v-if="isAdminLook" class="btn btn-danger mt-1 mb-2 mx-2" @click="remove(announcement.id)">X</button>
                 </router-link>
@@ -39,6 +47,12 @@ export default {
     },
     modify (id) {
       this.$router.push({name: 'EditAnnouncement', params: {id: id}})
+    },
+    share (id) {
+      console.log(id)
+    },
+    archive (id) {
+      console.log(id)
     },
     remove (id) {
       this.$store.dispatch('setSpinnerLoading')
