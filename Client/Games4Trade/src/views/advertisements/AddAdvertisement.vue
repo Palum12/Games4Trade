@@ -101,7 +101,11 @@
                         <div v-if="advertisement.discriminator === 'Game'" class="form-group col-7">
                             <div class="input">
                                 <label for="genre">Gatunek</label>
-                                <select class="form-control" id="genre" v-model="advertisement.genreId">
+                                <select
+                                        class="form-control"
+                                        id="genre"
+                                        @blur="$v.advertisement.genreId.$touch()"
+                                        v-model="advertisement.genreId">
                                     <option
                                             v-for="genre in genres"
                                             :key="genre.id"
@@ -116,6 +120,7 @@
                                 id="description"
                                 class="form-control"
                                 rows="6"
+                                @blur="$v.advertisement.description.$touch()"
                                 v-model="advertisement.description">
                         </textarea>
                     </div>
@@ -134,10 +139,15 @@
                         <div v-else>
                             <button type="button" class="btn btn-danger" @click="selectedFiles = []">Usuń zdjęcia</button>
                         </div>
-                        <button type="button" class="btn btn-primary" @click="saveAdd">Dodaj ogłoszenie!</button>
+                        <button
+                                type="button"
+                                class="btn btn-primary"
+                                :disabled="$v.$invalid"
+                                @click="saveAdd">Dodaj ogłoszenie!</button>
                     </div>
                 </div>
             </form>
+            {{$v}}
         </div>
     </div>
 </template>
@@ -274,6 +284,32 @@ export default {
       price: {
         required,
         minVal: minValue(0)
+      },
+      stateId: {
+        required
+      },
+      systemId: {
+        required
+      },
+      genreId: {
+        required: requiredIf((ad) => {
+          return ad.Discriminator === 'Game'
+        })
+      },
+      regionId: {
+        required: requiredUnless((ad) => {
+          return ad.Discriminator === 'Accessory'
+        })
+      },
+      accessoryManufacturer: {
+        required: requiredIf((ad) => {
+          return ad.Discriminator === 'Accessory'
+        })
+      },
+      accessoryModel: {
+        required: requiredIf((ad) => {
+          return ad.Discriminator === 'Accessory'
+        })
       }
     }
   },
