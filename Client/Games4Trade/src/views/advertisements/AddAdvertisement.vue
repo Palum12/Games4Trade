@@ -146,6 +146,7 @@
 import {mapGetters} from 'vuex'
 import mixins from '../../mixins/mixins'
 import axios from 'axios'
+import { required, minValue, requiredIf, requiredUnless } from 'vuelidate/lib/validators'
 export default {
   name: 'AddAdvertisement',
   data () {
@@ -260,6 +261,20 @@ export default {
     ...mapGetters(['regions', 'systems', 'genres', 'states']),
     discriminator () {
       return this.advertisement.discriminator
+    }
+  },
+  validations: {
+    advertisement: {
+      title: {
+        required
+      },
+      description: {
+        required
+      },
+      price: {
+        required,
+        minVal: minValue(0)
+      }
     }
   },
   mounted () {

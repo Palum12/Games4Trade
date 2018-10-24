@@ -60,10 +60,10 @@ namespace Games4Trade.Dtos
         public string Description { get; set; }
         public DateTime? DateReleased { get; set; }
         // game & console
-        public int RegionId { get; set; }
+        public int? RegionId { get; set; }
         //game part       
         public string Developer { get; set; }
-        public int GenreId { get; set; }
+        public int? GenreId { get; set; }
         //accessory part
         public string AccessoryManufacturer { get; set; }
         public string AccessoryModel { get; set; }

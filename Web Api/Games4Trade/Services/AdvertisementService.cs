@@ -74,7 +74,8 @@ namespace Games4Trade.Services
                 {
                     return new OperationResult
                     {
-                        IsSuccessful = true
+                        IsSuccessful = true,
+                        Payload = advertisement.Id
                     };
                 }
                 return new OperationResult()
@@ -147,8 +148,8 @@ namespace Games4Trade.Services
                 {
                     var game = currentAd.Item as Game;
                     game.Developer = ad.Developer;
-                    game.GameRegionId = ad.RegionId;
-                    game.GenreId = ad.GenreId;
+                    game.GameRegionId = ad.RegionId.Value;
+                    game.GenreId = ad.GenreId.Value;
                     game.DateReleased = ad.DateReleased;
                     game.StateId = ad.StateId;
                     game.SystemId = ad.SystemId;
@@ -468,9 +469,9 @@ namespace Games4Trade.Services
             switch (ad.Discriminator)
             {
                 case "Game":
-                    region = await _unitOfWork.Regions.GetASync(ad.RegionId);
+                    region = await _unitOfWork.Regions.GetASync(ad.RegionId.GetValueOrDefault());
                     state = await _unitOfWork.States.GetASync(ad.StateId);
-                    var genre = await _unitOfWork.Genres.GetASync(ad.GenreId);
+                    var genre = await _unitOfWork.Genres.GetASync(ad.GenreId.GetValueOrDefault());
                     system = await _unitOfWork.Systems.GetASync(ad.SystemId);
                     objects = new List<object> { region, system, state, genre };
 
@@ -482,7 +483,7 @@ namespace Games4Trade.Services
 
                     break;
                 case "Console":
-                    region = await _unitOfWork.Regions.GetASync(ad.RegionId);
+                    region = await _unitOfWork.Regions.GetASync(ad.RegionId.GetValueOrDefault());
                     state = await _unitOfWork.States.GetASync(ad.StateId);
                     system = await _unitOfWork.Systems.GetASync(ad.SystemId);
                     objects = new List<object> { region, system, state };
