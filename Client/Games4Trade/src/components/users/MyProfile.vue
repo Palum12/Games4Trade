@@ -156,7 +156,6 @@ export default {
     changePhoto (event) {
       this.$store.dispatch('setSpinnerLoading')
       this.selectedFile = event.target.files[0]
-      console.log(this.selectedFile)
       if (!this.selectedFile.type.includes('image')) {
         this.$store.dispatch('unsetSpinnerLoading')
         mixins.methods.customErrorPopUp(this, 'Wybrane rozszerzenie pliku nie jest wspierane!')

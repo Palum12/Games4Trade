@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
@@ -100,7 +99,7 @@ namespace Games4Trade.Controllers
                 var result = await _advertisementService.AddAdvertisement(currentId, ad);
                 if (result.IsSuccessful)
                 {
-                    return Ok();
+                    return Ok(result.Payload);
                 }
                 else if (result.IsClientError)
                 {
