@@ -11,6 +11,9 @@
                                 class="form-control"
                                 @blur="$v.advertisement.title.$touch()"
                                 v-model="advertisement.title">
+                        <p v-show="!$v.advertisement.title.required">
+                            Proszę podać tytuł ogłoszenia
+                        </p>
                     </div>
                     <div class="row">
                         <div class="col-3">
@@ -38,6 +41,12 @@
                                             @blur="$v.advertisement.price.$touch()"
                                             v-model.number="advertisement.price">
                                 </div>
+                                <p v-show="!$v.advertisement.price.required">
+                                    Proszę podać wycenę
+                                </p>
+                                <p v-show="!$v.advertisement.price.minVal">
+                                    Cena nie może być ujemna!
+                                </p>
                             </div>
                             <div class="form-group">
                                 <input type="checkbox" id="exchange" value="true" v-model="advertisement.exchangeActive">
@@ -54,6 +63,9 @@
                                     class="form-control"
                                     @blur="$v.advertisement.accessoryManufacturer.$touch()"
                                     v-model="advertisement.accessoryManufacturer">
+                            <p v-show="!$v.advertisement.accessoryManufacturer.required">
+                                Proszę podać producenta akcesorium
+                            </p>
                         </div>
                         <div class="form-group col-7">
                             <label for="manufacturer">Model</label>
@@ -63,6 +75,9 @@
                                     class="form-control"
                                     @blur="$v.advertisement.accessoryModel.$touch()"
                                     v-model="advertisement.accessoryModel">
+                            <p v-show="!$v.advertisement.accessoryModel.required">
+                                Proszę podać model akcesorium
+                            </p>
                         </div>
                     </div>
                     <div v-if="advertisement.discriminator === 'Game'" class="form-group">
@@ -85,6 +100,9 @@
                                     <option v-for="state in states" :key="state.id" :value="state.id">{{state.value}}</option>
                                 </select>
                             </div>
+                            <p v-show="!$v.advertisement.stateId.required">
+                                Proszę wskazać stan przedmiotu ogłoszenia
+                            </p>
                         </div>
                         <div class="form-group col-7">
                             <div class="input">
@@ -100,6 +118,9 @@
                                             :value="system.id">{{system.manufacturer + ' ' + system.model}}</option>
                                 </select>
                             </div>
+                            <p v-show="!$v.advertisement.systemId.required">
+                                Proszę wybrać system
+                            </p>
                         </div>
                     </div>
                     <div class="form-row">
@@ -117,6 +138,9 @@
                                             :value="region.id">{{region.value}}</option>
                                 </select>
                             </div>
+                            <p v-show="!$v.advertisement.regionId.required">
+                                Proszę wybrać region
+                            </p>
                         </div>
                         <div v-if="advertisement.discriminator === 'Game'" class="form-group col-7">
                             <div class="input">
@@ -132,6 +156,9 @@
                                             :value="genre.id">{{genre.value}}</option>
                                 </select>
                             </div>
+                            <p v-show="!$v.advertisement.genreId.required">
+                                Proszę wybrać gatunek
+                            </p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -139,10 +166,13 @@
                         <textarea
                                 id="description"
                                 class="form-control"
-                                rows="6"
+                                rows="3"
                                 @blur="$v.advertisement.description.$touch()"
                                 v-model="advertisement.description">
                         </textarea>
+                        <p v-show="!$v.advertisement.description.required">
+                            Opis nie może być pusty
+                        </p>
                     </div>
                     <div class="row d-flex justify-content-around">
                         <div v-if="selectedFiles.length === 0">
