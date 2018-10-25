@@ -9,6 +9,7 @@
                                 type="text"
                                 id="title"
                                 class="form-control"
+                                @blur="$v.advertisement.title.$touch()"
                                 v-model="advertisement.title">
                     </div>
                     <div class="row">
@@ -30,7 +31,12 @@
                             <div class="form-group">
                                 <div class="input">
                                     <label for="price">Twoj wycena</label>
-                                    <input type="number" class="form-control" id="price" v-model.number="advertisement.price">
+                                    <input
+                                            type="number"
+                                            class="form-control"
+                                            id="price"
+                                            @blur="$v.advertisement.price.$touch()"
+                                            v-model.number="advertisement.price">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -46,6 +52,7 @@
                                     type="text"
                                     id="manufacturer"
                                     class="form-control"
+                                    @blur="$v.advertisement.accessoryManufacturer.$touch()"
                                     v-model="advertisement.accessoryManufacturer">
                         </div>
                         <div class="form-group col-7">
@@ -54,6 +61,7 @@
                                     type="text"
                                     id="model"
                                     class="form-control"
+                                    @blur="$v.advertisement.accessoryModel.$touch()"
                                     v-model="advertisement.accessoryModel">
                         </div>
                     </div>
@@ -69,7 +77,11 @@
                         <div class="form-group col-5">
                             <div class="input">
                                 <label for="state">Stan przedmiotu</label>
-                                <select class="form-control" id="state" v-model="advertisement.stateId">
+                                <select
+                                        class="form-control"
+                                        id="state"
+                                        @blur="$v.advertisement.stateId.$touch()"
+                                        v-model="advertisement.stateId">
                                     <option v-for="state in states" :key="state.id" :value="state.id">{{state.value}}</option>
                                 </select>
                             </div>
@@ -77,7 +89,11 @@
                         <div class="form-group col-7">
                             <div class="input">
                                 <label for="system">System</label>
-                                <select class="form-control" id="system" v-model="advertisement.systemId">
+                                <select
+                                        class="form-control"
+                                        id="system"
+                                        @blur="$v.advertisement.systemId.$touch()"
+                                        v-model="advertisement.systemId">
                                     <option
                                             v-for="system in systems"
                                             :key="system.id"
@@ -90,7 +106,11 @@
                         <div v-if="advertisement.discriminator !== 'Accessory'" class="form-group col-5">
                             <div class="input">
                                 <label for="region">Region</label>
-                                <select class="form-control" id="region" v-model="advertisement.regionId">
+                                <select
+                                        class="form-control"
+                                        id="region"
+                                        @blur="$v.advertisement.regionId.$touch()"
+                                        v-model="advertisement.regionId">
                                     <option
                                             v-for="region in regions"
                                             :key="region.id"
@@ -141,13 +161,12 @@
                         </div>
                         <button
                                 type="button"
-                                class="btn btn-primary"
                                 :disabled="$v.$invalid"
+                                class="btn btn-primary"
                                 @click="saveAdd">Dodaj ogłoszenie!</button>
                     </div>
                 </div>
             </form>
-            {{$v}}
         </div>
     </div>
 </template>
@@ -293,22 +312,22 @@ export default {
       },
       genreId: {
         required: requiredIf((ad) => {
-          return ad.Discriminator === 'Game'
+          return ad.discriminator === 'Game'
         })
       },
       regionId: {
         required: requiredUnless((ad) => {
-          return ad.Discriminator === 'Accessory'
+          return ad.discriminator === 'Accessory'
         })
       },
       accessoryManufacturer: {
         required: requiredIf((ad) => {
-          return ad.Discriminator === 'Accessory'
+          return ad.discriminator === 'Accessory'
         })
       },
       accessoryModel: {
         required: requiredIf((ad) => {
-          return ad.Discriminator === 'Accessory'
+          return ad.discriminator === 'Accessory'
         })
       }
     }
