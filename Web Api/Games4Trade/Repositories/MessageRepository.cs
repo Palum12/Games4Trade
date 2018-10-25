@@ -12,8 +12,7 @@ namespace Games4Trade.Repositories
         public MessageRepository(ApplicationContext context) : base(context) { }
 
         public async Task<IEnumerable<Message>> GetNewestMessagesForUser(int currentUserId)
-        {
-
+        {                
             var query = from m in Context.Messages
                 let msgTo = m.ReceiverId == currentUserId
                 let msgFrom = m.SenderId == currentUserId

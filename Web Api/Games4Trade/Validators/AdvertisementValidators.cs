@@ -13,7 +13,6 @@ namespace Games4Trade.Validators
 
             RuleFor(a => a.Discriminator).NotNull().Must(a => discriminators.Contains(a));
             RuleFor(a => a.Description).NotNull().NotEmpty();
-            RuleFor(a => a.Developer).Null().When(a => !a.Discriminator.Equals("Game"));
             RuleFor(a => a.ExchangeActive).NotNull();
             RuleFor(a => a.Price).GreaterThan(0);
             RuleFor(a => a.Title).NotNull();

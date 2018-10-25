@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Data;
 using Games4Trade.Models;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Console = Games4Trade.Models.Console;
 
 namespace Games4Trade.Repositories

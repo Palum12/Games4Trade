@@ -9,7 +9,6 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.AspNetCore.Http;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
 using Console = Games4Trade.Models.Console;
 
 namespace Games4Trade.Services
