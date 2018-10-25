@@ -37,6 +37,8 @@
                                     <input
                                             type="number"
                                             class="form-control"
+                                            v-bind:class="[$v.advertisement.price.$error ? invalidClass : ''
+                                            , formClass]"
                                             id="price"
                                             @blur="$v.advertisement.price.$touch()"
                                             v-model.number="advertisement.price">
@@ -211,6 +213,8 @@ export default {
   data () {
     return {
       userId: null,
+      formClass: 'form-control',
+      invalidClass: 'is-invalid',
       advertisement: {
         title: null,
         description: null,

@@ -24,7 +24,6 @@
                             id="login"
                             v-bind:class="[$v.login.$error ? invalidClass : '',
                                 !$v.login.$invalid ? validClass : '', formClass]"
-                            class="form-control"
                             @blur="$v.login.$touch()"
                             v-model.lazy="login">
                 </div>
