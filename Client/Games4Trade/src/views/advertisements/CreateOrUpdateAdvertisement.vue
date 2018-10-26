@@ -243,6 +243,7 @@ export default {
   data () {
     return {
       hasDataLoaded: false,
+      dataSent: false,
       userId: null,
       isEditing: false,
       formClass: 'form-control',
@@ -353,15 +354,18 @@ export default {
                     .then(() => {
                       vm.$store.dispatch('unsetSpinnerLoading')
                       mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało zmodifkowane!')
+                      vm.dataSent = true
                       vm.$router.push({name: 'home'})
                     })
                     .catch(() => {
                       vm.$store.dispatch('unsetSpinnerLoading')
                       mixins.methods.customErrorPopUp(vm, 'Twoje ogłoszenie zostało zmodifkowane ale podczas zapisywania zdjęcia coś poszło nie tak!')
+                      vm.dataSent = true
                     })
                 } else {
                   vm.$store.dispatch('unsetSpinnerLoading')
                   mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało zmodifkowane!')
+                  vm.dataSent = true
                   vm.$router.push({name: 'home'})
                 }
               })
@@ -387,17 +391,20 @@ export default {
                     .then(() => {
                       vm.$store.dispatch('unsetSpinnerLoading')
                       mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
+                      vm.dataSent = true
                       vm.$router.push({name: 'home'})
                     })
                     .catch(() => {
                       vm.$store.dispatch('unsetSpinnerLoading')
                       mixins.methods.customErrorPopUp(vm, 'Ups! Twoje ogłoszenie zostało dodane, ale coś poszło nie tak podczas ' +
                         'dodawania zdjęć, spróbuj je wyłączyć adblocka i dodać ponownie lub skontaktuj się z administratorem!')
+                      vm.dataSent = true
                       vm.$router.push({name: 'home'})
                     })
                 } else {
                   vm.$store.dispatch('unsetSpinnerLoading')
                   mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
+                  vm.dataSent = true
                   vm.$router.push({name: 'home'})
                 }
               })
@@ -415,6 +422,7 @@ export default {
           axios.delete(`advertisements/${this.advertisement.id}/archived`)
             .then(() => {
               vm.advertisement.isActive = false
+              vm.dataSent = true
               mixins.methods.simpleSuccessPopUp(vm)
             })
             .catch(() => {
@@ -429,6 +437,7 @@ export default {
           axios.delete(`advertisements/${this.advertisement.id}`)
             .then(() => {
               mixins.methods.simpleSuccessPopUp(vm)
+              vm.dataSent = true
               vm.$router.go(-1)
             })
             .catch(() => {
@@ -538,6 +547,10 @@ export default {
     let vm = this
     console.log(vm.advertisement.id == null)
     if (!vm.isEditing && this.$route.params.id != null) {
+      next()
+      return
+    }
+    if (this.dataSent) {
       next()
       return
     }
