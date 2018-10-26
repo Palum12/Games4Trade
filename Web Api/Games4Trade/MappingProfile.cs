@@ -1,4 +1,5 @@
-﻿using AutoMapper.Configuration;
+﻿using System.Linq;
+using AutoMapper.Configuration;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
 
@@ -32,8 +33,14 @@ namespace Games4Trade
             CreateMap<Region, RegionDto>().ReverseMap();
             CreateMap<State, StateDto>().ReverseMap();
 
-            CreateMap<Advertisement, AdvertisementWithoutItemDto>();
-            CreateMap<AdvertisementSaveDto, Game>().ForMember(g => g.GameRegionId, opt => opt.MapFrom(a => a.RegionId));
+            CreateMap<Advertisement, AdvertisementWithoutItemDto>()
+                .ForMember(a => a.MainPhotoId, opt =>
+                {
+                    opt.PreCondition(a => a.Photos != null && a.Photos.Any());
+                    opt.MapFrom(a => a.Photos.FirstOrDefault().Id);
+                });
+
+        CreateMap<AdvertisementSaveDto, Game>().ForMember(g => g.GameRegionId, opt => opt.MapFrom(a => a.RegionId));
             CreateMap<AdvertisementSaveDto, Console>().ForMember(c => c.ConsoleRegionId, opt => opt.MapFrom(a => a.RegionId));
             CreateMap<AdvertisementSaveDto, Accessory>();
 

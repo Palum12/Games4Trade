@@ -7,6 +7,7 @@ namespace Games4Trade.Dtos
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public int? MainPhotoId { get; set; }
         public string Title { get; set; }      
         public DateTime? DateCreated { get; set; }
         public bool ExchangeActive { get; set; }

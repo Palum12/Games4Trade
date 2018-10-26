@@ -281,6 +281,7 @@ namespace Games4Trade.Services
         {
             var ads = await _unitOfWork.Advertisements.GetQueriedAds(queryOptions);
             var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
+            
             return new OperationResult()
             {
                 IsSuccessful = true,
@@ -538,8 +539,6 @@ namespace Games4Trade.Services
             var tempRegion = await _unitOfWork.Regions.GetASync(game.GameRegionId);
             var tempState = await _unitOfWork.States.GetASync(game.StateId);
             var tempSystem = await _unitOfWork.Systems.GetASync(game.SystemId);
-            var tempPhotos =
-                await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
 
             result.Genre = _mapper.Map<Genre, GenreDto>(tempGenre);
             result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
@@ -547,7 +546,7 @@ namespace Games4Trade.Services
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
 
             result.Photos = new List<PhotoDto>();
-            foreach (var photo in tempPhotos)
+            foreach (var photo in ad.Photos)
             {
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
             }
@@ -574,16 +573,13 @@ namespace Games4Trade.Services
             var tempRegion = await _unitOfWork.Regions.GetASync(console.ConsoleRegionId);
             var tempState = await _unitOfWork.States.GetASync(console.StateId);
             var tempSystem = await _unitOfWork.Systems.GetASync(console.SystemId);
-            var tempPhotos =
-                await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
-
 
             result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
             result.State = _mapper.Map<State, StateDto>(tempState);
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
 
             result.Photos = new List<PhotoDto>();
-            foreach (var photo in tempPhotos)
+            foreach (var photo in ad.Photos)
             {
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
             }
@@ -610,15 +606,13 @@ namespace Games4Trade.Services
                 DateReleased = accessory.DateReleased
             };
             var tempState = await _unitOfWork.States.GetASync(accessory.StateId);
-            var tempSystem = await _unitOfWork.Systems.GetASync(accessory.SystemId);
-            var tempPhotos =
-                await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
+            var tempSystem = await _unitOfWork.Systems.GetASync(accessory.SystemId);         
 
             result.State = _mapper.Map<State, StateDto>(tempState);
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
 
             result.Photos = new List<PhotoDto>();
-            foreach (var photo in tempPhotos)
+            foreach (var photo in ad.Photos)
             {
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
             }

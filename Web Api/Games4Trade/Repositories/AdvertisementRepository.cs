@@ -17,7 +17,8 @@ namespace Games4Trade.Repositories
         {
             return await Context.Advertisements
                 .Where(a => a.IsActive || (userId.HasValue && a.UserId == userId))
-                .Include(a => a.Item).FirstOrDefaultAsync(a => a.Id == id);
+                .Include(a => a.Item)
+                .Include(a => a.Photos).FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<IEnumerable<Advertisement>> Get(int page, int pageSize)
@@ -27,7 +28,7 @@ namespace Games4Trade.Repositories
                 .Where(a => a.IsActive)
                 .OrderByDescending(a => a.DateCreated)
                 .Skip(skip).Take(pageSize)
-                .Include(a => a.Item).ToListAsync();
+                .Include(a => a.Item).Include(a => a.Photos).ToListAsync();
         }
 
         public async Task<IEnumerable<Advertisement>> GetQueriedAds(AdQueryOptions options)
@@ -111,7 +112,7 @@ namespace Games4Trade.Repositories
                 return await query.Skip(skip).Take(options.PageSize.Value).ToListAsync();
             }
 
-            var result = await query.ToListAsync();
+            var result = await query.Include(a => a.Photos).ToListAsync();
 
             return result;
         }
@@ -129,6 +130,7 @@ namespace Games4Trade.Repositories
                 .Where( a => a.IsActive && a.UserId != userId && (observedUsers.Contains(a.UserId) || systems.Contains(a.Item.SystemId) || 
                             (a.Item is Game && genres.Contains(((Game)a.Item).GenreId)))  )
                 .Take(howMany)
+                .Include(a => a.Photos)
                 .OrderByDescending(a => a.DateCreated)
                 .ToArrayAsync();
 
@@ -142,6 +144,7 @@ namespace Games4Trade.Repositories
                 .Where(a => a.UserId == userId && (a.IsActive || skipInactive))
                 .OrderByDescending(a => a.DateCreated)
                 .Skip(skip).Take(pageSize)
+                .Include(a => a.Photos)
                 .ToListAsync();
         }
     }
