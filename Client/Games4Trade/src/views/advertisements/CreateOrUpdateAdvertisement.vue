@@ -1,5 +1,5 @@
 <template>
-    <div class="row no-gutters p-2">
+    <div v-if="hasDataLoaded" class="row no-gutters p-2">
         <div class="form rounded col-12 p-3">
             <form @submit.prevent="onSubmit">
                 <div class="col-12">
@@ -30,7 +30,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-9">
                             <div class="form-group">
                                 <div class="input">
                                     <label for="price">Twoj wycena</label>
@@ -50,9 +50,17 @@
                                     Cena nie może być ujemna!
                                 </p>
                             </div>
-                            <div class="form-group">
-                                <input type="checkbox" id="exchange" value="true" v-model="advertisement.exchangeActive">
+                            <div class="form-group checks">
+                                <input type="checkbox" id="exchange" v-model="advertisement.exchangeActive">
                                 <label for="exchange">Czy chcesz się wymienić ?</label>
+                            </div>
+                            <div class="form-group checks">
+                                <input type="checkbox" id="showEmail" v-model="advertisement.showEmail">
+                                <label for="showEmail">Czy chcesz się pokazać swój email w ogłoszeniu ?</label>
+                            </div>
+                            <div class="form-group checks">
+                                <input type="checkbox" id="showPhone" v-model="advertisement.showPhone">
+                                <label for="showPhone">Czy chcesz się pokazać swój numer telefonu w ogłoszeniu (o ile go podałeś) ?</label>
                             </div>
                         </div>
                     </div>
@@ -63,9 +71,8 @@
                                     type="text"
                                     id="manufacturer"
                                     class="form-control"
-                                    @blur="$v.advertisement.accessoryManufacturer.$touch()"
-                                    v-model="advertisement.accessoryManufacturer">
-                            <p v-show="!$v.advertisement.accessoryManufacturer.required">
+                                    v-model="accessoryManufacturer">
+                            <p v-show="!isAccessoryManufacturer">
                                 Proszę podać producenta akcesorium
                             </p>
                         </div>
@@ -75,9 +82,8 @@
                                     type="text"
                                     id="model"
                                     class="form-control"
-                                    @blur="$v.advertisement.accessoryModel.$touch()"
-                                    v-model="advertisement.accessoryModel">
-                            <p v-show="!$v.advertisement.accessoryModel.required">
+                                    v-model="accessoryModel">
+                            <p v-show="!isAccessoryModel">
                                 Proszę podać model akcesorium
                             </p>
                         </div>
@@ -132,15 +138,14 @@
                                 <select
                                         class="form-control"
                                         id="region"
-                                        @blur="$v.advertisement.regionId.$touch()"
-                                        v-model="advertisement.regionId">
+                                        v-model="regionId">
                                     <option
                                             v-for="region in regions"
                                             :key="region.id"
                                             :value="region.id">{{region.value}}</option>
                                 </select>
                             </div>
-                            <p v-show="!$v.advertisement.regionId.required">
+                            <p v-show="!isRegionSelected">
                                 Proszę wybrać region
                             </p>
                         </div>
@@ -150,15 +155,14 @@
                                 <select
                                         class="form-control"
                                         id="genre"
-                                        @blur="$v.advertisement.genreId.$touch()"
-                                        v-model="advertisement.genreId">
+                                        v-model="genreId">
                                     <option
                                             v-for="genre in genres"
                                             :key="genre.id"
                                             :value="genre.id">{{genre.value}}</option>
                                 </select>
                             </div>
-                            <p v-show="!$v.advertisement.genreId.required">
+                            <p v-show="!isGenreSelected">
                                 Proszę wybrać gatunek
                             </p>
                         </div>
@@ -189,13 +193,22 @@
                             <small class=" ml-2 mt-2 font-italic font-weight-light">Uwaga, można dodać tylko zdjęcia poniżej 3 MB!</small>
                         </div>
                         <div v-else>
-                            <button type="button" class="btn btn-danger" @click="selectedFiles = []">Usuń zdjęcia</button>
+                            <button type="button" class="btn btn-danger" @click="selectedFiles = []; hasPhotoChanged= true">Usuń zdjęcia</button>
                         </div>
-                        <button
-                                type="button"
-                                :disabled="$v.$invalid"
-                                class="btn btn-primary"
-                                @click="saveAdd">Dodaj ogłoszenie!</button>
+                        <div v-if="!isEditing">
+                            <button
+                                    type="button"
+                                    :disabled="!isValidationOk"
+                                    class="btn btn-primary"
+                                    @click="saveAdd">Dodaj ogłoszenie!</button>
+                        </div>
+                        <div v-else>
+                            <button
+                                    type="button"
+                                    :disabled="!isValidationOk"
+                                    class="btn btn-primary"
+                                    @click="saveAdd">Zapisz zmiany!</button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -207,16 +220,18 @@
 import {mapGetters} from 'vuex'
 import mixins from '../../mixins/mixins'
 import axios from 'axios'
-import { required, minValue, requiredIf, requiredUnless } from 'vuelidate/lib/validators'
+import { required, minValue } from 'vuelidate/lib/validators'
 export default {
   name: 'AddAdvertisement',
   data () {
     return {
+      hasDataLoaded: false,
       userId: null,
       isEditing: false,
       formClass: 'form-control',
       invalidClass: 'is-invalid',
       advertisement: {
+        id: null,
         title: null,
         description: null,
         discriminator: 'Game',
@@ -228,36 +243,55 @@ export default {
         genreId: null,
         developer: null,
         accessoryManufacturer: null,
-        accessoryModel: null
+        accessoryModel: null,
+        showEmail: false,
+        showPhone: false
       },
-      selectedFiles: []
+      regionId: null,
+      genreId: null,
+      accessoryManufacturer: null,
+      accessoryModel: null,
+      selectedFiles: [],
+      hasPhotoChanged: false
     }
   },
   watch: {
     discriminator (newVal) {
       switch (newVal) {
         case 'Game':
-          this.advertisement.accessoryManufacturer = null
-          this.advertisement.accessoryModel = null
+          this.accessoryManufacturer = null
+          this.accessoryModel = null
           break
         case 'Console':
-          this.advertisement.accessoryManufacturer = null
-          this.advertisement.accessoryModel = null
-          this.advertisement.genreId = null
+          this.accessoryManufacturer = null
+          this.accessoryModel = null
+          this.genreId = null
           this.advertisement.developer = null
           break
         case 'Accessory':
-          this.advertisement.genreId = null
           this.advertisement.developer = null
-          this.advertisement.regionId = null
+          this.regionId = null
           break
         default:
           break
       }
+    },
+    accessoryManufacturer (newVal) {
+      this.advertisement.accessoryManufacturer = newVal
+    },
+    accessoryModel (newVal) {
+      this.advertisement.accessoryModel = newVal
+    },
+    genreId (newVal) {
+      this.advertisement.genreId = newVal
+    },
+    regionId (newVal) {
+      this.advertisement.regionId = newVal
     }
   },
   methods: {
     selectedPhotos (event) {
+      this.hasPhotoChanged = true
       this.$store.dispatch('setSpinnerLoading')
       this.selectedFiles = event.target.files
       for (var i = 0; i < this.selectedFiles.length; i++) {
@@ -283,41 +317,76 @@ export default {
       mixins.methods.confirmationDialog(vm)
         .then(() => {
           vm.$store.dispatch('setSpinnerLoading')
-          axios.post('advertisements', vm.advertisement)
-            .then(response => {
-              if (vm.selectedFiles.length > 0) {
-                let id = response.data
-                const fd = new FormData()
-                for (var i = 0; i < vm.selectedFiles.length; i++) {
-                  fd.append('', vm.selectedFiles[i], vm.selectedFiles[i].name)
+          if (vm.isEditing) {
+            axios.put(`advertisements/${vm.advertisement.id}`, vm.advertisement)
+              .then(() => {
+                if (vm.hasPhotoChanged) {
+                  const fd = new FormData()
+                  for (let i = 0; i < vm.selectedFiles.length; i++) {
+                    fd.append('', vm.selectedFiles[i], vm.selectedFiles[i].name)
+                  }
+                  axios.patch(`advertisements/${vm.advertisement.id}/photos`, fd,
+                    {
+                      headers: {
+                        'Content-Type': 'multipart/form-data'
+                      }
+                    })
+                    .then(() => {
+                      vm.$store.dispatch('unsetSpinnerLoading')
+                      mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało zmodifkowane!')
+                      vm.$router.push({name: 'home'})
+                    })
+                    .catch(() => {
+                      vm.$store.dispatch('unsetSpinnerLoading')
+                      mixins.methods.customErrorPopUp(vm, 'Twoje ogłoszenie zostało zmodifkowane ale podczas zapisywania zdjęcia coś poszło nie tak!')
+                    })
+                } else {
+                  vm.$store.dispatch('unsetSpinnerLoading')
+                  mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało zmodifkowane!')
+                  vm.$router.push({name: 'home'})
                 }
-                axios.patch(`advertisements/${id}/photos`, fd,
-                  {
-                    headers: {
-                      'Content-Type': 'multipart/form-data'
-                    }
-                  })
-                  .then(() => {
-                    vm.$store.dispatch('unsetSpinnerLoading')
-                    mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
-                    vm.$router.push({name: 'home'})
-                  })
-                  .catch(() => {
-                    vm.$store.dispatch('unsetSpinnerLoading')
-                    mixins.methods.customErrorPopUp(vm, 'Ups! Twoje ogłoszenie zostało dodane, ale coś poszło nie tak podczas ' +
-                      'dodawania zdjęć, spróbuj je wyłączyć adblocka i dodać ponownie lub skontaktuj się z administratorem!')
-                    vm.$router.push({name: 'home'})
-                  })
-              } else {
+              })
+              .catch(() => {
                 vm.$store.dispatch('unsetSpinnerLoading')
-                mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
-                vm.$router.push({name: 'home'})
-              }
-            })
-            .catch(() => {
-              vm.$store.dispatch('unsetSpinnerLoading')
-              mixins.methods.errorPopUp(vm)
-            })
+                mixins.methods.errorPopUp(vm)
+              })
+          } else {
+            axios.post('advertisements', vm.advertisement)
+              .then(response => {
+                if (vm.selectedFiles.length > 0) {
+                  let id = response.data
+                  const fd = new FormData()
+                  for (let i = 0; i < vm.selectedFiles.length; i++) {
+                    fd.append('', vm.selectedFiles[i], vm.selectedFiles[i].name)
+                  }
+                  axios.patch(`advertisements/${id}/photos`, fd,
+                    {
+                      headers: {
+                        'Content-Type': 'multipart/form-data'
+                      }
+                    })
+                    .then(() => {
+                      vm.$store.dispatch('unsetSpinnerLoading')
+                      mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
+                      vm.$router.push({name: 'home'})
+                    })
+                    .catch(() => {
+                      vm.$store.dispatch('unsetSpinnerLoading')
+                      mixins.methods.customErrorPopUp(vm, 'Ups! Twoje ogłoszenie zostało dodane, ale coś poszło nie tak podczas ' +
+                        'dodawania zdjęć, spróbuj je wyłączyć adblocka i dodać ponownie lub skontaktuj się z administratorem!')
+                      vm.$router.push({name: 'home'})
+                    })
+                } else {
+                  vm.$store.dispatch('unsetSpinnerLoading')
+                  mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
+                  vm.$router.push({name: 'home'})
+                }
+              })
+              .catch(() => {
+                vm.$store.dispatch('unsetSpinnerLoading')
+                mixins.methods.errorPopUp(vm)
+              })
+          }
         })
     }
   },
@@ -325,6 +394,26 @@ export default {
     ...mapGetters(['regions', 'systems', 'genres', 'states']),
     discriminator () {
       return this.advertisement.discriminator
+    },
+    // here manual validation due to vuelidate bug
+    isAccessoryManufacturer () {
+      return this.discriminator !== 'Accessory' || (this.accessoryManufacturer != null && this.accessoryManufacturer !== '')
+    },
+    isAccessoryModel () {
+      return this.discriminator !== 'Accessory' || (this.accessoryModel != null && this.accessoryModel !== '')
+    },
+    isGenreSelected () {
+      return this.discriminator !== 'Game' || this.genreId != null
+    },
+    isRegionSelected () {
+      return this.discriminator === 'Accessory' || this.regionId != null
+    },
+    isValidationOk () {
+      return this.isAccessoryManufacturer &&
+        this.isAccessoryModel &&
+        this.isGenreSelected &&
+        this.isRegionSelected &&
+              !this.$v.$invalid
     }
   },
   validations: {
@@ -344,26 +433,6 @@ export default {
       },
       systemId: {
         required
-      },
-      genreId: {
-        required: requiredIf((ad) => {
-          return ad.discriminator === 'Game'
-        })
-      },
-      regionId: {
-        required: requiredUnless((ad) => {
-          return ad.discriminator === 'Accessory'
-        })
-      },
-      accessoryManufacturer: {
-        required: requiredIf((ad) => {
-          return ad.discriminator === 'Accessory'
-        })
-      },
-      accessoryModel: {
-        required: requiredIf((ad) => {
-          return ad.discriminator === 'Accessory'
-        })
       }
     }
   },
@@ -400,6 +469,7 @@ export default {
           vm.$router.push('/')
         })
     }
+    this.hasDataLoaded = true
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
@@ -414,5 +484,7 @@ export default {
 </script>
 
 <style scoped>
-
+    .checks {
+        margin-bottom: 0 !important;
+    }
 </style>
