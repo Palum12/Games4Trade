@@ -213,6 +213,7 @@ export default {
   data () {
     return {
       userId: null,
+      isEditing: false,
       formClass: 'form-control',
       invalidClass: 'is-invalid',
       advertisement: {
@@ -366,12 +367,39 @@ export default {
       }
     }
   },
-  mounted () {
-    var vm = this
-    this.$store.dispatch('getUserId')
+  async mounted () {
+    let vm = this
+    await this.$store.dispatch('getUserId')
       .then(response => {
         vm.userId = response.data
       })
+    if (this.$route.params.id != null) {
+      let id = this.$route.params.id
+      await axios.get(`advertisements/${id}`)
+        .then(response => {
+          if (response.data.userId !== vm.userId) {
+            vm.$router.push('/')
+          } else {
+            vm.advertisement = response.data
+            vm.advertisement.systemId = response.data.system.id
+            vm.advertisement.stateId = response.data.state.id
+            if (vm.advertisement.discriminator === 'Game') {
+              vm.advertisement.genreId = response.data.genre.id
+              vm.advertisement.regionId = response.data.region.id
+            }
+            if (vm.advertisement.discriminator === 'Console') {
+              vm.advertisement.regionId = response.data.region.id
+            }
+            if (response.data.photos.length > 0) {
+              vm.selectedFiles = response.data.photos
+            }
+            vm.isEditing = true
+          }
+        })
+        .catch(() => {
+          vm.$router.push('/')
+        })
+    }
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {

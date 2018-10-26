@@ -31,7 +31,7 @@
                             <button type="button" class="btn btn-info btn-block" @click="goBack">Powrót</button>
                         </div>
                         <div class="ml-2">
-                            <button type="button" class="btn btn-info btn-block" @click="modyfi">Modyfikuj</button>
+                            <button type="button" class="btn btn-info btn-block" @click="modify">modifykuj</button>
                         </div>
                         <div class="ml-2">
                             <button type="button" class="btn btn-danger btn-block" @click="remove">Usuń</button>
@@ -94,7 +94,7 @@ export default {
             })
         })
     },
-    modyfi () {
+    modify () {
       let vm = this
       let id = this.$route.params.id
       axios.put(`announcements/${id}`, {title: this.announcement.title, content: this.announcement.content})

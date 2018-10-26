@@ -22,6 +22,7 @@ export default new Router({
     Annoucements.EDITANNOUNCEMENT,
     Annoucements.ANNOUNCEMENT,
     Advertisements.ADDADVERTISEMENT,
+    Advertisements.EDITADVERTISEMENT,
     Messages.MESSAGES,
     {
       path: '/',
