@@ -103,13 +103,9 @@ namespace Games4Trade.Services
             }
             var ad = await _unitOfWork.Advertisements.GetASync(adId);
             ad.IsActive = false;
-            var result = await _unitOfWork.CompleteASync();
-            if (result > 0)
-            {
-                return new OperationResult(){IsSuccessful = true};
-            }
+            await _unitOfWork.CompleteASync();
 
-            return OtherServices.GetIncorrectDatabaseConnectionResult();
+            return new OperationResult(){IsSuccessful = true};
         }
 
         public async Task<OperationResult> EditAdvertisement(int userId, int adId, AdvertisementSaveDto ad)
@@ -138,6 +134,8 @@ namespace Games4Trade.Services
             var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithItem(adId, userId);
 
             currentAd.ExchangeActive = ad.ExchangeActive;
+            currentAd.ShowEmail = ad.ShowEmail;
+            currentAd.ShowPhone = ad.ShowPhone;
             currentAd.Price = ad.Price;
             currentAd.Title = ad.Title;
 
@@ -168,6 +166,7 @@ namespace Games4Trade.Services
                 {
                     var console = currentAd.Item as Console;
                     console.DateReleased = ad.DateReleased;
+                    console.ConsoleRegionId = ad.RegionId.Value;
                     console.StateId = ad.StateId;
                     console.SystemId = ad.SystemId;
                     console.Description = ad.Description;
@@ -554,6 +553,17 @@ namespace Games4Trade.Services
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
             }
 
+            var user = await _unitOfWork.Users.GetASync(result.UserId);
+            if (result.ShowEmail)
+            {
+                result.Email = user.Email;
+            }
+
+            if (result.ShowPhone && !string.IsNullOrEmpty(user.PhoneNumber))
+            {
+                result.PhoneNumber = user.PhoneNumber;
+            }
+
             return result;
         }
 
@@ -590,6 +600,17 @@ namespace Games4Trade.Services
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
             }
 
+            var user = await _unitOfWork.Users.GetASync(result.UserId);
+            if (result.ShowEmail)
+            {
+                result.Email = user.Email;
+            }
+
+            if (result.ShowPhone && !string.IsNullOrEmpty(user.PhoneNumber))
+            {
+                result.PhoneNumber = user.PhoneNumber;
+            }
+
             return result;
         }
 
@@ -624,6 +645,17 @@ namespace Games4Trade.Services
             foreach (var photo in ad.Photos)
             {
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
+            }
+
+            var user = await _unitOfWork.Users.GetASync(result.UserId);
+            if (result.ShowEmail)
+            {
+                result.Email = user.Email;
+            }
+
+            if (result.ShowPhone && !string.IsNullOrEmpty(user.PhoneNumber))
+            {
+                result.PhoneNumber = user.PhoneNumber;
             }
 
             return result;

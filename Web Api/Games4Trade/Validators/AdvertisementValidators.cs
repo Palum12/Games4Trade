@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentValidation;
 using Games4Trade.Dtos;
 
@@ -18,6 +19,11 @@ namespace Games4Trade.Validators
             RuleFor(a => a.Title).NotNull();
             RuleFor(a => a.AccessoryManufacturer).NotNull().When(a => a.Discriminator.Equals("Accessory"));
             RuleFor(a => a.AccessoryModel).NotNull().When(a => a.Discriminator.Equals("Accessory"));
+            RuleFor(a => a.DateReleased)
+                .GreaterThan(DateTime.Parse("1960-01-01"))
+                .LessThan(DateTime.Today.AddYears(1))
+                .When(a => a.DateReleased != null);
+
 
             RuleFor(a => a.StateId).NotNull().GreaterThan(0);
             RuleFor(a => a.SystemId).NotNull().GreaterThan(0);

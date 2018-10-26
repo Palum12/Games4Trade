@@ -29,6 +29,9 @@ namespace Games4Trade.Dtos
         public bool ShowEmail { get; set; }
         public bool ShowPhone { get; set; }
 
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
+
         public string Description { get; set; }
         public DateTime? DateReleased { get; set; }
         public StateDto State { get; set; }                

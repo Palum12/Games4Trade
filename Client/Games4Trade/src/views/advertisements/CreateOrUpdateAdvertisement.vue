@@ -181,6 +181,10 @@
                         </p>
                     </div>
                     <div class="row d-flex justify-content-around">
+                        <button
+                                type="button"
+                                class="btn btn-info mx-2"
+                                @click="$router.go(-1)">Powrót</button>
                         <div v-if="selectedFiles.length === 0">
                             <input
                                     type="file"
@@ -194,6 +198,19 @@
                         </div>
                         <div v-else>
                             <button type="button" class="btn btn-danger" @click="selectedFiles = []; hasPhotoChanged= true">Usuń zdjęcia</button>
+                        </div>
+                        <div v-if="isEditing">
+                            <button
+                                    type="button"
+                                    class="btn btn-warning mx-2"
+                                    @click="remove">Usuń</button>
+                        </div>
+                        <div v-if="isEditing">
+                            <button
+                                    v-if="advertisement.isActive"
+                                    type="button"
+                                    class="btn btn-warning mx-2"
+                                    @click="archive">Archiwizuj</button>
                         </div>
                         <div v-if="!isEditing">
                             <button
@@ -230,6 +247,8 @@ export default {
       isEditing: false,
       formClass: 'form-control',
       invalidClass: 'is-invalid',
+      selectedFiles: [],
+      hasPhotoChanged: false,
       advertisement: {
         id: null,
         title: null,
@@ -245,14 +264,14 @@ export default {
         accessoryManufacturer: null,
         accessoryModel: null,
         showEmail: false,
-        showPhone: false
+        showPhone: false,
+        isActive: true
       },
+      // due to a bug with vue
       regionId: null,
       genreId: null,
       accessoryManufacturer: null,
-      accessoryModel: null,
-      selectedFiles: [],
-      hasPhotoChanged: false
+      accessoryModel: null
     }
   },
   watch: {
@@ -388,6 +407,34 @@ export default {
               })
           }
         })
+    },
+    archive () {
+      let vm = this
+      mixins.methods.confirmationPernamentDialog(vm)
+        .then(() => {
+          axios.delete(`advertisements/${this.advertisement.id}/archived`)
+            .then(() => {
+              vm.advertisement.isActive = false
+              mixins.methods.simpleSuccessPopUp(vm)
+            })
+            .catch(() => {
+              mixins.methods.errorPopUp(vm)
+            })
+        })
+    },
+    remove () {
+      let vm = this
+      mixins.methods.confirmationPernamentDialog(vm)
+        .then(() => {
+          axios.delete(`advertisements/${this.advertisement.id}`)
+            .then(() => {
+              mixins.methods.simpleSuccessPopUp(vm)
+              vm.$router.go(-1)
+            })
+            .catch(() => {
+              mixins.methods.errorPopUp(vm)
+            })
+        })
     }
   },
   computed: {
@@ -454,10 +501,17 @@ export default {
             vm.advertisement.stateId = response.data.state.id
             if (vm.advertisement.discriminator === 'Game') {
               vm.advertisement.genreId = response.data.genre.id
+              vm.genreId = response.data.genre.id
               vm.advertisement.regionId = response.data.region.id
+              vm.regionId = response.data.region.id
             }
             if (vm.advertisement.discriminator === 'Console') {
               vm.advertisement.regionId = response.data.region.id
+              vm.regionId = response.data.region.id
+            }
+            if (vm.advertisement.discriminator === 'Accessory') {
+              vm.accessoryManufacturer = response.data.accessoryManufacturer
+              vm.accessoryModel = response.data.accessoryModel
             }
             if (response.data.photos.length > 0) {
               vm.selectedFiles = response.data.photos
@@ -479,6 +533,20 @@ export default {
         next('/')
       }
     })
+  },
+  async beforeRouteLeave (to, from, next) {
+    let vm = this
+    console.log(vm.advertisement.id == null)
+    if (!vm.isEditing && this.$route.params.id != null) {
+      next()
+      return
+    }
+    await mixins.methods.confirmationLeaveDialog(vm)
+      .then(() => next())
+      .catch(() => {
+        next(false)
+      }
+      )
   }
 }
 </script>
