@@ -11,6 +11,7 @@ namespace Games4Trade.Dtos
         public string Title { get; set; }      
         public DateTime? DateCreated { get; set; }
         public bool ExchangeActive { get; set; }
+        public bool IsActive { get; set; }
         public decimal Price { get; set; }
     }
 
@@ -23,7 +24,10 @@ namespace Games4Trade.Dtos
         public string Discriminator { get; set; }
         public DateTime? DateCreated { get; set; }
         public bool ExchangeActive { get; set; }
+        public bool IsActive { get; set; }
         public decimal Price { get; set; }
+        public bool ShowEmail { get; set; }
+        public bool ShowPhone { get; set; }
 
         public string Description { get; set; }
         public DateTime? DateReleased { get; set; }
@@ -60,6 +64,8 @@ namespace Games4Trade.Dtos
         public int SystemId { get; set; }
         public string Description { get; set; }
         public DateTime? DateReleased { get; set; }
+        public bool ShowEmail { get; set; }
+        public bool ShowPhone { get; set; }
         // game & console
         public int? RegionId { get; set; }
         //game part       

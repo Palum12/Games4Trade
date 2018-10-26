@@ -531,6 +531,9 @@ namespace Games4Trade.Services
                 ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
                 Price = ad.Price,
                 Title = ad.Title,
+                IsActive = ad.IsActive,
+                ShowEmail = ad.ShowEmail,
+                ShowPhone = ad.ShowPhone,
 
                 DateReleased = game.DateReleased,
                 Developer = game.Developer
@@ -567,6 +570,9 @@ namespace Games4Trade.Services
                 ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
                 Price = ad.Price,
                 Title = ad.Title,
+                IsActive = ad.IsActive,
+                ShowEmail = ad.ShowEmail,
+                ShowPhone = ad.ShowPhone,
 
                 DateReleased = console.DateReleased
             };
@@ -600,6 +606,9 @@ namespace Games4Trade.Services
                 ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
                 Price = ad.Price,
                 Title = ad.Title,
+                IsActive = ad.IsActive,
+                ShowEmail = ad.ShowEmail,
+                ShowPhone = ad.ShowPhone,
 
                 AccessoryManufacturer = accessory.AccessoryManufacturer,
                 AccessoryModel = accessory.AccessoryModel,
