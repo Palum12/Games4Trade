@@ -308,8 +308,8 @@ namespace Games4Trade.Services
                     
                     var otherUser = await _unitOfWork.Users.GetASync(ad.UserId);
                     var text = string.Format(
-                        @"Witaj. </br> Twoje ogłoszenie z serwisu Games4Trade zostało usunięte. Oto powód usunięcia ogłoszenia:<br>{0}",
-                        message);
+                        @"Witaj. </br> Twoje ogłoszenie z serwisu Games4Trade o tytule: '{0}' zostało usunięte. Oto powód usunięcia ogłoszenia:<br>{1}",
+                        ad.Title, message);
                     var emailResult = await OtherServices.SendEmail(otherUser.Email, "Wiadomość o usunięciu ogłoszenia.", text);
                     if (emailResult)
                     {
