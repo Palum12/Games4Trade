@@ -36,7 +36,7 @@
                 <p>Model: {{advertisement.accessoryModel}}</p>
             </div>
             <p v-if="advertisement.dateReleased != null">Data wydania: {{advertisement.dateReleased}}</p>
-            <div v-if="!isOwner">
+            <div v-if="!isOwner && $store.getters.isAuthenticated">
                 <button type="button" class="btn btn-primary btn-block" @click="sendMessage">Napisz do użytkownika!</button>
             </div>
         </div>
@@ -152,15 +152,17 @@ export default {
   },
   async mounted () {
     let vm = this
-    await this.$store.dispatch('getUserId')
-      .then(response => {
-        vm.userId = response.data
-      })
+    if (this.$store.getters.isAuthenticated) {
+      await this.$store.dispatch('getUserId')
+        .then(response => {
+          vm.userId = response.data
+        })
+    }
     let id = this.$route.params.id
     await axios.get(`advertisements/${id}`)
       .then(response => {
         vm.advertisement = response.data
-        vm.isOwner = vm.userId === response.data.userId
+        vm.isOwner = vm.$store.getters.isAuthenticated && vm.userId === response.data.userId
         vm.hasDataLoaded = true
         if (vm.advertisement.photos.length > 0) {
           vm.activePhotoId = 0

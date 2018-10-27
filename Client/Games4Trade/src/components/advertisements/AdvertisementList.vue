@@ -1,6 +1,5 @@
 <template>
   <div>
-      <p>No to jest lista</p>
       <div class="inner" v-for="advertisement in advertisementList" :key="advertisement.id">
           <advertisement-header :advertisement="advertisement"></advertisement-header>
       </div>
