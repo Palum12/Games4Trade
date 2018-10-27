@@ -53,7 +53,11 @@
                 type="button"
                 @click="$router.push(`/advertisements/${advertisement.id}/edit`)"
                 class="btn btn-warning">Modyfikuj</button>
-        <button v-if="!isOwner && $store.getters.isAdmin" class="btn btn-danger" type="button">Usuń administracyjnie</button>
+        <button
+                v-if="!isOwner && $store.getters.isAdmin"
+                class="btn btn-danger"
+                type="button"
+                @click="deleteAd">Usuń administracyjnie</button>
     </div>
 </div>
 </template>
@@ -72,7 +76,7 @@ export default {
   data () {
     return {
       fluxOptions: {
-        autoplay: false
+        autoplay: true
       },
       fluxTransitions: {
         transitionBook: Transitions.transitionSwipe
@@ -108,6 +112,36 @@ export default {
                 title: 'Wiadmość została wysłana!',
                 type: 'success'
               })
+            })
+            .catch(() => {
+              mixnis.methods.errorPopUp(vm)
+            })
+        }
+      })
+    },
+    deleteAd () {
+      let vm = this
+      this.$swal({
+        type: 'warning',
+        title: 'Czy jesteś tego pewien ?',
+        input: 'textarea',
+        inputPlaceholder: 'Tutaj wpisz treść wiadomości z przyczyną usunięcia ogłoszenia,' +
+          ' która zostanie wysłana na email użytkownika.',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Usuń!',
+        showLoaderOnConfirm: true,
+        preConfirm: (message) => {
+          axios.delete(`advertisements/${vm.advertisement.id}?reason=${message}`)
+            .then(() => {
+              vm.$swal({
+                title: 'Ogłosznie zostało usunięte.',
+                text: 'Użtykownik został powiadomiony o usunięciu jego ogłoszenia',
+                type: 'success'
+              })
+              vm.$router.go(-1)
             })
             .catch(() => {
               mixnis.methods.errorPopUp(vm)
