@@ -1,62 +1,93 @@
 <template>
 <div v-if="hasDataLoaded" class="no-gutters advertisement">
     <div class="row">
-        <div v-if="activePhotoId != null" class="col-7">
-            <div id="carousel ExampleControls" class="carousel slide" data-ride="carousel">
-                <div class="carousel-inner myTest">
-                    <div class="carousel-item active">
-                        <img class="d-block w-100"
-                             :src="`http://localhost:5000/api/advertisements/${advertisement.id}/photos/${currentPhotoId()}`">
-                    </div>
-                </div>
-                <a v-if="hasPreviousPhoto" class="carousel-control-prev" role="button" data-slide="prev" @click="changePhoto(-1)">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a v-if="hasNextPhoto" class="carousel-control-next" role="button" data-slide="next" @click="changePhoto(1)">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
+        <div class="col-8 gallery">
+            <vue-flux
+                    v-if="images.length > 0"
+                    :options="fluxOptions"
+                    :images="images"
+                    :transitions="fluxTransitions"
+                    ref="slider">
+                <flux-controls slot="controls"></flux-controls>
+                <flux-pagination slot="pagination"></flux-pagination>
+            </vue-flux>
+            <div v-else>
+                <img src="../../assets/no_image_available.svg"/>
             </div>
         </div>
+        <div class="col-4">
+            <h5>Cena: {{advertisement.price}}zł</h5>
+            <p v-if="advertisement.exchangeActive">Wymiana jest możliwa</p>
+            <p v-if="advertisement.phone != null">Numer kontaktowy: {{advertisement.phone}}</p>
+            <p v-if="advertisement.email != null">Adres email kontaktowy: {{advertisement.email}}</p>
+            <p>Stan: {{advertisement.state.value}}</p>
+            <p>System: {{advertisement.system.manufacturer + ' ' + advertisement.system.model}}</p>
+            <div v-if="advertisement.discriminator==='Game'">
+                <p>Kategoria ogłoszenia: Gra</p>
+                <p v-if="advertisement.developer != null">Producent: {{advertisement.developer}}</p>
+                <p>Gatunek: {{advertisement.genre.value}}</p>
+            </div>
+            <div v-else-if="advertisement.discriminator==='Console'">
+                <p>Kategoria ogłoszenia: Konsola</p>
+            </div>
+            <div v-else-if="advertisement.discriminator==='Accessory'">
+                <p>Kategoria ogłoszenia: Akcesorium</p>
+                <p>Producent: {{advertisement.accessoryManufacturer}}</p>
+                <p>Model: {{advertisement.accessoryModel}}</p>
+            </div>
+            <p v-if="advertisement.dateReleased != null">Data wydania: {{advertisement.dateReleased}}</p>
+            <div> <!--todo has to be only for not self user and send a message-->
+                <button type="button" class="btn btn-primary btn-block">Napisz do użytkownika!</button>
+            </div>
+        </div>
+    </div>
+    <div class="row m-1">
+        <h2>{{advertisement.title}}</h2>
+    </div>
+    <div class="row mt-1 container-fluid" style="white-space: pre-line;">
+        {{advertisement.description}}
+    </div>
+    <div class="row m-1 d-flex justify-content-between">
+        <button class="btn btn-info" type="button" @click="$router.go(-1)">Powrót</button>
+        <button v-if="isOwner"
+                type="button"
+                @click="$router.push(`/advertisements/${advertisement.id}/edit`)"
+                class="btn btn-warning">Modyfikuj</button>
+        <button v-if="!isOwner && $store.getters.isAdmin" class="btn btn-danger" type="button">Usuń administracyjnie</button>
     </div>
 </div>
 </template>
 
 <script>
 import axios from 'axios'
+import { VueFlux, FluxControls, FluxPagination, Transitions } from 'vue-flux'
 export default {
   name: 'ShowAdvertisement',
+  components: {
+    VueFlux,
+    FluxControls,
+    FluxPagination
+  },
   data () {
     return {
+      fluxOptions: {
+        autoplay: false
+      },
+      fluxTransitions: {
+        transitionBook: Transitions.transitionSwipe
+      },
       userId: null,
       hasDataLoaded: false,
       isOwner: false,
-      advertisement: null,
-      activePhotoId: null,
-      hasNextPhoto: false,
-      hasPreviousPhoto: false
+      advertisement: null
+    }
+  },
+  computed: {
+    images () {
+      return this.advertisement.photos.map(x => `http://localhost:5000/api/advertisements/${this.advertisement.id}/photos/${x.id}`)
     }
   },
   methods: {
-    changePhoto (val) {
-      if (val > 0) {
-        this.hasPreviousPhoto = true
-        this.activePhotoId = this.activePhotoId + 1
-        if (this.activePhotoId === this.advertisement.photos.length - 1) {
-          this.hasNextPhoto = false
-        }
-      } else {
-        this.hasNextPhoto = true
-        this.activePhotoId = this.activePhotoId - 1
-        if (this.activePhotoId === 0) {
-          this.hasPreviousPhoto = false
-        }
-      }
-    },
-    currentPhotoId () {
-      return this.advertisement.photos[this.activePhotoId].id
-    }
   },
   async mounted () {
     let vm = this
@@ -85,21 +116,17 @@ export default {
 </script>
 
 <style scoped>
+    .gallery{
+        min-height: 200px;
+        height: 45vh;
+        max-height: 90%;
+        overflow: hidden;
+        overflow-y: auto;
+    }
     .advertisement {
         margin: 0 2vw;
         padding-bottom: 2vh;
         width: 90vw;
         text-justify: newspaper;
-    }
-    img {
-        height:300px;
-        object-fit: cover;
-        border: 1px solid lightgray;
-        border-radius: 5px;
-    }
-    .myTest {
-        height:300px;
-        border: 1px solid lightgray;
-        border-radius: 5px;
     }
 </style>
