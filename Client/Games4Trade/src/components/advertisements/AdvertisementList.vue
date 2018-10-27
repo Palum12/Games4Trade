@@ -1,6 +1,6 @@
 <template>
-  <div>
-      <div class="inner" v-for="advertisement in advertisementList" :key="advertisement.id">
+  <div id="inner">
+      <div v-for="advertisement in advertisementList" :key="advertisement.id">
           <advertisement-header :advertisement="advertisement"></advertisement-header>
       </div>
   </div>
@@ -16,9 +16,9 @@ export default {
   props: ['advertisementList'],
   methods: {
     scrollEnded () {
-      var sh = document.getElementById('inner').scrollHeight
-      var st = document.getElementById('inner').scrollTop
-      var oh = document.getElementById('inner').offsetHeight
+      let sh = document.getElementById('inner').scrollHeight
+      let st = document.getElementById('inner').scrollTop
+      let oh = document.getElementById('inner').offsetHeight
       if (sh - st - oh + 1 < 2) {
         this.$emit('scroll-ended')
       }
@@ -26,6 +26,7 @@ export default {
   },
   mounted () {
     document.getElementById('inner').addEventListener('scroll', this.scrollEnded)
+    console.log(document.getElementById('inner').addEventListener('scroll', this.scrollEnded))
   }
 }
 </script>

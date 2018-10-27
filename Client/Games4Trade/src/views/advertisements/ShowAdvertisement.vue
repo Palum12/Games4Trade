@@ -76,7 +76,8 @@ export default {
   data () {
     return {
       fluxOptions: {
-        autoplay: true
+        autoplay: true,
+        enableGestures: true
       },
       fluxTransitions: {
         transitionBook: Transitions.transitionSwipe
@@ -164,12 +165,6 @@ export default {
         vm.advertisement = response.data
         vm.isOwner = vm.$store.getters.isAuthenticated && vm.userId === response.data.userId
         vm.hasDataLoaded = true
-        if (vm.advertisement.photos.length > 0) {
-          vm.activePhotoId = 0
-        }
-        if (vm.advertisement.photos.length > 1) {
-          vm.hasNextPhoto = true
-        }
       })
       .catch(() => {
         vm.$router.push('/')

@@ -545,7 +545,6 @@ export default {
   },
   async beforeRouteLeave (to, from, next) {
     let vm = this
-    console.log(vm.advertisement.id == null)
     if (!vm.isEditing && this.$route.params.id != null) {
       next()
       return

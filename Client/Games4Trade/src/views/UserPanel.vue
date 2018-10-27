@@ -25,7 +25,7 @@
             </tab>
             <tab name="Moje ogłoszenia" class="tabs-height">
                 <h5>W tym miejscu możesz przeglądać swoje ogłoszenia.</h5>
-                <my-ads :user-id="userId" class="scrollable"></my-ads>
+                <my-ads :user-id="userId"></my-ads>
             </tab>
         </tabs>
     </div>

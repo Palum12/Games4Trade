@@ -1,5 +1,9 @@
 <template>
-    <advertisement-list :advertisement-list="advertisements" @scroll-ended="getMoreAdvertisements"></advertisement-list>
+    <div class="scrollable">
+        <advertisement-list
+                :advertisement-list="advertisements"
+                ></advertisement-list>
+    </div>
 </template>
 
 <script>
@@ -44,5 +48,9 @@ export default {
 </script>
 
 <style scoped>
-
+    .scrollable {
+        min-height: 200px;
+        height: 70vh;
+        max-height: 100%;
+    }
 </style>
