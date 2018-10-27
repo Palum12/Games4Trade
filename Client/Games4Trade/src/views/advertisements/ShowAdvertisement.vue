@@ -36,8 +36,8 @@
                 <p>Model: {{advertisement.accessoryModel}}</p>
             </div>
             <p v-if="advertisement.dateReleased != null">Data wydania: {{advertisement.dateReleased}}</p>
-            <div> <!--todo has to be only for not self user and send a message-->
-                <button type="button" class="btn btn-primary btn-block">Napisz do użytkownika!</button>
+            <div v-if="!isOwner">
+                <button type="button" class="btn btn-primary btn-block" @click="sendMessage">Napisz do użytkownika!</button>
             </div>
         </div>
     </div>
@@ -60,6 +60,7 @@
 
 <script>
 import axios from 'axios'
+import mixnis from '../../mixins/mixins'
 import { VueFlux, FluxControls, FluxPagination, Transitions } from 'vue-flux'
 export default {
   name: 'ShowAdvertisement',
@@ -88,6 +89,32 @@ export default {
     }
   },
   methods: {
+    sendMessage () {
+      let vm = this
+      this.$swal({
+        title: 'Wpisz treść wiadomości',
+        input: 'textarea',
+        inputPlaceholder: 'Tutaj wpisz treść wiadomości...',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Wyślij',
+        showLoaderOnConfirm: true,
+        preConfirm: (message) => {
+          axios.post('Messages', {receiverId: vm.advertisement.userId, content: message})
+            .then(() => {
+              vm.$swal({
+                title: 'Wiadmość została wysłana!',
+                type: 'success'
+              })
+            })
+            .catch(() => {
+              mixnis.methods.errorPopUp(vm)
+            })
+        }
+      })
+    }
   },
   async mounted () {
     let vm = this
