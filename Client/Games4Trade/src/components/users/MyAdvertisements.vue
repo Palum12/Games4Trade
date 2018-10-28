@@ -21,29 +21,41 @@ export default {
   data () {
     return {
       advertisements: [],
-      page: 0,
+      page: 1,
       isNextPage: true
     }
   },
   methods: {
-    getAnnouncements () {
+    getAdvertisements () {
       let vm = this
       this.$store.dispatch('setSpinnerLoading')
       axios.get(`/users/${vm.userId}/advertisements?page=1`)
         .then(response => {
           vm.$store.dispatch('unsetSpinnerLoading')
           vm.advertisements = response.data
+          vm.nextPage = 2
         })
         .catch(() => {
           vm.$store.dispatch('unsetSpinnerLoading')
         })
     },
     getMoreAdvertisements () {
-      console.log('Im done')
+      if (this.isNextPage) {
+        let vm = this
+        axios.get(`/users/${vm.userId}/advertisements?page=${this.nextPage}`)
+          .then(response => {
+            vm.advertisements.push(...response.data)
+            if (response.data.length === 0) {
+              vm.isNextPage = false
+            } else {
+              vm.nextPage = vm.nextPage + 1
+            }
+          })
+      }
     }
   },
   mounted () {
-    this.getAnnouncements()
+    this.getAdvertisements()
   }
 }
 </script>
