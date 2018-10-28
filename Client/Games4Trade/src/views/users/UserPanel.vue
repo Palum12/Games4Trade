@@ -34,12 +34,12 @@
 
 <script>
 import 'vue-tabs-component/docs/resources/tabs-component.css'
-import ObservedUsers from '../components/users/ObservedUsers'
-import MyProfile from '../components/users/MyProfile'
-import MyGenres from '../components/users/MyGenres'
-import MySystems from '../components/users/MySystems'
-import MyAds from '../components/users/MyAdvertisements'
-import mixins from '../mixins/mixins'
+import ObservedUsers from '../../components/users/ObservedUsers'
+import MyProfile from '../../components/users/MyProfile'
+import MyGenres from '../../components/users/MyGenres'
+import MySystems from '../../components/users/MySystems'
+import MyAds from '../../components/users/MyAdvertisements'
+import mixins from '../../mixins/mixins'
 
 export default {
   name: 'UserPanel',

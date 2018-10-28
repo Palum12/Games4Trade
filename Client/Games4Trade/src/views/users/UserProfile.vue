@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import mixins from '../mixins/mixins'
+import mixins from '../../mixins/mixins'
 import { mapGetters } from 'vuex'
 import axios from 'axios'
 export default {

@@ -539,6 +539,7 @@ export default {
             vm.$router.push('/')
           } else {
             vm.advertisement = response.data
+            vm.advertisement.dateReleased = vm.advertisement.dateReleased.substring(0, 10)
             vm.advertisement.systemId = response.data.system.id
             vm.advertisement.stateId = response.data.state.id
             if (vm.advertisement.discriminator === 'Game') {

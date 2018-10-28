@@ -1,6 +1,6 @@
 import ChangePassword from '../components/users/ChangePassword'
-import UserPanel from '../views/UserPanel'
-import UserProfile from '../views/UserProfile'
+import UserPanel from '../views/users/UserPanel'
+import UserProfile from '../views/users/UserProfile'
 
 export default {
   CHANGE_PASSWORD: {
