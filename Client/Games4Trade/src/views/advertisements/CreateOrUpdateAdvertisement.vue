@@ -29,6 +29,24 @@
                                     <label><input type="radio" value="Accessory" v-model="advertisement.discriminator">Akcesorium</label>
                                 </div>
                             </div>
+                            <label for="dateReleased">Data wydania przedmiotu</label>
+                            <input
+                                    type="date"
+                                    min="1960-01-01"
+                                    max="2030-01-01"
+                                    class="form-control"
+                                    v-bind:class="[$v.advertisement.dateReleased.$error ? invalidClass : ''
+                                            , formClass]"
+                                    id="dateReleased"
+                                    @blur="$v.advertisement.dateReleased.$touch()"
+                                    v-model="advertisement.dateReleased"
+                                    >
+                            <p v-show="!$v.advertisement.dateReleased.isAfter">
+                                Proszę podać realną datę po roku 1960
+                            </p>
+                            <p v-show="!$v.advertisement.dateReleased.isBefore">
+                                Proszę podać realną datę do miesiąca w przyszłość
+                            </p>
                         </div>
                         <div class="col-9">
                             <div class="form-group">
@@ -253,6 +271,7 @@ export default {
       advertisement: {
         id: null,
         title: null,
+        dateReleased: null,
         description: null,
         discriminator: 'Game',
         exchangeActive: false,
@@ -355,7 +374,7 @@ export default {
                       vm.$store.dispatch('unsetSpinnerLoading')
                       mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało zmodifkowane!')
                       vm.dataSent = true
-                      vm.$router.push({name: 'home'})
+                      vm.$router.push(`/advertisements/${vm.advertisement.id}`)
                     })
                     .catch(() => {
                       vm.$store.dispatch('unsetSpinnerLoading')
@@ -366,7 +385,7 @@ export default {
                   vm.$store.dispatch('unsetSpinnerLoading')
                   mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało zmodifkowane!')
                   vm.dataSent = true
-                  vm.$router.push({name: 'home'})
+                  vm.$router.push(`/advertisements/${vm.advertisement.id}`)
                 }
               })
               .catch(() => {
@@ -392,7 +411,7 @@ export default {
                       vm.$store.dispatch('unsetSpinnerLoading')
                       mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
                       vm.dataSent = true
-                      vm.$router.push({name: 'home'})
+                      vm.$router.push(`/advertisements/${id}`)
                     })
                     .catch(() => {
                       vm.$store.dispatch('unsetSpinnerLoading')
@@ -405,7 +424,7 @@ export default {
                   vm.$store.dispatch('unsetSpinnerLoading')
                   mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
                   vm.dataSent = true
-                  vm.$router.push({name: 'home'})
+                  vm.$router.push(`/advertisements/${response.data}`)
                 }
               })
               .catch(() => {
@@ -470,10 +489,24 @@ export default {
         this.isGenreSelected &&
         this.isRegionSelected &&
               !this.$v.$invalid
+    },
+    monthFromNow () {
+      let now = new Date()
+      let current
+      if (now.getMonth() === 11) {
+        current = new Date(now.getFullYear() + 1, 0, 1)
+      } else {
+        current = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+      }
+      return current
     }
   },
   validations: {
     advertisement: {
+      dateReleased: {
+        isAfter (date) { return date == null || date === '' || new Date(date) > new Date('1960-01-01T00:00:00Z') },
+        isBefore (date) { return date == null || date === '' || new Date(date) < (this.monthFromNow) }
+      },
       title: {
         required
       },

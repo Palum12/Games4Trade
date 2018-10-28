@@ -42,7 +42,7 @@
                 <p>Producent: {{advertisement.accessoryManufacturer}}</p>
                 <p>Model: {{advertisement.accessoryModel}}</p>
             </div>
-            <p v-if="advertisement.dateReleased != null">Data wydania: {{advertisement.dateReleased}}</p>
+            <p v-if="advertisement.dateReleased != null">Data wydania: {{advertisement.dateReleased.substring(0, 10)}}</p>
             <div v-if="!isOwner && $store.getters.isAuthenticated">
                 <button type="button" class="btn btn-primary btn-block" @click="sendMessage">Napisz do użytkownika!</button>
             </div>
