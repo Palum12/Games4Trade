@@ -382,13 +382,14 @@ namespace Games4Trade.Controllers
         [Authorize]
         [HttpGet]
         [Route("{id}/advertisements/recommended")]
-        public async Task<IActionResult> GetRecommendedAds(int id)
+        public async Task<IActionResult> GetRecommendedAds(int id, [FromQuery]int page)
         {
             if (!await IsSelfService(id))
             {
                 return Forbid();
             }
-            var result = await _advertisementService.GetRecommendedAdsForUser(id);
+            page = page > 0 ? page - 1 : 0;
+            var result = await _advertisementService.GetRecommendedAdsForUser(id, page);
             return Ok(result.Payload);
         }
 

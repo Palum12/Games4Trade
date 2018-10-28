@@ -254,9 +254,9 @@ namespace Games4Trade.Services
             }
         }
 
-        public async Task<OperationResult> GetRecommendedAdsForUser(int userId)
+        public async Task<OperationResult> GetRecommendedAdsForUser(int userId, int page)
         {
-            var ads = await _unitOfWork.Advertisements.GetRecommendedAdvertisements(userId, DefaultPageSize);
+            var ads = await _unitOfWork.Advertisements.GetRecommendedAdvertisements(userId, page, DefaultPageSize);
             var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
             return new OperationResult()
             {

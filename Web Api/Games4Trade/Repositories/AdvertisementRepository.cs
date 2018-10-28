@@ -118,7 +118,7 @@ namespace Games4Trade.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<Advertisement>> GetRecommendedAdvertisements(int userId, int howMany)
+        public async Task<IEnumerable<Advertisement>> GetRecommendedAdvertisements(int userId, int page, int pageSize)
         {
             var genres = await Context.UserGenreRelationship
                 .Where(x => x.UserId == userId).Select(x => x.GenreId).ToArrayAsync();
@@ -127,10 +127,12 @@ namespace Games4Trade.Repositories
             var observedUsers = await Context.ObservedUsersRelationship
                 .Where(u => u.ObservingUserId == userId).Select(x => x.ObservedUserId).ToArrayAsync();
 
+            var skip = page * pageSize;
+
             var ads = await Context.Advertisements.Include(a => a.Item)
                 .Where( a => a.IsActive && a.UserId != userId && (observedUsers.Contains(a.UserId) || systems.Contains(a.Item.SystemId) || 
                             (a.Item is Game && genres.Contains(((Game)a.Item).GenreId)))  )
-                .Take(howMany)
+                .Skip(skip).Take(pageSize)
                 .Include(a => a.Photos)
                 .OrderByDescending(a => a.DateCreated)
                 .ToArrayAsync();

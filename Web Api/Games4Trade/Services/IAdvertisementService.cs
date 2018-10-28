@@ -12,7 +12,7 @@ namespace Games4Trade.Services
         Task<OperationResult> ArchiveAdvertisement(int userId, int adId);
         Task<OperationResult> EditAdvertisement(int userId, int adId, AdvertisementSaveDto ad);
         Task<OperationResult> GetAdvertisement(int id, int? userId = null);
-        Task<OperationResult> GetRecommendedAdsForUser(int userId);
+        Task<OperationResult> GetRecommendedAdsForUser(int userId, int page);
         Task<OperationResult> GetAdvetisementsForUser(int userId, int page, bool selfService);
         Task<OperationResult> GetAdvetisements(AdQueryOptions queryOptions);
         Task<OperationResult> DeleteAdvertisement(int userId, int adId, string reason = null);

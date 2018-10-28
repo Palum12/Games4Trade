@@ -1,9 +1,7 @@
 <template>
     <div class="row no-gutters">
         <div class="col-md-8 col-12 p-3">
-            <div class="jumbotron jumbotron-fluid text-center ">
-                <img alt="Vue logo" src="../assets/logo.png">
-            </div>
+            <home-page-advertisements></home-page-advertisements>
         </div>
         <div class="col-md-4 col-12 p-3">
             <h3>Ogłoszenia dla społeczności</h3>
@@ -15,11 +13,13 @@
 </template>
 
 <script>
-import announcementsList from '../components/announcements/AnnouncementsList'
+import HomePageAdvertisements from '../components/advertisements/HomePageAdvertisements'
+import AnnouncementsList from '../components/announcements/AnnouncementsList'
 export default {
   name: 'home',
   components: {
-    announcementsList
+    HomePageAdvertisements,
+    AnnouncementsList
   }
 }
 </script>
