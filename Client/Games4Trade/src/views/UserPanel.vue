@@ -114,7 +114,7 @@ export default {
 
     .scrollable {
         min-height: 200px;
-        height: 70vh;
+        height: 60vh;
         max-height: 100%;
     }
 </style>

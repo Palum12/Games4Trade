@@ -1,8 +1,8 @@
 <template>
 <div v-if="hasDataLoaded" class="no-gutters advertisement">
     <div class="row">
-        <div class="col-8">
-            <div v-if="images.length > 1" class="gallery">
+        <div class="col-12 col-md-8">
+            <div v-if="advertisement.photos.length > 1" class="gallery">
                 <vue-flux
                         :options="fluxOptions"
                         :images="images"
@@ -12,14 +12,14 @@
                     <flux-pagination slot="pagination"></flux-pagination>
                 </vue-flux>
             </div>
-            <div v-else-if="images.length = 1">
+            <div v-else-if="advertisement.photos.length === 1">
                 <img :src="images[0]">
             </div>
             <div v-else>
                 <img src="../../assets/no_image_available.svg"/>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-12 col-md-4">
             <p>Dodane przez: <router-link :to="`/users/${advertisement.user.id}`"
                                           exact
                                           tag="a">{{advertisement.user.login}}</router-link></p>

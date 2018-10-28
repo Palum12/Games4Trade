@@ -2,6 +2,7 @@
     <div class="scrollable">
         <advertisement-list
                 :advertisement-list="advertisements"
+                @scroll-ended="getMoreAdvertisements"
                 ></advertisement-list>
     </div>
 </template>
