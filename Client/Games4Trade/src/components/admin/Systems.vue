@@ -142,9 +142,9 @@ export default {
               mixins.methods.simpleSuccessPopUp(vm)
               vm.getsystems()
             })
-            .catch(() => {
+            .catch((error) => {
               vm.$store.dispatch('unsetSpinnerLoading')
-              mixins.methods.errorPopUp(vm)
+              mixins.methods.customErrorPopUp(vm, error.response.data)
             })
         })
         .catch(() => {

@@ -102,7 +102,7 @@ namespace Games4Trade.Services
                 {
                     IsSuccessful = false,
                     IsClientError = true,
-                    Message = "Object does not exist in database"
+                    Message = "Obiekt nie istnieje"
                 };
             }
         }
@@ -118,7 +118,7 @@ namespace Games4Trade.Services
                     {
                         IsSuccessful = false,
                         IsClientError = true,
-                        Message = "Genre has connected games with it, please delete them first",
+                        Message = "Istnieją ogłoszenia związane z tym gatunkiem, usuń je przed usunięciem gatunku",
                         Payload = genreInDb.Games
                     };
                 }
