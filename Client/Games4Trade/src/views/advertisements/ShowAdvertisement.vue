@@ -1,21 +1,28 @@
 <template>
 <div v-if="hasDataLoaded" class="no-gutters advertisement">
     <div class="row">
-        <div class="col-8 gallery">
-            <vue-flux
-                    v-if="images.length > 0"
-                    :options="fluxOptions"
-                    :images="images"
-                    :transitions="fluxTransitions"
-                    ref="slider">
-                <flux-controls slot="controls"></flux-controls>
-                <flux-pagination slot="pagination"></flux-pagination>
-            </vue-flux>
+        <div class="col-8">
+            <div v-if="images.length > 1" class="gallery">
+                <vue-flux
+                        :options="fluxOptions"
+                        :images="images"
+                        :transitions="fluxTransitions"
+                        ref="slider">
+                    <flux-controls slot="controls"></flux-controls>
+                    <flux-pagination slot="pagination"></flux-pagination>
+                </vue-flux>
+            </div>
+            <div v-else-if="images.length = 1">
+                <img :src="images[0]">
+            </div>
             <div v-else>
                 <img src="../../assets/no_image_available.svg"/>
             </div>
         </div>
         <div class="col-4">
+            <p>Dodane przez: <router-link :to="`/users/${advertisement.user.id}`"
+                                          exact
+                                          tag="a">{{advertisement.user.login}}</router-link></p>
             <h5>Cena: {{advertisement.price}}zł</h5>
             <p v-if="advertisement.exchangeActive">Wymiana jest możliwa</p>
             <p v-if="advertisement.phone != null">Numer kontaktowy: {{advertisement.phone}}</p>
@@ -174,6 +181,13 @@ export default {
 </script>
 
 <style scoped>
+    img {
+        min-height: 200px;
+        height: 45vh;
+        max-height: 90%;
+        width: 60vw;
+        object-fit: contain ;
+    }
     .gallery{
         min-height: 200px;
         height: 45vh;

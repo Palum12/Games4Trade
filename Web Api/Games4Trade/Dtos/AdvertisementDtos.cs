@@ -36,6 +36,8 @@ namespace Games4Trade.Dtos
         public DateTime? DateReleased { get; set; }
         public StateDto State { get; set; }                
         public SystemDto System { get; set; }
+
+        public UserDto User { get; set; }
         public ICollection<PhotoDto> Photos { get; set; }
     }
 

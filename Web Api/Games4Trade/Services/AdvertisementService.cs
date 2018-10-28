@@ -131,7 +131,7 @@ namespace Games4Trade.Services
                 };
             }
 
-            var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithItem(adId, userId);
+            var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithDetails(adId, userId);
 
             currentAd.ExchangeActive = ad.ExchangeActive;
             currentAd.ShowEmail = ad.ShowEmail;
@@ -211,7 +211,7 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> GetAdvertisement(int id, int? userId = null)
         {
-            var ad =  await _unitOfWork.Advertisements.GetAdvertisementWithItem(id, userId);
+            var ad =  await _unitOfWork.Advertisements.GetAdvertisementWithDetails(id, userId);
             if (ad == null)
             {
                 return new OperationResult()
@@ -546,6 +546,7 @@ namespace Games4Trade.Services
             result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
             result.State = _mapper.Map<State, StateDto>(tempState);
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
+            result.User = _mapper.Map<User, UserDto>(ad.User);
 
             result.Photos = new List<PhotoDto>();
             foreach (var photo in ad.Photos)
@@ -553,15 +554,14 @@ namespace Games4Trade.Services
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
             }
 
-            var user = await _unitOfWork.Users.GetASync(result.UserId);
             if (result.ShowEmail)
             {
-                result.Email = user.Email;
+                result.Email = ad.User.Email;
             }
 
-            if (result.ShowPhone && !string.IsNullOrEmpty(user.PhoneNumber))
+            if (result.ShowPhone && !string.IsNullOrEmpty(ad.User.PhoneNumber))
             {
-                result.PhoneNumber = user.PhoneNumber;
+                result.PhoneNumber = ad.User.PhoneNumber;
             }
 
             return result;
@@ -593,6 +593,7 @@ namespace Games4Trade.Services
             result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
             result.State = _mapper.Map<State, StateDto>(tempState);
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
+            result.User = _mapper.Map<User, UserDto>(ad.User);
 
             result.Photos = new List<PhotoDto>();
             foreach (var photo in ad.Photos)
@@ -600,15 +601,14 @@ namespace Games4Trade.Services
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
             }
 
-            var user = await _unitOfWork.Users.GetASync(result.UserId);
             if (result.ShowEmail)
             {
-                result.Email = user.Email;
+                result.Email = ad.User.Email;
             }
 
-            if (result.ShowPhone && !string.IsNullOrEmpty(user.PhoneNumber))
+            if (result.ShowPhone && !string.IsNullOrEmpty(ad.User.PhoneNumber))
             {
-                result.PhoneNumber = user.PhoneNumber;
+                result.PhoneNumber = ad.User.PhoneNumber;
             }
 
             return result;
@@ -640,6 +640,7 @@ namespace Games4Trade.Services
 
             result.State = _mapper.Map<State, StateDto>(tempState);
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
+            result.User = _mapper.Map<User, UserDto>(ad.User);
 
             result.Photos = new List<PhotoDto>();
             foreach (var photo in ad.Photos)
@@ -647,15 +648,14 @@ namespace Games4Trade.Services
                 result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
             }
 
-            var user = await _unitOfWork.Users.GetASync(result.UserId);
             if (result.ShowEmail)
             {
-                result.Email = user.Email;
+                result.Email = ad.User.Email;
             }
 
-            if (result.ShowPhone && !string.IsNullOrEmpty(user.PhoneNumber))
+            if (result.ShowPhone && !string.IsNullOrEmpty(ad.User.PhoneNumber))
             {
-                result.PhoneNumber = user.PhoneNumber;
+                result.PhoneNumber = ad.User.PhoneNumber;
             }
 
             return result;

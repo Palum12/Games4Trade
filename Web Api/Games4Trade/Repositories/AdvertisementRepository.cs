@@ -13,12 +13,13 @@ namespace Games4Trade.Repositories
     {
         public AdvertisementRepository(ApplicationContext context) : base(context) { }
 
-        public async Task<Advertisement> GetAdvertisementWithItem(int id, int? userId = null)
+        public async Task<Advertisement> GetAdvertisementWithDetails(int id, int? userId = null)
         {
             return await Context.Advertisements
                 .Where(a => a.IsActive || (userId.HasValue && a.UserId == userId))
                 .Include(a => a.Item)
-                .Include(a => a.Photos).FirstOrDefaultAsync(a => a.Id == id);
+                .Include(a => a.Photos)
+                .Include(a => a.User).FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<IEnumerable<Advertisement>> Get(int page, int pageSize)

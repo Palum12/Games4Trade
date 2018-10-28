@@ -34,7 +34,7 @@ export default new Router({
       path: '/admin',
       name: 'admin',
       component: Admin
-    },
-    {path: '*', redirect: '/'}
+    }/*,
+    {path: '*', redirect: '/'}*/
   ]
 })
