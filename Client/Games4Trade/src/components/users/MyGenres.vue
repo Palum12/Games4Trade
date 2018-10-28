@@ -52,13 +52,13 @@ export default {
           vm.likedGenres.forEach(el => {
             likedGenresRequest.push(el.id)
           })
-          axios.patch(`users/${vm.userId}/genres`, likedGenresRequest)
+          axios.patch(`users/${vm.userId}/genres`, {GenresIds: likedGenresRequest})
             .then(response => {
               mixins.methods.simpleSuccessPopUp(vm)
               vm.$forceUpdate()
             })
             .catch(error => {
-              mixins.methods.errorPopUp(error.response.data)
+              mixins.methods.errorPopUp(vm, error.response.data)
               vm.$forceUpdate()
             })
         })

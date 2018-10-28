@@ -51,13 +51,13 @@ export default {
           vm.likedSystems.forEach(el => {
             likedSystemsRequest.push(el.id)
           })
-          axios.patch(`users/${vm.userId}/systems`, likedSystemsRequest)
+          axios.patch(`users/${vm.userId}/systems`, {SystemsIds: likedSystemsRequest})
             .then(response => {
               mixins.methods.simpleSuccessPopUp(vm)
               vm.$forceUpdate()
             })
             .catch(error => {
-              mixins.methods.errorPopUp(error.response.data)
+              mixins.methods.errorPopUp(vm, error.response.data)
               vm.$forceUpdate()
             })
         })
