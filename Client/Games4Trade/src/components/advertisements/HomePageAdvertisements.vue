@@ -8,7 +8,9 @@
             <h3>Oto najnowsze ogłoszenia !</h3>
         </div>
         <div class="scrollable-ads" >
-            <advertisement-list :advertisementList="advertisements"></advertisement-list>
+            <advertisement-list
+                    :advertisementList="advertisements"
+                    @scroll-ended="getMoreAdvertisements"></advertisement-list>
         </div>
     </div>
 </template>
@@ -31,6 +33,31 @@ export default {
       advertisements: []
     }
   },
+  computed: {
+    urlToGet () {
+      if (this.areRecommended) {
+        return `/users/${this.userId}/advertisements/recommended?page=${this.nextPage}`
+      } else {
+        return `/advertisements/?page=${this.nextPage}&size=${this.pageSize}&desc=true`
+      }
+    }
+  },
+  methods: {
+    getMoreAdvertisements () {
+      if (this.isNextPage) {
+        let vm = this
+        axios.get(this.urlToGet)
+          .then(response => {
+            vm.advertisements.push(...response.data)
+            if (response.data.length === 0) {
+              vm.isNextPage = false
+            } else {
+              vm.nextPage = vm.nextPage + 1
+            }
+          })
+      }
+    }
+  },
   mounted () {
     let vm = this
     if (this.$store.getters.isAuthenticated) {
@@ -43,11 +70,13 @@ export default {
               if (response.data.length > 0) {
                 vm.areRecommended = true
                 vm.advertisements = response.data
+                vm.nextPage = vm.nextPage + 1
               } else {
                 vm.areRecommended = false
                 axios.get(`/advertisements/?page=${vm.nextPage}&size=${vm.pageSize}&desc=true`)
                   .then(response => {
                     vm.advertisements = response.data
+                    vm.nextPage = vm.nextPage + 1
                   })
               }
             })
