@@ -18,7 +18,7 @@
                     <div class="row">
                         <div class="col-3">
                             <p>Wybierz typ ogłoszenia: </p>
-                            <div class="form-group">
+                            <div class="form-group noBottomMargin">
                                 <div class="radio">
                                     <label><input type="radio" value="Game" v-model="advertisement.discriminator">Gra</label>
                                 </div>
@@ -68,15 +68,15 @@
                                     Cena nie może być ujemna!
                                 </p>
                             </div>
-                            <div class="form-group checks">
+                            <div class="form-group noBottomMargin">
                                 <input type="checkbox" id="exchange" v-model="advertisement.exchangeActive">
                                 <label for="exchange">Czy chcesz się wymienić ?</label>
                             </div>
-                            <div class="form-group checks">
+                            <div class="form-group noBottomMargin">
                                 <input type="checkbox" id="showEmail" v-model="advertisement.showEmail">
                                 <label for="showEmail">Czy chcesz się pokazać swój email w ogłoszeniu ?</label>
                             </div>
-                            <div class="form-group checks">
+                            <div class="form-group noBottomMargin">
                                 <input type="checkbox" id="showPhone" v-model="advertisement.showPhone">
                                 <label for="showPhone">Czy chcesz się pokazać swój numer telefonu w ogłoszeniu (o ile go podałeś) ?</label>
                             </div>
@@ -598,7 +598,7 @@ export default {
 </script>
 
 <style scoped>
-    .checks {
+    .noBottomMargin {
         margin-bottom: 0 !important;
     }
 </style>
