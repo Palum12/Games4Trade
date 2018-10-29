@@ -15,6 +15,15 @@ namespace Games4Trade.Dtos
         public string Description { get; set; }
     }
 
+    public class UserLikedGenresDto
+    {
+        public IList<int> GenresIds { get; set; }
+    }
+    public class UserOwnedSystemsDto
+    {
+        public IList<int> SystemsIds { get; set; }
+    }
+
     public class ObservedUserDto
     {
         public int Id { get; set; }

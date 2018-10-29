@@ -234,14 +234,14 @@ namespace Games4Trade.Controllers
         [HttpPatch]
         [Route("{id}/genres")]
         [Authorize]
-        public async Task<IActionResult> ChangeUserLikedGenres(int id, IList<int> likedGenres)
+        public async Task<IActionResult> ChangeUserLikedGenres(int id, UserLikedGenresDto likedGenres)
         {
             if (!await IsSelfService(id))
             {
                 return Unauthorized();
             }
 
-            var result =  await _userService.ReplaceGenresForUser(id, likedGenres);
+            var result =  await _userService.ReplaceGenresForUser(id, likedGenres.GenresIds);
             if (result.IsSuccessful)
             {
                 return Ok();
@@ -272,14 +272,14 @@ namespace Games4Trade.Controllers
         [HttpPatch]
         [Route("{id}/systems")]
         [Authorize]
-        public async Task<IActionResult> ChangeUserLikedSystems(int id, IList<int> ownedSystems)
+        public async Task<IActionResult> ChangeUserLikedSystems(int id, UserOwnedSystemsDto ownedSystems)
         {
             if (!await IsSelfService(id))
             {
                 return Unauthorized();
             }
 
-            var result = await _userService.ReplaceSystemsForUser(id, ownedSystems);
+            var result = await _userService.ReplaceSystemsForUser(id, ownedSystems.SystemsIds);
             if (result.IsSuccessful)
             {
                 return Ok();

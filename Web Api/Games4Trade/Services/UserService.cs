@@ -387,15 +387,7 @@ namespace Games4Trade.Services
                 .Select(x => new UserLikedGenre{UserId = userId, GenreId = x}).ToList();
             await _unitOfWork.Users.ReplaceGenresForUser(userId, newRelationships);
             var repoResult = await _unitOfWork.CompleteASync();
-            if (repoResult > 0)
-            {
-                return new OperationResult
-                {
-                    IsSuccessful = true
-                };
-            }
-
-            return OtherServices.GetIncorrectDatabaseConnectionResult();
+            return new OperationResult { IsSuccessful = true };
         }
 
         public async Task<OperationResult> ReplaceSystemsForUser(int userId, IList<int> systemsIds)
@@ -411,15 +403,7 @@ namespace Games4Trade.Services
                 .Select(x => new UserOwnedSystem { UserId = userId, SystemId = x }).ToList();
             await _unitOfWork.Users.ReplaceSystemsForUser(userId, newRelationships);
             var repoResult = await _unitOfWork.CompleteASync();
-            if (repoResult > 0)
-            {
-                return new OperationResult
-                {
-                    IsSuccessful = true
-                };
-            }
-
-            return OtherServices.GetIncorrectDatabaseConnectionResult();
+            return new OperationResult {IsSuccessful = true};
         }
 
         public async Task<OperationResult> CreateUser(UserRegisterDto newUser)
