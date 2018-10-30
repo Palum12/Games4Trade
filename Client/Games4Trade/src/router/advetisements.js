@@ -1,5 +1,6 @@
 import ShowAdvertisement from '../views/advertisements/ShowAdvertisement'
 import CreateOrUpdateAdvertisement from '../views/advertisements/CreateOrUpdateAdvertisement'
+import SearchAdvertisements from '../views/advertisements/SearchAdvertisements'
 export default {
   ADDADVERTISEMENT: {
     path: '/advertisements/add',
@@ -15,5 +16,10 @@ export default {
     path: '/advertisements/:id',
     name: 'ShowAvertisement',
     component: ShowAdvertisement
+  },
+  SEARCHADVERTISEMENTS: {
+    path: '/advertisements/search/:text',
+    name: 'SearchAdvertisement',
+    component: SearchAdvertisements
   }
 }

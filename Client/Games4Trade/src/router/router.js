@@ -24,6 +24,7 @@ export default new Router({
     Advertisements.ADDADVERTISEMENT,
     Advertisements.EDITADVERTISEMENT,
     Advertisements.SHOWADVERTISEMENT,
+    Advertisements.SEARCHADVERTISEMENTS,
     Messages.MESSAGES,
     {
       path: '/',
@@ -34,7 +35,7 @@ export default new Router({
       path: '/admin',
       name: 'admin',
       component: Admin
-    }/*,
-    {path: '*', redirect: '/'}*/
+    }/* ,
+    {path: '*', redirect: '/'} */
   ]
 })

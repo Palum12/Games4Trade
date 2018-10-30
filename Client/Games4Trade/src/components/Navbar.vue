@@ -19,8 +19,12 @@
                                         class="form-control ml-5 mr-sm-2"
                                         type="search"
                                         placeholder="Szukaj ogłoszeń"
-                                        aria-label="Search">
-                                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Szukaj</button>
+                                        aria-label="Search"
+                                        v-model="searchText">
+                                <button
+                                        class="btn btn-outline-light my-2 my-sm-0"
+                                        type="button"
+                                        @click="goToSearch">Szukaj</button>
                             </form>
                     </li>
                 </ul>
@@ -50,12 +54,20 @@
 import { mapGetters } from 'vuex'
 export default {
   name: 'Navbar',
+  data () {
+    return {
+      searchText: ''
+    }
+  },
   computed: {
     ...mapGetters(['isAuthenticated', 'isAdmin'])
   },
   methods: {
     logout () {
       this.$store.dispatch('logout')
+    },
+    goToSearch () {
+      this.$router.push({name: 'SearchAdvertisement', params: {text: this.searchText}})
     }
   }
 }
