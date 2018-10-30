@@ -31,7 +31,7 @@ namespace Games4Trade.Dtos
         public string Description { get; set; }
         public IList<string> LikedGenres { get; set; }
         public IList<string> InterestingSystems { get; set; }
-    }
+    } 
 
     public class UserProfileDto : ObservedUserDto
     {

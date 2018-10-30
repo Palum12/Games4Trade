@@ -18,7 +18,7 @@ export default {
     component: ShowAdvertisement
   },
   SEARCHADVERTISEMENTS: {
-    path: '/advertisements/search/:text',
+    path: '/advertisements/search/:text?',
     name: 'SearchAdvertisement',
     component: SearchAdvertisements
   }

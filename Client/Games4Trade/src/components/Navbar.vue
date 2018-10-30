@@ -56,7 +56,7 @@ export default {
   name: 'Navbar',
   data () {
     return {
-      searchText: ''
+      searchText: null
     }
   },
   computed: {
