@@ -86,6 +86,7 @@ export default {
       axios.get(`/advertisements/?page=${vm.nextPage}&size=${vm.pageSize}&desc=true`)
         .then(response => {
           vm.advertisements = response.data
+          vm.nextPage = vm.nextPage + 1
         })
     }
   }
