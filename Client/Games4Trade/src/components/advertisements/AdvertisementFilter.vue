@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <h2>Filtruj ogłoszenia</h2>
-        <div class="form rounded col-12">
+        <div class="form rounded col-12 my-2">
             <form @submit.prevent="onSubmit">
                 <div class="form-group">
                     <label for="type">Typ ogłoszenia</label>
@@ -73,10 +73,10 @@ export default {
   },
   methods: {
     cleanFilters () {
-      console.log('filter')
+      this.$emit('clear')
     },
     applyFilters () {
-      console.log('test')
+      this.$emit('filter')
     }
   }
 }

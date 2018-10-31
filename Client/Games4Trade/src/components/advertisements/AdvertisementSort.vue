@@ -11,6 +11,7 @@
                     </select>
                     <input type="checkbox" id="desc" v-model="sortCriteria.desc">
                     <label for="desc">Malejąco</label>
+                    <button type="button" class="btn btn-outline-success mx-2" @click="applySort">Sortuj</button>
         </form>
     </div>
 </template>
@@ -18,7 +19,12 @@
 <script>
 export default {
   name: 'AdvertisementSort',
-  props: ['sortCriteria']
+  props: ['sortCriteria'],
+  methods: {
+    applySort () {
+      this.$emit('filter')
+    }
+  }
 }
 </script>
 
