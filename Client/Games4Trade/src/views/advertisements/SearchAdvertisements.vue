@@ -1,20 +1,18 @@
 <template>
-<div class="no-gutters">
-    <div class="row">
-        <div class="col-3">
-            <advertisement-filter :filter-criteria="filterCriteria"></advertisement-filter>
-        </div>
-        <div class="col-9">
-            <div class="row">
-                <advertisement-sort :sort-criteria="sortCriteria"></advertisement-sort>
+    <div class="row no-gutters">
+            <div class="col-3">
+                <advertisement-filter :filter-criteria="filterCriteria"></advertisement-filter>
             </div>
-            <div class="row btn-block">
-                <advertisement-list class="scrollable-ads" :advertisement-list="advertisements"></advertisement-list>
-                <button type="button" class="btn btn-primary btn-block" @click="getNextPage">Pobierz więcej</button>
+            <div class="col-8">
+                <div class="row mb-2">
+                    <advertisement-sort :sort-criteria="sortCriteria"></advertisement-sort>
+                </div>
+                <div class="row btn-block">
+                    <advertisement-list class="scrollable-ads" :advertisement-list="advertisements"></advertisement-list>
+                    <button type="button" class="btn btn-primary btn-block" @click="getNextPage">Pobierz więcej</button>
+                </div>
             </div>
-        </div>
     </div>
-</div>
 </template>
 
 <script>
