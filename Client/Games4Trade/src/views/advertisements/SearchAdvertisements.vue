@@ -1,9 +1,9 @@
 <template>
-    <div class="row no-gutters">
+    <div class="row no-gutters search">
             <div class="col-3">
                 <advertisement-filter :filter-criteria="filterCriteria"></advertisement-filter>
             </div>
-            <div class="col-8">
+            <div class="col-8 search">
                 <div class="row mb-2">
                     <advertisement-sort :sort-criteria="sortCriteria"></advertisement-sort>
                 </div>
@@ -36,9 +36,9 @@ export default {
       filterCriteria: {
         type: null,
         stateId: null,
-        systemId: null,
+        systemIds: [],
         regionId: null,
-        genreId: null
+        genreIds: []
       },
       isNextPage: true,
       nextPage: 1,
@@ -78,5 +78,9 @@ export default {
         min-height: 200px;
         height: 72vh;
         max-height: 100%;
+    }
+    .search {
+        margin-left: 1vw !important;
+        margin-right: 0 !important;
     }
 </style>
