@@ -1,15 +1,25 @@
 <template>
     <div class="row no-gutters search">
             <div class="col-3">
-                <advertisement-filter :filter-criteria="filterCriteria"></advertisement-filter>
+                <advertisement-filter
+                        :filter-criteria="filterCriteria"
+                        @filter="search"
+                        @clear="clear"
+                ></advertisement-filter>
             </div>
             <div class="col-8 search">
                 <div class="row mb-2">
-                    <advertisement-sort :sort-criteria="sortCriteria"></advertisement-sort>
+                    <advertisement-sort
+                            :sort-criteria="sortCriteria"
+                            @filter="search"></advertisement-sort>
                 </div>
-                <div class="row btn-block">
+                <div class="row scrollable-ads btn-block">
                     <advertisement-list class="scrollable-ads" :advertisement-list="advertisements"></advertisement-list>
-                    <button type="button" class="btn btn-primary btn-block" @click="getNextPage">Pobierz więcej</button>
+                    <button
+                            :disabled="!isNextPage"
+                            type="button"
+                            class="btn btn-primary btn-block"
+                            @click="getNextPage">Pobierz więcej</button>
                 </div>
             </div>
     </div>
@@ -19,6 +29,8 @@
 import AdvertisementList from '../../components/advertisements/AdvertisementList'
 import AdvertisementFilter from '../../components/advertisements/AdvertisementFilter'
 import AdvertisementSort from '../../components/advertisements/AdvertisementSort'
+import axios from 'axios'
+import advetisements from '../../router/advetisements'
 export default {
   name: 'SearchAdvertisement',
   components: {
@@ -42,32 +54,63 @@ export default {
       },
       isNextPage: true,
       nextPage: 1,
-      earlyQuery: ''
+      pageSize: 10,
+      query: ''
     }
   },
   methods: {
+    clear () {
+      this.filterCriteria = {
+        type: null,
+        stateId: null,
+        systemIds: [],
+        regionId: null,
+        genreIds: []
+      }
+      this.sortCriteria = {
+        sort: 'DateCreated',
+        desc: true
+      }
+      this.search()
+    },
     search () {
-      this.advertisements.push({
-        id: 1,
-        title: 'No elo',
-        dateCreated: '2008-03-03',
-        price: 200,
-        exchangeActive: true
-      })
-      this.advertisements.push({
-        id: 2,
-        title: 'No elo 2',
-        dateCreated: '2008-03-03',
-        price: 300,
-        exchangeActive: false
-      })
+      this.isNextPage = true
+      this.nextPage = 2
+      let url = 'advertisements?'
+      if (this.query !== null && this.query !== '') {
+        url = url + `search=${this.query}`
+      }
+      url = url + '&sort=' + this.sortCriteria.sort
+      url = url + '&desc=' + this.sortCriteria.desc
+      if (this.filterCriteria.stateId != null) {
+        url = url + '&state=' + this.filterCriteria.stateId
+      }
+      axios.get(url)
+        .then(response => {
+          this.advertisements = response.data
+        })
+        .catch(() => {
+          console.log('not found ?')
+        })
     },
     getNextPage () {
+      if (this.isNextPage) {
+        let vm = this
+        axios.get(this.urlToGet)
+          .then(response => {
+            vm.advertisements.push(...response.data)
+            if (response.data.length === 0) {
+              vm.isNextPage = false
+            } else {
+              vm.nextPage = vm.nextPage + 1
+            }
+          })
+      }
       console.log('Im done!')
     }
   },
   mounted () {
-    this.earlyQuery = this.$route.params.text
+    this.query = this.$route.params.text
     this.search()
   }
 }
@@ -76,7 +119,7 @@ export default {
 <style scoped>
     .scrollable-ads {
         min-height: 200px;
-        height: 72vh;
+        height: 80vh;
         max-height: 100%;
     }
     .search {
