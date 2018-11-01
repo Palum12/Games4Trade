@@ -60,6 +60,12 @@ export default {
       query: ''
     }
   },
+  watch: {
+    '$route.params.text': function (newQuery) {
+      this.query = newQuery
+      this.search()
+    }
+  },
   methods: {
     clear () {
       this.filterCriteria = {
