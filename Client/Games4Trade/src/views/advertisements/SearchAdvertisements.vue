@@ -13,13 +13,16 @@
                             :sort-criteria="sortCriteria"
                             @filter="search"></advertisement-sort>
                 </div>
-                <div class="row scrollable-ads btn-block">
+                <div v-if="advertisements.length > 0" class="row scrollable-ads btn-block">
                     <advertisement-list class="scrollable-ads" :advertisement-list="advertisements"></advertisement-list>
                     <button
                             :disabled="!isNextPage"
                             type="button"
                             class="btn btn-primary btn-block"
                             @click="getNextPage">Pobierz więcej</button>
+                </div>
+                <div v-else>
+                    <p>Niestety nie znaleziono pasujących ogłoszeń !</p>
                 </div>
             </div>
     </div>
@@ -30,7 +33,6 @@ import AdvertisementList from '../../components/advertisements/AdvertisementList
 import AdvertisementFilter from '../../components/advertisements/AdvertisementFilter'
 import AdvertisementSort from '../../components/advertisements/AdvertisementSort'
 import axios from 'axios'
-import advetisements from '../../router/advetisements'
 export default {
   name: 'SearchAdvertisement',
   components: {
@@ -75,7 +77,14 @@ export default {
     },
     search () {
       this.isNextPage = true
-      this.nextPage = 2
+      this.nextPage = 1
+      this.advertisements = []
+      this.getData()
+    },
+    getNextPage () {
+      this.getData()
+    },
+    getData () {
       let url = 'advertisements?'
       if (this.query !== null && this.query !== '') {
         url = url + `search=${this.query}`
@@ -85,28 +94,41 @@ export default {
       if (this.filterCriteria.stateId != null) {
         url = url + '&state=' + this.filterCriteria.stateId
       }
+      if (this.filterCriteria.systemIds.length > 0) {
+        this.filterCriteria.systemIds.forEach(x => {
+          url = url + '&systems=' + x
+        })
+      }
+      if (this.filterCriteria.type != null) {
+        url = url + '&type=' + this.filterCriteria.type
+        if (this.filterCriteria.type === 'game') {
+          if (this.filterCriteria.genreIds.length > 0) {
+            this.filterCriteria.genreIds.forEach(x => {
+              url = url + '&genres=' + x
+            })
+          }
+        }
+        if (this.filterCriteria.type !== 'accessory') {
+          if (this.filterCriteria.regionId != null) {
+            url = url + '&region=' + this.filterCriteria.regionId
+          }
+        }
+      }
+      url = url + '&page=' + this.nextPage
+      url = url + '&size=' + this.pageSize
+      let vm = this
       axios.get(url)
         .then(response => {
-          this.advertisements = response.data
+          vm.advertisements.push(...response.data)
+          if (response.data.length % vm.pageSize !== 0) {
+            vm.isNextPage = false
+          } else {
+            vm.nextPage = vm.nextPage + 1
+          }
         })
         .catch(() => {
           console.log('not found ?')
         })
-    },
-    getNextPage () {
-      if (this.isNextPage) {
-        let vm = this
-        axios.get(this.urlToGet)
-          .then(response => {
-            vm.advertisements.push(...response.data)
-            if (response.data.length === 0) {
-              vm.isNextPage = false
-            } else {
-              vm.nextPage = vm.nextPage + 1
-            }
-          })
-      }
-      console.log('Im done!')
     }
   },
   mounted () {

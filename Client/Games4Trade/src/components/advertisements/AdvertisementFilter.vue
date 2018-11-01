@@ -10,9 +10,9 @@
                             id="type"
                             v-model="filterCriteria.type">
                         <option :value="null">Wszystkie</option>
-                        <option value="Game">Gra</option>
-                        <option value="Console">Konsola</option>
-                        <option value="Accessory">Akcesorium</option>
+                        <option value="game">Gra</option>
+                        <option value="console">Konsola</option>
+                        <option value="accessory">Akcesorium</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -32,14 +32,14 @@
                         <label :for="system.id">{{system.manufacturer + ' ' + system.model}}</label>
                     </div>
                 </div>
-                <div class="form-group">
+                <div  v-if="filterCriteria.type != null && filterCriteria.type === 'game'" class="form-group">
                     <label @click="showGenres = !showGenres">{{'Gatunek' + (showGenres ? '▲' : '▼')}}</label>
                     <div v-show="showGenres" v-for="genre in genres" :key="genre.id">
                         <input type="checkbox" :id="genre.id" :value="genre.id" v-model="filterCriteria.genreIds">
                         <label :for="genre.id">{{genre.value}}</label>
                     </div>
                 </div>
-                <div v-if="filterCriteria.type != null && filterCriteria.type !== 'Accessory'" class="form-group">
+                <div v-if="filterCriteria.type != null && filterCriteria.type !== 'accessory'" class="form-group">
                     <label>Region</label>
                     <div v-for="region in regions" :key="region.id">
                         <input type="radio" :id="region.id" :value="region.id" v-model="filterCriteria.regionId">
