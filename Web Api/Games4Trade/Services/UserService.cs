@@ -141,7 +141,6 @@ namespace Games4Trade.Services
             return _mapper.Map<User, UserDto>(user);
         }
 
-        // todo: add ads
         public async Task<UserProfileDto> GetUserProfile(int id, int? currentUser = null)
         {
             var user = await _unitOfWork.Users.GetASync(id);
