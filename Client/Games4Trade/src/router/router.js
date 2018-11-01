@@ -15,6 +15,7 @@ export default new Router({
   routes: [
     Users.CHANGE_PASSWORD,
     Users.USER_PANEL,
+    Users.USER_ADVERTISEMENTS,
     Users.USER_PROFILE,
     Navbar.LOGIN,
     Navbar.SIGNUP,

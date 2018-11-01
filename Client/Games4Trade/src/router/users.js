@@ -1,6 +1,7 @@
 import ChangePassword from '../components/users/ChangePassword'
 import UserPanel from '../views/users/UserPanel'
 import UserProfile from '../views/users/UserProfile'
+import UsersAdvertisements from '../views/users/UsersAdvertisements'
 
 export default {
   CHANGE_PASSWORD: {
@@ -12,6 +13,11 @@ export default {
     path: '/userpanel',
     name: 'UserPanel',
     component: UserPanel
+  },
+  USER_ADVERTISEMENTS: {
+    path: '/users/:id/advertisements',
+    name: 'UsersAdvertisements',
+    component: UsersAdvertisements
   },
   USER_PROFILE: {
     path: '/users/:id',
