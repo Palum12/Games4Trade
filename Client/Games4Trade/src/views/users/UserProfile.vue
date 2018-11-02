@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="mt-4">
-            <h4>Najnowsze ogłoszenia użytkownika: <router-link :to="`users/${user.id}/advertisements`" tag="a">tutaj</router-link></h4>
+            <h4>Najnowsze ogłoszenia użytkownika: <router-link :to="`${user.id}/advertisements`" tag="a">tutaj</router-link></h4>
         </div>
     </div>
 </template>
