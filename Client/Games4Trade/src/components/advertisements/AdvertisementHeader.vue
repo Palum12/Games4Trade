@@ -20,8 +20,13 @@
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <small>{{advertisement.dateCreated.substring(0,10)
-                                        + ' ' + advertisement.dateCreated.substring(11,16)}}</small>
+                                    <div class="row">
+                                        <small>{{advertisement.dateCreated.substring(0,10)
+                                            + ' ' + advertisement.dateCreated.substring(11,16)}}</small>
+                                    </div>
+                                    <div v-if="!advertisement.isActive" class="row">
+                                        <strong>Ogłoszenie nieaktywne</strong>
+                                    </div>
                                 </div>
                             </div>
                     </div>

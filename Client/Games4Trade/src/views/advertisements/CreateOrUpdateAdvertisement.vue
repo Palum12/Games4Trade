@@ -326,9 +326,83 @@ export default {
     },
     regionId (newVal) {
       this.advertisement.regionId = newVal
+    },
+    '$route': function (newVal) {
+      this.getData()
     }
   },
   methods: {
+    getData () {
+      this.hasDataLoaded = false
+      this.regionId = null
+      this.genreId = null
+      this.accessoryManufacturer = null
+      this.accessoryModel = null
+      this.advertisement = {
+        id: null,
+        title: null,
+        dateReleased: null,
+        description: null,
+        discriminator: 'Game',
+        exchangeActive: false,
+        price: null,
+        stateId: null,
+        systemId: null,
+        regionId: null,
+        genreId: null,
+        developer: null,
+        accessoryManufacturer: null,
+        accessoryModel: null,
+        showEmail: false,
+        showPhone: false,
+        isActive: true
+      }
+      this.selectedFiles = []
+      this.isEditing = false
+      let vm = this
+      this.$store.dispatch('getUserId')
+        .then(response => {
+          vm.userId = response.data
+          if (this.$route.params.id != null) {
+            let id = this.$route.params.id
+            axios.get(`advertisements/${id}`)
+              .then(response => {
+                if (response.data.userId !== vm.userId) {
+                  vm.$router.push('/')
+                } else {
+                  vm.advertisement = response.data
+                  vm.advertisement.dateReleased =
+                    vm.advertisement.dateReleased == null ? null : vm.advertisement.dateReleased.substring(0, 10)
+                  vm.advertisement.systemId = response.data.system.id
+                  vm.advertisement.stateId = response.data.state.id
+                  if (vm.advertisement.discriminator === 'Game') {
+                    vm.advertisement.genreId = response.data.genre.id
+                    vm.genreId = response.data.genre.id
+                    vm.advertisement.regionId = response.data.region.id
+                    vm.regionId = response.data.region.id
+                  }
+                  if (vm.advertisement.discriminator === 'Console') {
+                    vm.advertisement.regionId = response.data.region.id
+                    vm.regionId = response.data.region.id
+                  }
+                  if (vm.advertisement.discriminator === 'Accessory') {
+                    vm.accessoryManufacturer = response.data.accessoryManufacturer
+                    vm.accessoryModel = response.data.accessoryModel
+                  }
+                  if (response.data.photos.length > 0) {
+                    vm.selectedFiles = response.data.photos
+                  }
+                  vm.isEditing = true
+                  vm.hasDataLoaded = true
+                }
+              })
+              .catch(error => {
+                console.log(error)
+              })
+          }
+          vm.hasDataLoaded = true
+        })
+    },
     selectedPhotos (event) {
       this.hasPhotoChanged = true
       this.$store.dispatch('setSpinnerLoading')
@@ -525,48 +599,8 @@ export default {
       }
     }
   },
-  async mounted () {
-    let vm = this
-    await this.$store.dispatch('getUserId')
-      .then(response => {
-        vm.userId = response.data
-      })
-    if (this.$route.params.id != null) {
-      let id = this.$route.params.id
-      await axios.get(`advertisements/${id}`)
-        .then(response => {
-          if (response.data.userId !== vm.userId) {
-            vm.$router.push('/')
-          } else {
-            vm.advertisement = response.data
-            vm.advertisement.dateReleased = vm.advertisement.dateReleased.substring(0, 10)
-            vm.advertisement.systemId = response.data.system.id
-            vm.advertisement.stateId = response.data.state.id
-            if (vm.advertisement.discriminator === 'Game') {
-              vm.advertisement.genreId = response.data.genre.id
-              vm.genreId = response.data.genre.id
-              vm.advertisement.regionId = response.data.region.id
-              vm.regionId = response.data.region.id
-            }
-            if (vm.advertisement.discriminator === 'Console') {
-              vm.advertisement.regionId = response.data.region.id
-              vm.regionId = response.data.region.id
-            }
-            if (vm.advertisement.discriminator === 'Accessory') {
-              vm.accessoryManufacturer = response.data.accessoryManufacturer
-              vm.accessoryModel = response.data.accessoryModel
-            }
-            if (response.data.photos.length > 0) {
-              vm.selectedFiles = response.data.photos
-            }
-            vm.isEditing = true
-          }
-        })
-        .catch(() => {
-          vm.$router.push('/')
-        })
-    }
-    this.hasDataLoaded = true
+  mounted () {
+    this.getData()
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {

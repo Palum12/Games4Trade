@@ -99,6 +99,7 @@ const actions = {
     commit('clearAuthData')
     router.push('/')
     localStorage.clear()
+    window.location.reload(true)
   },
   getUserId () {
     return axios.get('users/id')
