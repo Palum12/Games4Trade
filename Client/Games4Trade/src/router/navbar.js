@@ -1,5 +1,5 @@
-import Login from '../components/users/Login'
-import SignUp from '../components/users/SignUp'
+import Login from '../views/users/Login'
+import SignUp from '../views/users/SignUp'
 
 export default {
   LOGIN: {

@@ -1,4 +1,4 @@
-import ChangePassword from '../components/users/ChangePassword'
+import ChangePassword from '../views/users/ChangePassword'
 import UserPanel from '../views/users/UserPanel'
 import UserProfile from '../views/users/UserProfile'
 import UsersAdvertisements from '../views/users/UsersAdvertisements'
