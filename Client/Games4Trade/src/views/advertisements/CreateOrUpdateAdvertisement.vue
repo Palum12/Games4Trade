@@ -16,7 +16,7 @@
                         </p>
                     </div>
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-12 col-md-3">
                             <p>Wybierz typ ogłoszenia: </p>
                             <div class="form-group noBottomMargin">
                                 <div class="radio">
@@ -48,7 +48,7 @@
                                 Proszę podać realną datę do miesiąca w przyszłość
                             </p>
                         </div>
-                        <div class="col-9">
+                        <div class="col-12 col-md-9">
                             <div class="form-group">
                                 <div class="input">
                                     <label for="price">Twoj wycena</label>
@@ -83,7 +83,7 @@
                         </div>
                     </div>
                     <div v-if="advertisement.discriminator==='Accessory'" class="form-row">
-                        <div class="form-group col-5">
+                        <div class="form-group col-12 col-md-5">
                             <label for="manufacturer">Producent</label>
                             <input
                                     type="text"
@@ -94,7 +94,7 @@
                                 Proszę podać producenta akcesorium
                             </p>
                         </div>
-                        <div class="form-group col-7">
+                        <div class="form-group col-12 col-md-7">
                             <label for="manufacturer">Model</label>
                             <input
                                     type="text"
@@ -115,7 +115,7 @@
                                 v-model="advertisement.developer">
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-5">
+                        <div class="form-group col-12 col-md-5">
                             <div class="input">
                                 <label for="state">Stan przedmiotu</label>
                                 <select
@@ -130,7 +130,7 @@
                                 Proszę wskazać stan przedmiotu ogłoszenia
                             </p>
                         </div>
-                        <div class="form-group col-7">
+                        <div class="form-group col-12 col-md-7">
                             <div class="input">
                                 <label for="system">System</label>
                                 <select
@@ -150,7 +150,7 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div v-if="advertisement.discriminator !== 'Accessory'" class="form-group col-5">
+                        <div v-if="advertisement.discriminator !== 'Accessory'" class="form-group col-12 col-md-5">
                             <div class="input">
                                 <label for="region">Region</label>
                                 <select
@@ -167,7 +167,7 @@
                                 Proszę wybrać region
                             </p>
                         </div>
-                        <div v-if="advertisement.discriminator === 'Game'" class="form-group col-7">
+                        <div v-if="advertisement.discriminator === 'Game'" class="form-group col-12 col-md-7">
                             <div class="input">
                                 <label for="genre">Gatunek</label>
                                 <select
@@ -198,10 +198,10 @@
                             Opis nie może być pusty
                         </p>
                     </div>
-                    <div class="row d-flex justify-content-around">
+                    <div class="row d-flex justify-content-around ">
                         <button
                                 type="button"
-                                class="btn btn-info mx-2"
+                                class="btn btn-info m-1"
                                 @click="$router.go(-1)">Powrót</button>
                         <div v-if="selectedFiles.length === 0">
                             <input
@@ -211,37 +211,36 @@
                                     accept="image/x-png, image/jpeg"
                                     multiple="multiple"
                                     @change="selectedPhotos">
-                            <button type="button" class="btn btn-info" @click="$refs.fileInput.click()">Dodaj zdjęcia</button>
-                            <small class=" ml-2 mt-2 font-italic font-weight-light">Uwaga, można dodać tylko zdjęcia poniżej 3 MB!</small>
+                            <button type="button" class="btn btn-info m-1" @click="$refs.fileInput.click()" title="Uwaga, można dodać tylko zdjęcia poniżej 3 MB!">Dodaj zdjęcia</button>
                         </div>
                         <div v-else>
-                            <button type="button" class="btn btn-danger" @click="selectedFiles = []; hasPhotoChanged= true">Usuń zdjęcia</button>
+                            <button type="button" class="btn btn-danger m-1" @click="selectedFiles = []; hasPhotoChanged= true">Usuń zdjęcia</button>
                         </div>
                         <div v-if="isEditing">
                             <button
                                     type="button"
-                                    class="btn btn-warning mx-2"
+                                    class="btn btn-warning m-1"
                                     @click="remove">Usuń</button>
                         </div>
                         <div v-if="isEditing">
                             <button
                                     v-if="advertisement.isActive"
                                     type="button"
-                                    class="btn btn-warning mx-2"
+                                    class="btn btn-warning m-1"
                                     @click="archive">Archiwizuj</button>
                         </div>
-                        <div v-if="!isEditing">
+                        <div v-if="!isEditing" >
                             <button
                                     type="button"
                                     :disabled="!isValidationOk"
-                                    class="btn btn-primary"
+                                    class="btn btn-primary m-1"
                                     @click="saveAdd">Dodaj ogłoszenie!</button>
                         </div>
                         <div v-else>
                             <button
                                     type="button"
                                     :disabled="!isValidationOk"
-                                    class="btn btn-primary"
+                                    class="btn btn-primary m-1"
                                     @click="saveAdd">Zapisz zmiany!</button>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 <template>
-    <div class="row">
+    <div class="row no-gutters p-2">
         <h2>Filtruj ogłoszenia</h2>
-        <div class="form rounded col-12 my-2">
+        <div class="col-12 py-2">
             <form @submit.prevent="onSubmit">
                 <div class="form-group">
                     <label for="type">Typ ogłoszenia</label>
@@ -27,16 +27,16 @@
                 </div>
                 <div class="form-group">
                     <label class="labels" @click="showSystems = !showSystems">{{'System' + (showSystems ? '▲' : '▼')}}</label>
-                    <div v-show="showSystems" v-for="system in systems" :key="system.id">
-                        <input type="checkbox" :id="system.id" :value="system.id" v-model="filterCriteria.systemIds">
-                        <label :for="system.id">{{system.manufacturer + ' ' + system.model}}</label>
+                    <div v-show="showSystems" v-for="system in systems" :key="'system' + system.id">
+                        <input type="checkbox" :id="'system' + system.id" :value="system.id" v-model="filterCriteria.systemIds">
+                        <label :for="'system' + system.id">{{system.manufacturer + ' ' + system.model}}</label>
                     </div>
                 </div>
                 <div  v-if="filterCriteria.type != null && filterCriteria.type === 'game'" class="form-group">
                     <label @click="showGenres = !showGenres">{{'Gatunek' + (showGenres ? '▲' : '▼')}}</label>
-                    <div v-show="showGenres" v-for="genre in genres" :key="genre.id">
-                        <input type="checkbox" :id="genre.id" :value="genre.id" v-model="filterCriteria.genreIds">
-                        <label :for="genre.id">{{genre.value}}</label>
+                    <div v-show="showGenres" v-for="genre in genres" :key="'genre' + genre.id">
+                        <input type="checkbox" :id="'genre' + genre.id" :value="genre.id" v-model="filterCriteria.genreIds">
+                        <label :for="'genre' + genre.id">{{genre.value}}</label>
                     </div>
                 </div>
                 <div v-if="filterCriteria.type != null && filterCriteria.type !== 'accessory'" class="form-group">

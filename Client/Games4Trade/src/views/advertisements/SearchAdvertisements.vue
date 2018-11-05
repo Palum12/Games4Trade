@@ -1,19 +1,19 @@
 <template>
-    <div class="row no-gutters search">
-            <div class="col-3">
+    <div class="row no-gutters">
+            <div class="col-12 col-md-3 p-2">
                 <advertisement-filter
                         :filter-criteria="filterCriteria"
                         @filter="search"
                         @clear="clear"
                 ></advertisement-filter>
             </div>
-            <div class="col-8 search">
-                <div class="row mb-2">
+            <div class="col-12 col-md-9 p-2">
+                <div class="row no-gutters mb-2">
                     <advertisement-sort
                             :sort-criteria="sortCriteria"
                             @filter="search"></advertisement-sort>
                 </div>
-                <div v-if="advertisements.length > 0" class="row scrollable-ads btn-block">
+                <div v-if="advertisements.length > 0" class="row no-gutters scrollable-ads btn-block">
                     <advertisement-list class="scrollable-ads" :advertisement-list="advertisements"></advertisement-list>
                     <button
                             :disabled="!isNextPage"
@@ -123,6 +123,7 @@ export default {
       url = url + '&page=' + this.nextPage
       url = url + '&size=' + this.pageSize
       let vm = this
+      console.log('url', url)
       axios.get(url)
         .then(response => {
           vm.advertisements.push(...response.data)
@@ -138,6 +139,7 @@ export default {
     }
   },
   mounted () {
+    console.log('mounted')
     this.query = this.$route.params.text
     this.search()
   }
@@ -151,7 +153,7 @@ export default {
         max-height: 100%;
     }
     .search {
-        margin-left: 1vw !important;
-        margin-right: 0 !important;
+        padding-left: 1vw !important;
+        padding-right: 0 !important;
     }
 </style>
