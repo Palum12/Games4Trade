@@ -40,7 +40,6 @@ namespace Games4Trade.Services
                     Price = ad.Price
                 };
 
-
                 switch (ad.Discriminator)
                 {
                     case "Game":

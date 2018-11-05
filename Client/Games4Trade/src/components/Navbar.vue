@@ -14,7 +14,7 @@
                         <router-link to="/messages" class="nav-link"><a>Wiadomości</a></router-link>
                     </li>
                     <li class="nav-item">
-                            <form class="form-inline">
+                            <form class="form-inline" @submit.prevent="goToSearch">
                                 <input
                                         class="form-control ml-5 mr-sm-2"
                                         type="search"

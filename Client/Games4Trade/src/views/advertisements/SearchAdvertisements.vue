@@ -123,7 +123,6 @@ export default {
       url = url + '&page=' + this.nextPage
       url = url + '&size=' + this.pageSize
       let vm = this
-      console.log('url', url)
       axios.get(url)
         .then(response => {
           vm.advertisements.push(...response.data)
@@ -139,7 +138,6 @@ export default {
     }
   },
   mounted () {
-    console.log('mounted')
     this.query = this.$route.params.text
     this.search()
   }
