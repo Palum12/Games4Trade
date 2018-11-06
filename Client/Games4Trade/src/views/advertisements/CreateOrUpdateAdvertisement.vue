@@ -58,14 +58,16 @@
                                             v-bind:class="[$v.advertisement.price.$error ? invalidClass : ''
                                             , formClass]"
                                             id="price"
-                                            onkeyup="this.value=this.value.replace(/[^\d+]/,'')"
                                             @blur="$v.advertisement.price.$touch()"
-                                            v-model.number.lazy="advertisement.price">
+                                            v-model.number="advertisement.price">
                                 </div>
                                 <p v-show="!$v.advertisement.price.required">
                                     Proszę podać wycenę
                                 </p>
-                                <p v-show="!$v.advertisement.price.minVal">
+                                <p v-if="!$v.advertisement.price.decimal">
+                                    Proszę wpisać liczbę!
+                                </p>
+                                <p v-else-if="!$v.advertisement.price.minVal">
                                     Cena nie może być ujemna!
                                 </p>
                             </div>
@@ -255,7 +257,7 @@
 import {mapGetters} from 'vuex'
 import mixins from '../../mixins/mixins'
 import axios from 'axios'
-import { required, minValue } from 'vuelidate/lib/validators'
+import { required, minValue, decimal } from 'vuelidate/lib/validators'
 export default {
   name: 'AddAdvertisement',
   data () {
@@ -589,6 +591,7 @@ export default {
       },
       price: {
         required,
+        decimal,
         minVal: minValue(0)
       },
       stateId: {
