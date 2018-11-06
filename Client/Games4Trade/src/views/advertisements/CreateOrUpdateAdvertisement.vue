@@ -53,13 +53,14 @@
                                 <div class="input">
                                     <label for="price">Twoj wycena</label>
                                     <input
-                                            type="number"
+                                            type="text"
                                             class="form-control"
                                             v-bind:class="[$v.advertisement.price.$error ? invalidClass : ''
                                             , formClass]"
                                             id="price"
+                                            onkeyup="this.value=this.value.replace(/[^\d+]/,'')"
                                             @blur="$v.advertisement.price.$touch()"
-                                            v-model.number="advertisement.price">
+                                            v-model.number.lazy="advertisement.price">
                                 </div>
                                 <p v-show="!$v.advertisement.price.required">
                                     Proszę podać wycenę

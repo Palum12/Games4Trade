@@ -8,7 +8,7 @@
             <div class="collapse navbar-collapse " id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto" >
                     <li class="nav-item" v-if="isAuthenticated">
-                        <router-link to="/advertisements/add" class="nav-link"><a>Dodaj ogłoszenie</a></router-link>
+                        <router-link to="/advertisements/add" class="nav-link"><a id="addAddvertisement">Dodaj ogłoszenie</a></router-link>
                     </li>
                     <li class="nav-item" v-if="isAuthenticated">
                         <router-link to="/messages" class="nav-link"><a>Wiadomości</a></router-link>
@@ -18,10 +18,12 @@
                                 <input
                                         class="form-control ml-5 mr-sm-2"
                                         type="search"
+                                        id="searchInput"
                                         placeholder="Szukaj ogłoszeń"
                                         aria-label="Search"
                                         v-model="searchText">
                                 <button
+                                        id="searchButton"
                                         class="btn btn-outline-light my-2 my-sm-0"
                                         type="button"
                                         @click="goToSearch">Szukaj</button>
