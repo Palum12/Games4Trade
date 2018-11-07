@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+	<title>advertisement tests</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Login</td></tr>
+</thead>
+<tbody>
+<tr><td>open</td><td>http://localhost:8080/<datalist><option>http://localhost:8080/</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>//a[contains(text(),'Zaloguj')]<datalist><option>//a[contains(text(),'Zaloguj')]</option><option>//div[@id='navbarSupportedContent']/ul[2]/li[2]/a/a</option><option>//li[2]/a/a</option></datalist></td><td>36,10</td>
+</tr>
+<tr><td>clickAt</td><td>id=login<datalist><option>id=login</option><option>css=#login</option><option>//input[@id='login']</option><option>//div[@id='login-form']/div/form/div/input</option><option>//div/input</option></datalist></td><td>407,30</td>
+</tr>
+<tr><td>type</td><td>id=login<datalist><option>id=login</option><option>css=#login</option><option>//input[@id='login']</option><option>//div[@id='login-form']/div/form/div/input</option><option>//div/input</option></datalist></td><td>admin</td>
+</tr>
+<tr><td>type</td><td>id=password<datalist><option>id=password</option><option>css=#password</option><option>//input[@id='password']</option><option>//div[@id='login-form']/div/form/div[2]/input</option><option>//div[2]/input</option></datalist></td><td>Portal12\</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-info<datalist><option>css=button.btn.btn-info</option><option>//button[@type='submit']</option><option>//div[@id='login-form']/div/form/div[3]/div/button</option><option>//div/button</option></datalist></td><td>27,29</td>
+</tr>
+</tbody></table>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">add addvertisement and remove it</td></tr>
+</thead>
+<tbody>
+<tr><td>open</td><td>http://localhost:8080/<datalist><option>http://localhost:8080/</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>id=addAddvertisement<datalist><option>id=addAddvertisement</option><option>css=#addAddvertisement</option><option>//a[contains(text(),'Dodaj ogłoszenie')]</option><option>//a[@id='addAddvertisement']</option><option>//div[@id='navbarSupportedContent']/ul/li/a/a</option><option>//li/a/a</option></datalist></td><td>40,5</td>
+</tr>
+<tr><td>clickAt</td><td>id=title<datalist><option>id=title</option><option>css=#title</option><option>//input[@id='title']</option><option>//div[@id='app']/div[2]/div/form/div/div/input</option><option>//div/input</option></datalist></td><td>243,27</td>
+</tr>
+<tr><td>type</td><td>id=title<datalist><option>id=title</option><option>css=#title</option><option>//input[@id='title']</option><option>//div[@id='app']/div[2]/div/form/div/div/input</option><option>//div/input</option></datalist></td><td>test automat23</td>
+</tr>
+<tr><td>clickAt</td><td>//div[@id='app']/div[2]/div/form/div/div[2]/div/div/div[2]/label<datalist><option>//div[@id='app']/div[2]/div/form/div/div[2]/div/div/div[2]/label</option><option>//div[2]/label</option></datalist></td><td>55,12</td>
+</tr>
+<tr><td>clickAt</td><td>id=price<datalist><option>id=price</option><option>css=#price</option><option>//input[@id='price']</option><option>//div[@id='app']/div[2]/div/form/div/div[2]/div[2]/div/div/input</option><option>//div[2]/div[2]/div/div/input</option></datalist></td><td>146,32</td>
+</tr>
+<tr><td>type</td><td>id=price<datalist><option>id=price</option><option>css=#price</option><option>//input[@id='price']</option><option>//div[@id='app']/div[2]/div/form/div/div[2]/div[2]/div/div/input</option><option>//div[2]/div[2]/div/div/input</option></datalist></td><td>123</td>
+</tr>
+<tr><td>mouseDown</td><td>css=div.form-group.noBottomMargin &gt; label<datalist><option>css=div.form-group.noBottomMargin &gt; label</option><option>//div[@id='app']/div[2]/div/form/div/div[2]/div[2]/div[2]/label</option><option>//div[2]/div[2]/label</option></datalist></td><td></td>
+</tr>
+<tr><td>mouseUp</td><td>//div[@id='app']/div[2]/div/form/div/div[2]/div[2]/div[3]/label<datalist><option>//div[@id='app']/div[2]/div/form/div/div[2]/div[2]/div[3]/label</option><option>//div[2]/div[3]/label</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>id=exchange<datalist><option>id=exchange</option><option>css=#exchange</option><option>//input[@id='exchange']</option><option>//div[@id='app']/div[2]/div/form/div/div[2]/div[2]/div[2]/input</option><option>//div[2]/input</option></datalist></td><td>7,8</td>
+</tr>
+<tr><td>clickAt</td><td>id=showEmail<datalist><option>id=showEmail</option><option>css=#showEmail</option><option>//input[@id='showEmail']</option><option>//div[@id='app']/div[2]/div/form/div/div[2]/div[2]/div[3]/input</option><option>//div[3]/input</option></datalist></td><td>7,4</td>
+</tr>
+<tr><td>clickAt</td><td>id=state<datalist><option>id=state</option><option>css=#state</option><option>//select[@id='state']</option><option>//div[@id='app']/div[2]/div/form/div/div[3]/div/div/select</option><option>//select</option></datalist></td><td>753,25</td>
+</tr>
+<tr><td>select</td><td>id=state<datalist><option>id=state</option><option>css=#state</option><option>//select[@id='state']</option><option>//div[@id='app']/div[2]/div/form/div/div[3]/div/div/select</option><option>//select</option></datalist></td><td>label=Używany</td>
+</tr>
+<tr><td>clickAt</td><td>id=state<datalist><option>id=state</option><option>css=#state</option><option>//select[@id='state']</option><option>//div[@id='app']/div[2]/div/form/div/div[3]/div/div/select</option><option>//select</option></datalist></td><td>-39,-424</td>
+</tr>
+<tr><td>clickAt</td><td>id=system<datalist><option>id=system</option><option>css=#system</option><option>//select[@id='system']</option><option>//div[@id='app']/div[2]/div/form/div/div[3]/div[2]/div/select</option><option>//div[2]/div/select</option></datalist></td><td>36,19</td>
+</tr>
+<tr><td>select</td><td>id=system<datalist><option>id=system</option><option>css=#system</option><option>//select[@id='system']</option><option>//div[@id='app']/div[2]/div/form/div/div[3]/div[2]/div/select</option><option>//div[2]/div/select</option></datalist></td><td>label=Microsoft Xbox 360</td>
+</tr>
+<tr><td>clickAt</td><td>id=system<datalist><option>id=system</option><option>css=#system</option><option>//select[@id='system']</option><option>//div[@id='app']/div[2]/div/form/div/div[3]/div[2]/div/select</option><option>//div[2]/div/select</option></datalist></td><td>-810,-424</td>
+</tr>
+<tr><td>clickAt</td><td>id=region<datalist><option>id=region</option><option>css=#region</option><option>//select[@id='region']</option><option>//div[@id='app']/div[2]/div/form/div/div[4]/div/div/select</option><option>//div[4]/div/div/select</option></datalist></td><td>665,19</td>
+</tr>
+<tr><td>select</td><td>id=region<datalist><option>id=region</option><option>css=#region</option><option>//select[@id='region']</option><option>//div[@id='app']/div[2]/div/form/div/div[4]/div/div/select</option><option>//div[4]/div/div/select</option></datalist></td><td>label=MULTI</td>
+</tr>
+<tr><td>clickAt</td><td>id=region<datalist><option>id=region</option><option>css=#region</option><option>//select[@id='region']</option><option>//div[@id='app']/div[2]/div/form/div/div[4]/div/div/select</option><option>//div[4]/div/div/select</option></datalist></td><td>-39,-510</td>
+</tr>
+<tr><td>clickAt</td><td>id=description<datalist><option>id=description</option><option>css=#description</option><option>//textarea[@id='description']</option><option>//div[@id='app']/div[2]/div/form/div/div[5]/textarea</option><option>//textarea</option></datalist></td><td>655,29</td>
+</tr>
+<tr><td>type</td><td>id=description<datalist><option>id=description</option><option>css=#description</option><option>//textarea[@id='description']</option><option>//div[@id='app']/div[2]/div/form/div/div[5]/textarea</option><option>//textarea</option></datalist></td><td>test automat</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-primary.m-1<datalist><option>css=button.btn.btn-primary.m-1</option><option>xpath=(//button[@type='button'])[5]</option><option>//div[@id='app']/div[2]/div/form/div/div[6]/div[2]/button</option><option>//div[2]/button</option></datalist></td><td>74,12</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[7]</option><option>//div[3]/button</option></datalist></td><td>13,24</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[3]/button</option></datalist></td><td>6,21</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-warning<datalist><option>css=button.btn.btn-warning</option><option>xpath=(//button[@type='button'])[4]</option><option>//div[@id='app']/div[2]/div[4]/button[2]</option><option>//button[2]</option></datalist></td><td>34,17</td>
+</tr>
+<tr><td>clickAt</td><td>xpath=(//button[@type='button'])[6]<datalist><option>xpath=(//button[@type='button'])[6]</option><option>//div[@id='app']/div[2]/div/form/div/div[6]/div[3]/button</option><option>//div[3]/button</option></datalist></td><td>79,15</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[9]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>34,16</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[8]</option><option>//div[3]/button</option></datalist></td><td>53,18</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-warning.m-1<datalist><option>css=button.btn.btn-warning.m-1</option><option>xpath=(//button[@type='button'])[5]</option><option>//div[@id='app']/div[2]/div/form/div/div[6]/div[2]/button</option><option>//div[2]/button</option></datalist></td><td>43,20</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[8]</option><option>//div[3]/button</option></datalist></td><td>38,1</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[4]</option><option>//div[3]/button</option></datalist></td><td>28,33</td>
+</tr>
+</tbody></table>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">logout</td></tr>
+</thead>
+<tbody>
+<tr><td>open</td><td>http://localhost:8080/<datalist><option>http://localhost:8080/</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>link=Wyloguj<datalist><option>link=Wyloguj</option><option>//a[contains(text(),'Wyloguj')]</option><option>//div[@id='navbarSupportedContent']/ul[2]/li[3]/a</option><option>//li[3]/a</option></datalist></td><td>32,22</td>
+</tr>
+</tbody></table>
+</body>
+</html>

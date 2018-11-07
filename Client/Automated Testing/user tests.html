@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+	<title>user tests</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">login</td></tr>
+</thead>
+<tbody>
+<tr><td>open</td><td>http://localhost:8080/<datalist><option>http://localhost:8080/</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>//a[contains(text(),'Zaloguj')]<datalist><option>//a[contains(text(),'Zaloguj')]</option><option>//div[@id='navbarSupportedContent']/ul[2]/li[2]/a/a</option><option>//li[2]/a/a</option></datalist></td><td>36,10</td>
+</tr>
+<tr><td>clickAt</td><td>id=login<datalist><option>id=login</option><option>css=#login</option><option>//input[@id='login']</option><option>//div[@id='login-form']/div/form/div/input</option><option>//div/input</option></datalist></td><td>407,30</td>
+</tr>
+<tr><td>type</td><td>id=login<datalist><option>id=login</option><option>css=#login</option><option>//input[@id='login']</option><option>//div[@id='login-form']/div/form/div/input</option><option>//div/input</option></datalist></td><td>admin</td>
+</tr>
+<tr><td>type</td><td>id=password<datalist><option>id=password</option><option>css=#password</option><option>//input[@id='password']</option><option>//div[@id='login-form']/div/form/div[2]/input</option><option>//div[2]/input</option></datalist></td><td>Portal12\</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-info<datalist><option>css=button.btn.btn-info</option><option>//button[@type='submit']</option><option>//div[@id='login-form']/div/form/div[3]/div/button</option><option>//div/button</option></datalist></td><td>27,29</td>
+</tr>
+</tbody></table>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">change data</td></tr>
+</thead>
+<tbody>
+<tr><td>open</td><td>http://localhost:8080/<datalist><option>http://localhost:8080/</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>css=ul.navbar-nav.ml-auto &gt; li.nav-item &gt; a.nav-link &gt; a<datalist><option>css=ul.navbar-nav.ml-auto &gt; li.nav-item &gt; a.nav-link &gt; a</option><option>//a[contains(text(),'Panel użytkownika')]</option><option>//div[@id='navbarSupportedContent']/ul[2]/li/a/a</option><option>//ul[2]/li/a/a</option></datalist></td><td>89,14</td>
+</tr>
+<tr><td>clickAt</td><td>css=div.row.no-gutters.mt-1 &gt; div.w-100 &gt; div &gt; button.btn.btn-primary.btn-block.mt-1<datalist><option>css=div.row.no-gutters.mt-1 &gt; div.w-100 &gt; div &gt; button.btn.btn-primary.btn-block.mt-1</option><option>xpath=(//button[@type='button'])[4]</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/button</option><option>//div[2]/div/div/button</option></datalist></td><td>76,19</td>
+</tr>
+<tr><td>clickAt</td><td>link=Mój profil<datalist><option>link=Mój profil</option><option>css=a.tabs-component-tab-a</option><option>//a[contains(text(),'Mój profil')]</option><option>//div[@id='app']/div[2]/div/ul/li/a</option><option>//a[contains(@href, '#mój-profil')]</option><option>//div[2]/div/ul/li/a</option></datalist></td><td>46,12</td>
+</tr>
+<tr><td>clickAt</td><td>id=phoneNumber<datalist><option>id=phoneNumber</option><option>css=#phoneNumber</option><option>//input[@id='phoneNumber']</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/input</option><option>//div[2]/div/div/input</option></datalist></td><td>96,12</td>
+</tr>
+<tr><td>type</td><td>id=phoneNumber<datalist><option>id=phoneNumber</option><option>css=#phoneNumber</option><option>//input[@id='phoneNumber']</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/input</option><option>//div[2]/div/div/input</option></datalist></td><td>111222333</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-warning.mt-1.ml-3<datalist><option>css=button.btn.btn-warning.mt-1.ml-3</option><option>xpath=(//button[@type='button'])[5]</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/button[2]</option><option>//div[2]/div/div/button[2]</option></datalist></td><td>79,9</td>
+</tr>
+<tr><td>mouseOver</td><td>css=button.btn.btn-warning.mt-1.ml-3<datalist><option>css=button.btn.btn-warning.mt-1.ml-3</option><option>xpath=(//button[@type='button'])[5]</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/button[2]</option><option>//form/div[2]/div/div/button[2]</option></datalist></td><td></td>
+</tr>
+<tr><td>mouseOut</td><td>css=button.btn.btn-warning.mt-1.ml-3<datalist><option>css=button.btn.btn-warning.mt-1.ml-3</option><option>xpath=(//button[@type='button'])[5]</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/button[2]</option><option>//form/div[2]/div/div/button[2]</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[7]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>15,10</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>64,27</td>
+</tr>
+<tr><td>clickAt</td><td>id=content<datalist><option>id=content</option><option>css=#content</option><option>//textarea[@id='content']</option><option>//section[@id='mój-profil']/div/div[2]/div/textarea</option><option>//textarea</option></datalist></td><td>472,73</td>
+</tr>
+<tr><td>clickAt</td><td>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary<datalist><option>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button</option><option>//div[2]/div[2]/button</option></datalist></td><td>48,15</td>
+</tr>
+<tr><td>mouseOver</td><td>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary<datalist><option>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button[2]</option><option>//div[2]/div[2]/button[2]</option></datalist></td><td></td>
+</tr>
+<tr><td>mouseOut</td><td>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary<datalist><option>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button[2]</option><option>//div[2]/div[2]/button[2]</option></datalist></td><td></td>
+</tr>
+<tr><td>type</td><td>id=content<datalist><option>id=content</option><option>css=#content</option><option>//textarea[@id='content']</option><option>//section[@id='mój-profil']/div/div[2]/div/textarea</option><option>//textarea</option></datalist></td><td>Student Politechniki Wrocławskiej przeżywający depresję związaną z pracą inżynierską.
+Gry pozwalają mi odetchnąć od szarej rzeczywistości i ukoić mój ból. Jeśli tak jak Ty zostałeś wrakiem człowieka po 3 latach studiowania na Pwr daj mi znać, pogramy razem test aut</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-warning.mr-2<datalist><option>css=button.btn.btn-warning.mr-2</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button</option><option>//div[2]/div[2]/button</option></datalist></td><td>60,24</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>63,34</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>42,24</td>
+</tr>
+<tr><td>clickAt</td><td>link=Moje preferencje<datalist><option>link=Moje preferencje</option><option>//a[contains(text(),'Moje preferencje')]</option><option>//div[@id='app']/div[2]/div/ul/li[2]/a</option><option>//a[contains(@href, '#moje-preferencje')]</option><option>//div[2]/div/ul/li[2]/a</option></datalist></td><td>72,31</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-success.ml-sm-1<datalist><option>css=button.btn.btn-success.ml-sm-1</option><option>//section[@id='moje-preferencje']/div/div/div/div/form/div/div/button</option><option>//form/div/div/button</option></datalist></td><td>67,27</td>
+</tr>
+<tr><td>clickAt</td><td>css=div.col-md-6.col-12 &gt; div &gt; button.btn.btn-primary.btn-block<datalist><option>css=div.col-md-6.col-12 &gt; div &gt; button.btn.btn-primary.btn-block</option><option>//section[@id='moje-preferencje']/div/div/div/button</option><option>//section[2]/div/div/div/button</option></datalist></td><td>345,19</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>57,14</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>27,43</td>
+</tr>
+<tr><td>clickAt</td><td>link=Obserwowani użytkownicy<datalist><option>link=Obserwowani użytkownicy</option><option>//a[contains(text(),'Obserwowani użytkownicy')]</option><option>//div[@id='app']/div[2]/div/ul/li[3]/a</option><option>//a[contains(@href, '#obserwowani-użytkownicy')]</option><option>//div[2]/div/ul/li[3]/a</option></datalist></td><td>80,24</td>
+</tr>
+</tbody></table>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">reverse changes</td></tr>
+</thead>
+<tbody>
+<tr><td>open</td><td>http://localhost:8080/<datalist><option>http://localhost:8080/</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>css=ul.navbar-nav.ml-auto &gt; li.nav-item &gt; a.nav-link &gt; a<datalist><option>css=ul.navbar-nav.ml-auto &gt; li.nav-item &gt; a.nav-link &gt; a</option><option>//a[contains(text(),'Panel użytkownika')]</option><option>//div[@id='navbarSupportedContent']/ul[2]/li/a/a</option><option>//ul[2]/li/a/a</option></datalist></td><td>83,0</td>
+</tr>
+<tr><td>mouseOver</td><td>link=Panel użytkownika<datalist><option>link=Panel użytkownika</option><option>css=a.nav-link.router-link-exact-active.router-link-active</option><option>//div[@id='navbarSupportedContent']/ul[2]/li/a</option><option>//a[contains(@href, '/userPanel')]</option><option>//ul[2]/li/a</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>link=Mój profil<datalist><option>link=Mój profil</option><option>css=a.tabs-component-tab-a</option><option>//a[contains(text(),'Mój profil')]</option><option>//div[@id='app']/div[2]/div/ul/li/a</option><option>//a[contains(@href, '#mój-profil')]</option><option>//div[2]/div/ul/li/a</option></datalist></td><td>48,35</td>
+</tr>
+<tr><td>clickAt</td><td>css=div.row.no-gutters.mt-1 &gt; div.w-100 &gt; div &gt; button.btn.btn-primary.btn-block.mt-1<datalist><option>css=div.row.no-gutters.mt-1 &gt; div.w-100 &gt; div &gt; button.btn.btn-primary.btn-block.mt-1</option><option>xpath=(//button[@type='button'])[4]</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/button</option><option>//div[2]/div/div/button</option></datalist></td><td>168,0</td>
+</tr>
+<tr><td>clickAt</td><td>id=phoneNumber<datalist><option>id=phoneNumber</option><option>css=#phoneNumber</option><option>//input[@id='phoneNumber']</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/input</option><option>//div[2]/div/div/input</option></datalist></td><td>156,20</td>
+</tr>
+<tr><td>type</td><td>id=phoneNumber<datalist><option>id=phoneNumber</option><option>css=#phoneNumber</option><option>//input[@id='phoneNumber']</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/input</option><option>//div[2]/div/div/input</option></datalist></td><td>11122233</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-warning.mt-1.ml-3<datalist><option>css=button.btn.btn-warning.mt-1.ml-3</option><option>xpath=(//button[@type='button'])[5]</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/button[2]</option><option>//div[2]/div/div/button[2]</option></datalist></td><td>58,23</td>
+</tr>
+<tr><td>mouseOver</td><td>css=button.btn.btn-warning.mt-1.ml-3<datalist><option>css=button.btn.btn-warning.mt-1.ml-3</option><option>xpath=(//button[@type='button'])[5]</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/button[2]</option><option>//form/div[2]/div/div/button[2]</option></datalist></td><td></td>
+</tr>
+<tr><td>mouseOut</td><td>css=button.btn.btn-warning.mt-1.ml-3<datalist><option>css=button.btn.btn-warning.mt-1.ml-3</option><option>xpath=(//button[@type='button'])[5]</option><option>//section[@id='mój-profil']/div/div/div[3]/form/div[2]/div/div/button[2]</option><option>//form/div[2]/div/div/button[2]</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[7]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>49,25</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>74,25</td>
+</tr>
+<tr><td>clickAt</td><td>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary<datalist><option>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button</option><option>//div[2]/div[2]/button</option></datalist></td><td>22,15</td>
+</tr>
+<tr><td>mouseOver</td><td>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary<datalist><option>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button[2]</option><option>//div[2]/div[2]/button[2]</option></datalist></td><td></td>
+</tr>
+<tr><td>mouseOut</td><td>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary<datalist><option>css=div.row.mt-3.pl-3.d-flex.justify-content-end &gt; button.btn.btn-primary</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button[2]</option><option>//div[2]/div[2]/button[2]</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>id=content<datalist><option>id=content</option><option>css=#content</option><option>//textarea[@id='content']</option><option>//section[@id='mój-profil']/div/div[2]/div/textarea</option><option>//textarea</option></datalist></td><td>624,104</td>
+</tr>
+<tr><td>type</td><td>id=content<datalist><option>id=content</option><option>css=#content</option><option>//textarea[@id='content']</option><option>//section[@id='mój-profil']/div/div[2]/div/textarea</option><option>//textarea</option></datalist></td><td>Student Politechniki Wrocławskiej przeżywający depresję związaną z pracą inżynierską.
+Gry pozwalają mi odetchnąć od szarej rzeczywistości i ukoić mój ból. Jeśli tak jak Ty zostałeś wrakiem człowieka po 3 latach studiowania na Pwr daj mi znać, pogramy razem</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-warning.mr-2<datalist><option>css=button.btn.btn-warning.mr-2</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button</option><option>//div[2]/div[2]/button</option></datalist></td><td>51,25</td>
+</tr>
+<tr><td>mouseOver</td><td>css=button.btn.btn-warning.mr-2<datalist><option>css=button.btn.btn-warning.mr-2</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button</option><option>//div[2]/div[2]/button</option></datalist></td><td></td>
+</tr>
+<tr><td>mouseOut</td><td>css=button.btn.btn-warning.mr-2<datalist><option>css=button.btn.btn-warning.mr-2</option><option>//section[@id='mój-profil']/div/div[2]/div[2]/button</option><option>//div[2]/div[2]/button</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>72,25</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>33,19</td>
+</tr>
+<tr><td>clickAt</td><td>link=Moje preferencje<datalist><option>link=Moje preferencje</option><option>//a[contains(text(),'Moje preferencje')]</option><option>//div[@id='app']/div[2]/div/ul/li[2]/a</option><option>//a[contains(@href, '#moje-preferencje')]</option><option>//div[2]/div/ul/li[2]/a</option></datalist></td><td>81,23</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.btn.btn-primary.ml-sm-1<datalist><option>css=button.btn.btn-primary.ml-sm-1</option><option>//section[@id='moje-preferencje']/div/div/div/div/form/div/div/button</option><option>//form/div/div/button</option></datalist></td><td>72,2</td>
+</tr>
+<tr><td>clickAt</td><td>css=div.tabs-component-panels<datalist><option>css=div.tabs-component-panels</option><option>//div[@id='app']/div[2]/div/div</option><option>//div[2]/div/div</option></datalist></td><td>337,757</td>
+</tr>
+<tr><td>clickAt</td><td>css=div.col-md-6.col-12 &gt; div &gt; button.btn.btn-primary.btn-block<datalist><option>css=div.col-md-6.col-12 &gt; div &gt; button.btn.btn-primary.btn-block</option><option>//section[@id='moje-preferencje']/div/div/div/button</option><option>//section[2]/div/div/div/button</option></datalist></td><td>302,22</td>
+</tr>
+<tr><td>mouseOver</td><td>css=div.col-md-6.col-12 &gt; div &gt; button.btn.btn-primary.btn-block<datalist><option>css=div.col-md-6.col-12 &gt; div &gt; button.btn.btn-primary.btn-block</option><option>//section[@id='moje-preferencje']/div/div/div/button</option><option>//section[2]/div/div/div/button</option></datalist></td><td></td>
+</tr>
+<tr><td>mouseOut</td><td>css=div.col-md-6.col-12 &gt; div &gt; button.btn.btn-primary.btn-block<datalist><option>css=div.col-md-6.col-12 &gt; div &gt; button.btn.btn-primary.btn-block</option><option>//section[@id='moje-preferencje']/div/div/div/button</option><option>//section[2]/div/div/div/button</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>31,16</td>
+</tr>
+<tr><td>clickAt</td><td>css=button.swal2-confirm.swal2-styled<datalist><option>css=button.swal2-confirm.swal2-styled</option><option>xpath=(//button[@type='button'])[6]</option><option>//div[2]/div/div[3]/button</option></datalist></td><td>31,16</td>
+</tr>
+</tbody></table>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">logout</td></tr>
+</thead>
+<tbody>
+<tr><td>open</td><td>http://localhost:8080/<datalist><option>http://localhost:8080/</option></datalist></td><td></td>
+</tr>
+<tr><td>clickAt</td><td>link=Wyloguj<datalist><option>link=Wyloguj</option><option>//a[contains(text(),'Wyloguj')]</option><option>//div[@id='navbarSupportedContent']/ul[2]/li[3]/a</option><option>//li[3]/a</option></datalist></td><td>32,22</td>
+</tr>
+</tbody></table>
+</body>
+</html>
