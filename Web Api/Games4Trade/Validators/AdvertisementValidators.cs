@@ -15,10 +15,14 @@ namespace Games4Trade.Validators
             RuleFor(a => a.Discriminator).NotNull().Must(a => discriminators.Contains(a));
             RuleFor(a => a.Description).NotNull().NotEmpty();
             RuleFor(a => a.ExchangeActive).NotNull();
-            RuleFor(a => a.Price).GreaterThan(0);
             RuleFor(a => a.Title).NotNull();
-            RuleFor(a => a.AccessoryManufacturer).NotNull().When(a => a.Discriminator.Equals("Accessory"));
-            RuleFor(a => a.AccessoryModel).NotNull().When(a => a.Discriminator.Equals("Accessory"));
+            RuleFor(a => a.Price).GreaterThan(0);        
+            RuleFor(a => a.AccessoryManufacturer)
+                .NotNull()
+                .When(a => a.Discriminator.Equals("Accessory"));
+            RuleFor(a => a.AccessoryModel)
+                .NotNull()
+                .When(a => a.Discriminator.Equals("Accessory"));
             RuleFor(a => a.DateReleased)
                 .GreaterThan(DateTime.Parse("1960-01-01"))
                 .LessThan(DateTime.Today.AddYears(1))

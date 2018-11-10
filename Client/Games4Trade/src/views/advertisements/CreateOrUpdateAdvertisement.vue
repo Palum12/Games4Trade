@@ -492,14 +492,16 @@ export default {
                     .catch(() => {
                       vm.$store.dispatch('unsetSpinnerLoading')
                       mixins.methods.customErrorPopUp(vm, 'Ups! Twoje ogłoszenie zostało dodane, ale coś poszło nie tak podczas ' +
-                        'dodawania zdjęć, spróbuj je wyłączyć adblocka i dodać ponownie lub skontaktuj się z administratorem!')
+                        'dodawania zdjęć, skontaktuj się z administratorem!')
                       vm.dataSent = true
                       vm.$router.push({name: 'home'})
                     })
                 } else {
                   vm.$store.dispatch('unsetSpinnerLoading')
-                  mixins.methods.customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane i jest ono już widoczne !')
                   vm.dataSent = true
+                  mixins.methods
+                    .customSuccessPopUp(vm, 'Gratulacje Twoje ogłoszenie zostało dodane ' +
+                      'i jest ono już widoczne !')
                   vm.$router.push(`/advertisements/${response.data}`)
                 }
               })
@@ -580,8 +582,14 @@ export default {
   validations: {
     advertisement: {
       dateReleased: {
-        isAfter (date) { return date == null || date === '' || new Date(date) > new Date('1960-01-01T00:00:00Z') },
-        isBefore (date) { return date == null || date === '' || new Date(date) < (this.monthFromNow) }
+        isAfter (date) {
+          return date == null || date === '' ||
+          new Date(date) > new Date('1960-01-01T00:00:00Z')
+        },
+        isBefore (date) {
+          return date == null || date === '' ||
+            new Date(date) < (this.monthFromNow)
+        }
       },
       title: {
         required

@@ -55,7 +55,7 @@ namespace Games4Trade.Services
 
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }

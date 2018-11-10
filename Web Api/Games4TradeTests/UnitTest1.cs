@@ -15,14 +15,13 @@ namespace Games4TradeTests
 {
     public class UnitTest1
     {
-
         [Fact]
         public async Task Test1()
         {
             var unitMock = new Mock<IUnitOfWork>();
             unitMock.Setup(u => u.Users.GetUserByLogin("asad")).ReturnsAsync(new User(){Id=1});
             var mockMapper = new Mock<IMapper>();
-
+            
             var loginService = new LoginService(unitMock.Object, mockMapper.Object);
 
             unitMock.Setup(u => u.Users.GetUserByLogin("asad")).ReturnsAsync(new User() { Id = 1 });

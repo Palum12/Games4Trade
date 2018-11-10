@@ -34,7 +34,7 @@ import AdvertisementFilter from '../../components/advertisements/AdvertisementFi
 import AdvertisementSort from '../../components/advertisements/AdvertisementSort'
 import axios from 'axios'
 export default {
-  name: 'SearchAdvertisement',
+  name: 'SearchAdvertisements',
   components: {
     AdvertisementList,
     AdvertisementFilter,
@@ -147,7 +147,7 @@ export default {
 <style scoped>
     .scrollable-ads {
         min-height: 200px;
-        height: 80vh;
+        height: 74vh;
         max-height: 100%;
     }
     .search {

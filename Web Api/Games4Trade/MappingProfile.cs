@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using AutoMapper.Configuration;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
+using Console = Games4Trade.Models.Console;
 
 namespace Games4Trade
 {
@@ -40,7 +42,11 @@ namespace Games4Trade
                     opt.MapFrom(a => a.Photos.FirstOrDefault().Id);
                 });
 
-        CreateMap<AdvertisementSaveDto, Game>().ForMember(g => g.GameRegionId, opt => opt.MapFrom(a => a.RegionId));
+            CreateMap<AdvertisementSaveDto, Advertisement>()
+                .ForMember(a => a.DateCreated, opt => opt.MapFrom(a => DateTime.Now))
+                .ForMember(a => a.ExchangeActive, opt => opt.MapFrom(a => true))
+                .ForMember(a => a.UserId, opt => opt.Ignore());
+            CreateMap<AdvertisementSaveDto, Game>().ForMember(g => g.GameRegionId, opt => opt.MapFrom(a => a.RegionId));
             CreateMap<AdvertisementSaveDto, Console>().ForMember(c => c.ConsoleRegionId, opt => opt.MapFrom(a => a.RegionId));
             CreateMap<AdvertisementSaveDto, Accessory>();
 

@@ -30,15 +30,8 @@ namespace Games4Trade.Services
             var isCorrectResultTuple = await CheckIfRelationshipsAreCorrect(ad);
             if (isCorrectResultTuple.Item1)
             {
-                var advertisement = new Advertisement()
-                {
-                    UserId = userId,
-                    DateCreated = DateTime.Now,
-                    Title = ad.Title,
-                    ExchangeActive = ad.ExchangeActive,
-                    IsActive = true,
-                    Price = ad.Price
-                };
+                var advertisement = _mapper.Map<AdvertisementSaveDto, Advertisement>(ad);
+                advertisement.UserId = userId;
 
                 switch (ad.Discriminator)
                 {
@@ -78,7 +71,8 @@ namespace Games4Trade.Services
                 }
                 return new OperationResult()
                 {
-                    IsSuccessful = false
+                    IsSuccessful = false,
+                    IsClientError = false
                 };
             }
             return new OperationResult()
