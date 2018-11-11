@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade;
-using Games4Trade.Data;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Games4Trade.Services;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 using System = Games4Trade.Models.System;
@@ -189,6 +186,35 @@ namespace Games4TradeTests
             Assert.NotNull(addedGame);
             unitMock.Verify();
 
+        }
+
+        [Fact]
+        public async void GetSearchedAd()
+        {
+            var unitMock = new Mock<IUnitOfWork>();
+            unitMock.Setup(u => u.Advertisements.GetQueriedAds(It.IsAny<AdQueryOptions>()))
+                .ReturnsAsync(new List<Advertisement>() {new Advertisement()
+                {
+                    Id = 1,
+                    Item = new Game()
+                }}).Verifiable();
+
+            var query = new AdQueryOptions()
+            {
+                Sort = "price",
+                Desc = true,
+                Systems = new int[0],
+                Genres = new int[0]
+            };
+
+            var service = new AdvertisementService(unitMock.Object, _fixture.Mapper);
+
+            var result = await service.GetAdvetisements(query);
+            var ads = result.Payload as List<AdvertisementWithoutItemDto>;
+
+            Assert.NotNull(ads);
+            Assert.Single(ads);
+            unitMock.Verify();
         }
     }
 }
