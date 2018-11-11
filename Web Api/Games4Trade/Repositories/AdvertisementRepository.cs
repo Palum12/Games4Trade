@@ -46,7 +46,7 @@ namespace Games4Trade.Repositories
                 query = query.Where(a => a.Item.StateId == options.State.Value);
             }
 
-            //sorting
+            //default sorting
             if (string.IsNullOrEmpty(options.Sort))
             {
                 if (options.Desc.HasValue && options.Desc.Value)
@@ -60,7 +60,9 @@ namespace Games4Trade.Repositories
             }
             else
             {
-                query = query.OrderByPropertyName(options.Sort, !(options.Desc.HasValue && options.Desc.Value));
+                query = query
+                    .OrderByPropertyName(options.Sort,
+                        !(options.Desc.HasValue && options.Desc.Value));
             }
 
             if (!string.IsNullOrEmpty(options.Search))
