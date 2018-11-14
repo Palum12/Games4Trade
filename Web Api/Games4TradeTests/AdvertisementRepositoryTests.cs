@@ -194,52 +194,41 @@ namespace Games4TradeTests
         }
 
         [Fact]
-        public async void RepositorySearchTest()
+        public async void RepositorySearchConsolesTestPositive()
         {
-
+            // Arrange
             var ctx = _fixture.ctx;
             var advertisementRepository = new AdvertisementRepository(ctx);
 
-            var sorted = await advertisementRepository.GetQueriedAds(new AdQueryOptions()
-            {
-                Sort = "price",
-                Desc = true,
-                Systems = new int[0],
-                Genres = new int[0]
-            }) as List<Advertisement>;
-
+            // Act         
             var consoles = await advertisementRepository.GetQueriedAds(new AdQueryOptions()
             {
                 Type = "console",
                 Systems = new int[0],
                 Genres = new int[0]
-            }) as List<Advertisement>; ;
+            }) as List<Advertisement>;
+
+            // Assert
+
+            Assert.Equal(3, consoles.Count);
+        }
+
+
+        [Fact]
+        public async void RepositorySearchAccessoriesTestNegative()
+        {
+
+            var ctx = _fixture.ctx;
+            var advertisementRepository = new AdvertisementRepository(ctx);
 
             var accessories = await advertisementRepository.GetQueriedAds(new AdQueryOptions()
             {
                 Type = "accessory",
                 Systems = new int[0],
                 Genres = new int[0]
-            }) as List<Advertisement>; ;
-
-            var searched = await advertisementRepository.GetQueriedAds(new AdQueryOptions()
-            {
-                Search = "search",
-                Systems = new int[0],
-                Genres = new int[0]
-            }) as List<Advertisement>; ;
-
-            // testing if sorting by price works
-            Assert.Equal(4, sorted.FirstOrDefault().Id);
-            // testing if not returning inactive
-            Assert.Equal(4, sorted.Count);
-            // testing if returning only consoles
-            Assert.Equal(3, consoles.Count);
-            // testing if returning only accessories
-            Assert.Empty(accessories);
-            // testing if returning search text
-            Assert.Single(searched);
-            Assert.Equal(3, searched.FirstOrDefault().Id);
+            }) as List<Advertisement>;
+            
+            Assert.Empty(accessories);           
         }
 
         [Fact]

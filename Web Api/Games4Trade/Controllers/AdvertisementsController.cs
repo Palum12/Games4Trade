@@ -91,7 +91,7 @@ namespace Games4Trade.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Post(AdvertisementSaveDto ad)
+        public async Task<IActionResult> AddAd(AdvertisementSaveDto ad)
         {
             if (ModelState.IsValid)
             {
@@ -101,7 +101,7 @@ namespace Games4Trade.Controllers
                 {
                     return Ok(result.Payload);
                 }
-                else if (result.IsClientError)
+                if (result.IsClientError)
                 {
                     return BadRequest(result.Message);
                 }
