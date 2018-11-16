@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Games4TradeTests
 {
-    public class AdvertisementsFixture : IDisposable
+    public class AdvertisementRepositoryFixture : IDisposable
     {
         private readonly DbContextOptions<ApplicationContext> options;
 
@@ -136,7 +136,7 @@ namespace Games4TradeTests
 
         public readonly ApplicationContext ctx;
 
-        public AdvertisementsFixture()
+        public AdvertisementRepositoryFixture()
         {
             var builder = new DbContextOptionsBuilder<ApplicationContext>();
             builder.UseInMemoryDatabase();
@@ -156,11 +156,11 @@ namespace Games4TradeTests
         }    
     }
 
-    public class AdvertisementRepositoryTests : IClassFixture<AdvertisementsFixture>
+    public class AdvertisementRepositoryTests : IClassFixture<AdvertisementRepositoryFixture>
     {
-        private readonly AdvertisementsFixture _fixture;
+        private readonly AdvertisementRepositoryFixture _fixture;
 
-        public AdvertisementRepositoryTests(AdvertisementsFixture fixture)
+        public AdvertisementRepositoryTests(AdvertisementRepositoryFixture fixture)
         {
             _fixture = fixture;
         }
@@ -194,7 +194,7 @@ namespace Games4TradeTests
         }
 
         [Fact]
-        public async void RepositorySearchConsolesTestPositive()
+        public async void SearchConsolesPositive()
         {
             // Arrange
             var ctx = _fixture.ctx;
@@ -215,7 +215,7 @@ namespace Games4TradeTests
 
 
         [Fact]
-        public async void RepositorySearchAccessoriesTestNegative()
+        public async void SearchAccessoriesNegative()
         {
 
             var ctx = _fixture.ctx;
@@ -246,7 +246,7 @@ namespace Games4TradeTests
         }
 
         [Fact]
-        public async void GetRecommendedAdsForUserTest()
+        public async void GetRecommendedAdsForUserPositive()
         {
 
             var ctx = _fixture.ctx;

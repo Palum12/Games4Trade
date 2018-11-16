@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Security.Principal;
-using AutoMapper;
-using Games4Trade;
 using Games4Trade.Controllers;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
-using Games4Trade.Repositories;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -92,7 +87,8 @@ namespace Games4TradeTests
             // Arrange
             var adServiceMock = new Mock<IAdvertisementService>();
             adServiceMock
-                .Setup(a => a.AddAdvertisement(It.IsAny<int>(), It.IsAny<AdvertisementSaveDto>()))
+                .Setup(a =>
+                    a.AddAdvertisement(It.IsAny<int>(), It.IsAny<AdvertisementSaveDto>()))
                 .ReturnsAsync(new OperationResult()
                 {
                     IsSuccessful = false,
