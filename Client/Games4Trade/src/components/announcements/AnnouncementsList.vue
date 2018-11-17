@@ -40,8 +40,8 @@ export default {
   },
   methods: {
     shortenString (content) {
-      if (content.length > 97) {
-        return content.substring(0, 97) + '...'
+      if (content.length > 147) {
+        return content.substring(0, 147) + '...'
       }
       return content
     },

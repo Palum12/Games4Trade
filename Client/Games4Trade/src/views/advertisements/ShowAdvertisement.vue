@@ -25,7 +25,7 @@
                                           tag="a">{{advertisement.user.login}}</router-link></p>
             <h5>Cena: {{advertisement.price}}zł</h5>
             <p v-if="advertisement.exchangeActive">Wymiana jest możliwa</p>
-            <p v-if="advertisement.phone != null">Numer kontaktowy: {{advertisement.phone}}</p>
+            <p v-if="advertisement.phoneNumber != null">Numer kontaktowy: {{advertisement.phoneNumber}}</p>
             <p v-if="advertisement.email != null">Adres email kontaktowy: {{advertisement.email}}</p>
             <p>Stan: {{advertisement.state.value}}</p>
             <p>System: {{advertisement.system.manufacturer + ' ' + advertisement.system.model}}</p>
