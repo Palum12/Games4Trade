@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
@@ -163,7 +164,7 @@ namespace Games4Trade.Controllers
             var acceptedExtensions = new[] { "jpg", "png", "jpeg", "bmp", "svg" };
             foreach (var photo in photos)
             {
-                if (!acceptedExtensions.Any(e => photo.FileName.EndsWith(e)))
+                if (!acceptedExtensions.Any(e => photo.FileName.EndsWith(e, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     return BadRequest(
                         "The photo field only accepts files with the following extensions: .jpg, .png, .jpeg, .bmp, .svg");

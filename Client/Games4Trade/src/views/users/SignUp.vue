@@ -29,11 +29,16 @@
                 </div>
                 <p v-if="!$v.login.unique">Ten login jest już zajęty!.</p>
                 <p v-if="!$v.login.required">To pole nie może być puste.</p>
+                <div class="form-group">
+                    <input type="checkbox" id="acceptTerms" v-model="hasAcceptedTerms">
+                    <label for="acceptTerms">Czy akceptujesz <span><a @click="showTerms" href="#">regulamin</a></span> ?</label>
+                </div>
+                <p v-if="!hasAcceptedTerms">Przed skorzystaniem z serwisu musisz zaakceptować regulamin.</p>
                 <div class="submit">
                     <button
                         type="submit"
                         class="btn btn-info btn-block"
-                        :disabled="$v.$invalid"
+                        :disabled="$v.$invalid || !hasAcceptedTerms"
                         @click="onSubmit">Utwórz konto !</button>
                 </div>
             </form>
@@ -51,6 +56,7 @@ export default {
     return {
       login: '',
       email: '',
+      hasAcceptedTerms: false,
       isEmailTaken: false,
       invalidClass: 'is-invalid',
       validClass: 'is-valid',
@@ -88,6 +94,15 @@ export default {
             })
           }
         })
+    },
+    showTerms () {
+      this.$swal({
+        title: 'Regulamin',
+        text: 'Akceptuję, iż administracja serwisu Games4Trade nie ponosi żadnej odpowiedzialności za szkody wyrządzone ' +
+          'przez użytkowników, oraz za ogłoszenia zawierające nielegalne treści. Dodatkowo oświadczam, że ponoszę wszelką' +
+          'odpowiedzialność w przypadku gdy dodawane przeze mnie ogłoszenia są nie zgodne z prawem obowiązującym na ' +
+          'terenie Polski.'
+      })
     }
   },
   validations: {

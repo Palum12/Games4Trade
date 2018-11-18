@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -9,6 +9,8 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.AspNetCore.Http;
+using System.Drawing.Imaging;
+using ImageMagick;
 using Console = Games4Trade.Models.Console;
 
 namespace Games4Trade.Services
@@ -412,6 +414,7 @@ namespace Games4Trade.Services
                 {
                     await photo.CopyToAsync(fileStream);
                 }
+
                 var newPhoto = new Photo { DateCreated = DateTime.Now, Path = path, AdvertisementId = adId};
                 photosAdded.Add(newPhoto);
                 await _unitOfWork.Photos.AddASync(newPhoto);
