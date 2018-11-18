@@ -1,7 +1,7 @@
 <template>
 <div v-if="hasDataLoaded" class="no-gutters advertisement">
     <div class="row">
-        <div class="col-12 col-md-8">
+        <div class="col-12 col-md-7">
             <div v-if="advertisement.photos.length > 1" class="gallery">
                 <vue-flux
                         :options="fluxOptions"
@@ -19,7 +19,7 @@
                 <img src="../../assets/no_image_available.svg"/>
             </div>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-5">
             <p>Dodane przez: <router-link :to="`/users/${advertisement.user.id}`"
                                           exact
                                           tag="a">{{advertisement.user.login}}</router-link></p>
@@ -185,13 +185,16 @@ export default {
         min-height: 200px;
         height: 45vh;
         max-height: 90%;
-        width: 60vw;
+        width: 60vh;
         object-fit: contain ;
     }
     .gallery{
-        min-height: 200px;
+        min-height: 300px;
         height: 45vh;
         max-height: 90%;
+        min-width: 400px;
+        width: 60vh;
+        max-width: 90%;
         overflow: hidden;
         overflow-y: auto;
     }

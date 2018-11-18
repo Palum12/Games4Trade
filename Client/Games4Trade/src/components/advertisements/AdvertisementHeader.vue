@@ -46,7 +46,7 @@ export default {
 <style scoped>
     img {
         width: 9vw;
-        height: 7vw;
+        height: 6vw;
         object-fit: cover;
         border: 1px solid lightgray;
         border-radius: 5px;

@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,9 +10,17 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.AspNetCore.Http;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
+/*
 using System.Drawing.Imaging;
-using ImageMagick;
+*/
 using Console = Games4Trade.Models.Console;
+using Image = SixLabors.ImageSharp.Image;
+using Region = Games4Trade.Models.Region;
+using Size = SixLabors.Primitives.Size;
 
 namespace Games4Trade.Services
 {
@@ -361,7 +370,9 @@ namespace Games4Trade.Services
                     await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
                 if (photos.Any())
                 {
-                    return await File.ReadAllBytesAsync(photos.OrderBy(p => p.Id).ElementAt(0).Path);
+                    var directory = @"photos/ad" + adId;
+                    var path = Path.Combine(directory, "miniature");
+                    return await File.ReadAllBytesAsync(path);
                 }
                 return await File.ReadAllBytesAsync(@"photos/adPhoto.png");
             }
@@ -383,6 +394,12 @@ namespace Games4Trade.Services
             var temp = await _unitOfWork.Photos
                 .FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
             var oldPhotos = temp.ToArray();
+            if (oldPhotos.Any())
+            {
+                var directory = @"photos/ad" + ad.Id;
+                var path = Path.Combine(directory, "miniature");
+                File.Delete(path);
+            }
             // here delete old photos
             foreach (var oldPhoto in oldPhotos)
             {
@@ -391,7 +408,7 @@ namespace Games4Trade.Services
             }
 
             int repoRes;
-            if (photos.Count == 0)
+            if (!photos.Any())
             {
                 repoRes = await _unitOfWork.CompleteASync();
                 if (repoRes == oldPhotos.Length)
@@ -402,23 +419,44 @@ namespace Games4Trade.Services
             }
 
             var photosAdded = new List<Photo>();
+
             // here add new photos
-            foreach (var photo in photos)
+            for (var i = 0; i < photos.Count; i++)
             {
+                var photo = photos[i];
                 var fileId = Guid.NewGuid().ToString("N").ToUpper();
                 var directory = @"photos/ad" + adId;
                 Directory.CreateDirectory(directory);
 
                 var path = Path.Combine(directory, fileId);
+
                 using (var fileStream = new FileStream(path, FileMode.Create))
                 {
                     await photo.CopyToAsync(fileStream);
                 }
-
-                var newPhoto = new Photo { DateCreated = DateTime.Now, Path = path, AdvertisementId = adId};
+                var newPhoto = new Photo {DateCreated = DateTime.Now, Path = path, AdvertisementId = adId};
                 photosAdded.Add(newPhoto);
                 await _unitOfWork.Photos.AddASync(newPhoto);
+
+                // here create miniature
+                if (i == 0)
+                {
+                    var newPath = Path.Combine(directory, "miniature");
+                    using (var outputStream = new FileStream(newPath, FileMode.Create))
+                    using (Stream inputStream = photo.OpenReadStream())
+                    {
+                        var image = Image.Load(inputStream);
+                        image.Mutate(img => img.Resize(new ResizeOptions()
+                            {
+                                Mode = ResizeMode.Max,
+                                Size = new Size(300, 200)
+                            }
+                        ));
+                        image.Save(outputStream, new JpegEncoder());
+                    }                    
+                }
             }
+
             repoRes = await _unitOfWork.CompleteASync();
             if (repoRes == oldPhotos.Length + photos.Count)
             {
@@ -429,6 +467,9 @@ namespace Games4Trade.Services
             }
             else
             {
+                var directory = @"photos/ad" + ad.Id;
+                var path = Path.Combine(directory, "miniature");
+                File.Delete(path);
                 foreach (var photo in photosAdded)
                 {
                     File.Delete(photo.Path);
@@ -445,6 +486,9 @@ namespace Games4Trade.Services
             var repoResult = await _unitOfWork.CompleteASync();
             if (repoResult > 0)
             {
+                var directory = @"photos/ad" + ad.Id;
+                var path = Path.Combine(directory, "miniature");
+                File.Delete(path);
                 foreach (var photo in photos)
                 {
                     File.Delete(photo.Path);
