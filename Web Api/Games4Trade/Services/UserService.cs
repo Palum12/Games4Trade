@@ -413,6 +413,11 @@ namespace Games4Trade.Services
             mappedUser.Salt = _loginService.GetSalt();
             mappedUser.Password = _loginService.ComputeHash(
                 mappedUser.Salt, Guid.NewGuid().ToString("N").ToUpper());
+            var tempUsers = await _unitOfWork.Users.GetAllASync();
+            if (!tempUsers.Any())
+            {
+                mappedUser.Role = "Admin";
+            }
 
             await _unitOfWork.Users.AddASync(mappedUser);
 
