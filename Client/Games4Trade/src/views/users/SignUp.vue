@@ -1,7 +1,7 @@
 <template>
 <div>
     <div id="signup-form" class="row no-gutters" >
-        <div class="form rounded col-6 offset-3 p-4">
+        <div class="form rounded col-12 col-md-6 offset-0 offset-md-3 p-1 p-md-4">
             <form novalidate v-on:submit.prevent>
                 <div class="form-group ">
                     <label for="email">Adres e-mail</label>

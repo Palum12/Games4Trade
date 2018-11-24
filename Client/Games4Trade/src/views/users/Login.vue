@@ -1,7 +1,7 @@
 <template>
     <div>
     <div id="login-form" class="row no-gutters">
-        <div class="form rounded col-4 offset-4 p-4">
+        <div class="form rounded col-12 col-md-4 offset-0 offset-md-4 p-1 p-md-4">
             <form @submit.prevent="onSubmit">
                 <div class="form-group">
                     <label for="login">Login</label>

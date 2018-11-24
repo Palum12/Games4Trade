@@ -62,7 +62,7 @@ export default {
         .then(() => {
           this.$store.dispatch('unsetSpinnerLoading')
           this.$swal({
-            title: 'Wiadomość została wysłana',
+            title: 'Hasło zostało zmienione',
             type: 'success'
           })
           this.$router.replace({name: 'home'})

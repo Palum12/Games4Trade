@@ -68,13 +68,13 @@ export default {
       return descrption
     },
     prepareGenres (genres) {
-      if (genres.length === 0) {
+      if (genres == null || genres.length === 0) {
         return this.noGenresMessage
       }
       return 'Lubię gatunki: ' + genres.join(', ')
     },
     prepareSystems (systems) {
-      if (systems.length === 0) {
+      if (systems == null || systems.length === 0) {
         return this.noSystemsMessage
       }
       return 'Interesują mnie: ' + systems.join(', ')
