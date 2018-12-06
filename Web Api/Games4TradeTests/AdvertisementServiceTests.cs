@@ -42,6 +42,7 @@ namespace Games4TradeTests
         [Fact]
         public async void AddAdPositive()
         {
+            // Arrange
             var unitMock = new Mock<IUnitOfWork>();
             unitMock.Setup(u => u.Regions.GetASync(It.IsAny<int>()))
                 .ReturnsAsync(new Region()).Verifiable();
@@ -83,8 +84,10 @@ namespace Games4TradeTests
                 Price = 10
             };
 
+            // Act
             await service.AddAdvertisement(userId: 1, ad: newAdd);
 
+            // Assert
             Assert.NotNull(addedAdd);
             Assert.NotNull(addedGame);
             unitMock.Verify();

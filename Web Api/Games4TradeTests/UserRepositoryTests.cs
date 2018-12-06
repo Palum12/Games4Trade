@@ -96,12 +96,15 @@ namespace Games4TradeTests
         [Fact]
         public async void GetUserByLoginTest()
         {
+            // Arrange
             var ctx = _fixture.ctx;
             var repository = new UserRepository(ctx);
 
+            // Act
             var result = await repository.GetUserByLogin("test1");
             var resultEmpty = await repository.GetUserByLogin("te");
 
+            // Assert
             Assert.NotNull(result);
             Assert.Null(resultEmpty);
         }
@@ -109,12 +112,15 @@ namespace Games4TradeTests
         [Fact]
         public async void GetObservedUsersForUser()
         {
+            // Arrange
             var ctx = _fixture.ctx;
             var repository = new UserRepository(ctx);
 
+            // Act
             var listOfUsersForUser1 = await repository.GetObservedUsersForUser(1);
             var listOfUsersForUser3 = await repository.GetObservedUsersForUser(3);
 
+            // Assert
             Assert.Equal(2, listOfUsersForUser1.Count);
             Assert.Empty(listOfUsersForUser3);
         }
@@ -122,14 +128,17 @@ namespace Games4TradeTests
         [Fact]
         public async void AddObservedUsersForUser()
         {
+            // Arrange
             var ctx = _fixture.ctx;
             var repository = new UserRepository(ctx);
 
+            // Act
             await repository.AddObsersvedUser(observedUserId: 3, observingUserId: 4);
             await ctx.SaveChangesAsync();
 
             var listOfUsersForUser4 = await repository.GetObservedUsersForUser(4);
 
+            // Assert
             Assert.Single(listOfUsersForUser4);
         }
 
