@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -220,38 +219,12 @@ namespace Games4Trade.Services
                 };
             }
 
-            switch (ad.Item)
+            var result = await FillAdvertisement(ad.Item);
+            return new OperationResult()
             {
-                case Game g:
-                {
-                    var result = await FillGame(g);
-                    return new OperationResult()
-                    {
-                        IsSuccessful = true,
-                        Payload = result
-                    };
-                }
-                case Accessory a:
-                {
-                    var result = await FillAccessory(a);
-                    return new OperationResult()
-                    {
-                        IsSuccessful = true,
-                        Payload = result
-                    };
-                }
-                case Console c:
-                {
-                    var result = await FillConsole(c);
-                    return new OperationResult()
-                    {
-                        IsSuccessful = true,
-                        Payload = result
-                    };
-                }
-                default:
-                    throw new DataException("Invalid discriminator !");
-            }
+                IsSuccessful = true,
+                Payload = result
+            };
         }
 
         public async Task<OperationResult> GetRecommendedAdsForUser(int userId, int page)
@@ -503,10 +476,10 @@ namespace Games4Trade.Services
             Region region;
             switch (ad.Discriminator)
             {
-                case "Game":
+                case nameof(Game):
+                    var genre = await _unitOfWork.Genres.GetASync(ad.GenreId.GetValueOrDefault());
                     region = await _unitOfWork.Regions.GetASync(ad.RegionId.GetValueOrDefault());
                     state = await _unitOfWork.States.GetASync(ad.StateId);
-                    var genre = await _unitOfWork.Genres.GetASync(ad.GenreId.GetValueOrDefault());
                     system = await _unitOfWork.Systems.GetASync(ad.SystemId);
                     objects = new List<object> { region, system, state, genre };
 
@@ -517,7 +490,7 @@ namespace Games4Trade.Services
                     }
 
                     break;
-                case "Console":
+                case nameof(Console):
                     region = await _unitOfWork.Regions.GetASync(ad.RegionId.GetValueOrDefault());
                     state = await _unitOfWork.States.GetASync(ad.StateId);
                     system = await _unitOfWork.Systems.GetASync(ad.SystemId);
@@ -529,7 +502,7 @@ namespace Games4Trade.Services
                         return (false, message);
                     }
                     break;
-                case "Accessory":
+                case nameof(Accessory):
                     state = await _unitOfWork.States.GetASync(ad.StateId);
                     system = await _unitOfWork.Systems.GetASync(ad.SystemId);
                     objects = new List<object> { system, state };
@@ -553,73 +526,54 @@ namespace Games4Trade.Services
             return ad.UserId == userId;
         }
 
-        private async Task<AdvertisementGameDto> FillGame(Game game)
+        private async Task<AdvertisementBasicDto> FillAdvertisement(AdvertisementItem source)
         {
-            var result = _mapper.Map<Advertisement, AdvertisementGameDto>(game.Advertisement);
-            _mapper.Map(game, result);
-            result.Discriminator = nameof(Game);
+            AdvertisementBasicDto result;
 
-            var tempGenre = await _unitOfWork.Genres.GetASync(game.GenreId);
-            var tempRegion = await _unitOfWork.Regions.GetASync(game.GameRegionId);
-            var tempState = await _unitOfWork.States.GetASync(game.StateId);
-            var tempSystem = await _unitOfWork.Systems.GetASync(game.SystemId);
+            var taskState = _unitOfWork.States.GetASync(source.StateId);
+            var taskSystem = _unitOfWork.Systems.GetASync(source.SystemId);
 
-            result.Genre = _mapper.Map<Genre, GenreDto>(tempGenre);
-            result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
-            result.State = _mapper.Map<State, StateDto>(tempState);
-            result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
-
-            FillEmailAndPhone(game.Advertisement, result);
-
-            return result;
-        }
-
-        private async Task<AdvertisementConsoleDto> FillConsole(Console console)
-        {
-            var result = _mapper.Map<Advertisement, AdvertisementConsoleDto>(console.Advertisement);
-            _mapper.Map(console, result);
-            result.Discriminator = nameof(Console);
-
-            var tempRegion = await _unitOfWork.Regions.GetASync(console.ConsoleRegionId);
-            var tempState = await _unitOfWork.States.GetASync(console.StateId);
-            var tempSystem = await _unitOfWork.Systems.GetASync(console.SystemId);
-
-            result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
-            result.State = _mapper.Map<State, StateDto>(tempState);
-            result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
-
-            FillEmailAndPhone(console.Advertisement, result);
-
-            return result;
-        }
-
-        private async Task<AdvertisementAccessoryDto> FillAccessory(Accessory accessory)
-        {
-            var result = _mapper.Map<Advertisement, AdvertisementAccessoryDto>(accessory.Advertisement);
-            _mapper.Map(accessory, result);
-            result.Discriminator = nameof(Accessory);
-
-            var tempState = await _unitOfWork.States.GetASync(accessory.StateId);
-            var tempSystem = await _unitOfWork.Systems.GetASync(accessory.SystemId);         
-
-            result.State = _mapper.Map<State, StateDto>(tempState);
-            result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
-
-            FillEmailAndPhone(accessory.Advertisement, result);
-
-            return result;
-        }
-
-        private void FillEmailAndPhone (Advertisement source, AdvertisementBasicDto destanation)
-        {
-            if(source.ShowEmail)
+            switch (source)
             {
-                destanation.Email = source.User.Email;
+                case Game g:
+                    result = _mapper.Map<Advertisement, AdvertisementGameDto>(g.Advertisement);
+                    _mapper.Map(g, result);
+                    result.Discriminator = nameof(Game);
+                    var tempGenre = await _unitOfWork.Genres.GetASync(g.GenreId);
+                    var tempRegionGame = await _unitOfWork.Regions.GetASync(g.GameRegionId);
+                    ((AdvertisementGameDto)result).Genre = _mapper.Map<Genre, GenreDto>(tempGenre);
+                    ((AdvertisementGameDto)result).Region = _mapper.Map<Region, RegionDto>(tempRegionGame);
+                    break;
+                case Console c:
+                    result = _mapper.Map<Advertisement, AdvertisementConsoleDto>(c.Advertisement);
+                    _mapper.Map(c, result);
+                    result.Discriminator = nameof(Console);
+                    var tempRegionConsole = await _unitOfWork.Regions.GetASync(c.ConsoleRegionId);
+                    ((AdvertisementConsoleDto)result).Region = _mapper.Map<Region, RegionDto>(tempRegionConsole);
+                    break;
+                case Accessory a:
+                    result = _mapper.Map<Advertisement, AdvertisementAccessoryDto>(a.Advertisement);
+                    _mapper.Map(a, result);
+                    result.Discriminator = nameof(Accessory);
+                    break;
+                default:
+                    throw new NotSupportedException();
             }
 
-            if(source.ShowPhone && !string.IsNullOrEmpty(source.User.PhoneNumber)) {
-                destanation.PhoneNumber = source.User.PhoneNumber;
+            await Task.WhenAll(taskState, taskSystem);
+            result.State = _mapper.Map<State, StateDto>(taskState.Result);
+            result.System = _mapper.Map<Models.System, SystemDto>(taskSystem.Result);
+
+            if (source.Advertisement.ShowEmail)
+            {
+                result.Email = source.Advertisement.User.Email;
             }
+
+            if (source.Advertisement.ShowPhone && !string.IsNullOrEmpty(source.Advertisement.User.PhoneNumber))
+            {
+                result.PhoneNumber = source.Advertisement.User.PhoneNumber;
+            }
+            return result;
         }
 
     }
