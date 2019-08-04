@@ -10,13 +10,8 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.AspNetCore.Http;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
-/*
-using System.Drawing.Imaging;
-*/
 using Console = Games4Trade.Models.Console;
 using Image = SixLabors.ImageSharp.Image;
 using Region = Games4Trade.Models.Region;
@@ -44,19 +39,20 @@ namespace Games4Trade.Services
                 var advertisement = _mapper.Map<AdvertisementSaveDto, Advertisement>(ad);
                 advertisement.UserId = userId;
 
+
                 switch (ad.Discriminator)
                 {
-                    case "Game":
+                    case nameof(Game):
                         var game = _mapper.Map<AdvertisementSaveDto, Game>(ad);
                         await _unitOfWork.Games.AddASync(game);
                         advertisement.Item = game;
                         break;
-                    case "Accessory":
+                    case nameof(Accessory):
                         var accessory = _mapper.Map<AdvertisementSaveDto, Accessory>(ad);
                         await _unitOfWork.Accessories.AddASync(accessory);
                         advertisement.Item = accessory;
                         break;
-                    case "Console":
+                    case nameof(Console):
                         var console = _mapper.Map<AdvertisementSaveDto, Console>(ad);
                         await _unitOfWork.Consoles.AddASync(console);
                         advertisement.Item = console;
@@ -224,33 +220,33 @@ namespace Games4Trade.Services
                 };
             }
 
-            switch (ad.Item.GetType().Name)
+            switch (ad.Item)
             {
-                case "Game":
+                case Game g:
                 {
-                    var game =  await MapToGame(ad);
+                    var result = await FillGame(g);
                     return new OperationResult()
                     {
                         IsSuccessful = true,
-                        Payload = game
+                        Payload = result
                     };
                 }
-                case "Accessory":
+                case Accessory a:
                 {
-                    var accessory =  await MapToAccessory(ad);
+                    var result = await FillAccessory(a);
                     return new OperationResult()
                     {
                         IsSuccessful = true,
-                        Payload = accessory
+                        Payload = result
                     };
                 }
-                case "Console":
+                case Console c:
                 {
-                    var console = await MapToConsole(ad);
+                    var result = await FillConsole(c);
                     return new OperationResult()
                     {
                         IsSuccessful = true,
-                        Payload = console
+                        Payload = result
                     };
                 }
                 default:
@@ -557,26 +553,12 @@ namespace Games4Trade.Services
             return ad.UserId == userId;
         }
 
-        private async Task<AdvertisementGameDto> MapToGame(Advertisement ad)
+        private async Task<AdvertisementGameDto> FillGame(Game game)
         {
-            Game game = ad.Item as Game;
-            var result = new AdvertisementGameDto()
-            {
-                Id = ad.Id,
-                UserId = ad.UserId,
-                Discriminator = ad.Item.GetType().Name,
-                DateCreated = ad.DateCreated,
-                Description = ad.Item.Description,               
-                ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
-                Price = ad.Price,
-                Title = ad.Title,
-                IsActive = ad.IsActive,
-                ShowEmail = ad.ShowEmail,
-                ShowPhone = ad.ShowPhone,
+            var result = _mapper.Map<Advertisement, AdvertisementGameDto>(game.Advertisement);
+            _mapper.Map(game, result);
+            result.Discriminator = nameof(Game);
 
-                DateReleased = game.DateReleased,
-                Developer = game.Developer
-            };
             var tempGenre = await _unitOfWork.Genres.GetASync(game.GenreId);
             var tempRegion = await _unitOfWork.Regions.GetASync(game.GameRegionId);
             var tempState = await _unitOfWork.States.GetASync(game.StateId);
@@ -586,46 +568,18 @@ namespace Games4Trade.Services
             result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
             result.State = _mapper.Map<State, StateDto>(tempState);
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
-            result.User = _mapper.Map<User, UserDto>(ad.User);
 
-            result.Photos = new List<PhotoDto>();
-            foreach (var photo in ad.Photos)
-            {
-                result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
-            }
-
-            if (result.ShowEmail)
-            {
-                result.Email = ad.User.Email;
-            }
-
-            if (result.ShowPhone && !string.IsNullOrEmpty(ad.User.PhoneNumber))
-            {
-                result.PhoneNumber = ad.User.PhoneNumber;
-            }
+            FillEmailAndPhone(game.Advertisement, result);
 
             return result;
         }
 
-        private async Task<AdvertisementConsoleDto> MapToConsole(Advertisement ad)
+        private async Task<AdvertisementConsoleDto> FillConsole(Console console)
         {
-            Console console = ad.Item as Console;
-            var result = new AdvertisementConsoleDto()
-            {
-                Id = ad.Id,
-                UserId = ad.UserId,
-                Discriminator = ad.Item.GetType().Name,
-                DateCreated = ad.DateCreated,
-                Description = ad.Item.Description,
-                ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
-                Price = ad.Price,
-                Title = ad.Title,
-                IsActive = ad.IsActive,
-                ShowEmail = ad.ShowEmail,
-                ShowPhone = ad.ShowPhone,
+            var result = _mapper.Map<Advertisement, AdvertisementConsoleDto>(console.Advertisement);
+            _mapper.Map(console, result);
+            result.Discriminator = nameof(Console);
 
-                DateReleased = console.DateReleased
-            };
             var tempRegion = await _unitOfWork.Regions.GetASync(console.ConsoleRegionId);
             var tempState = await _unitOfWork.States.GetASync(console.StateId);
             var tempSystem = await _unitOfWork.Systems.GetASync(console.SystemId);
@@ -633,72 +587,39 @@ namespace Games4Trade.Services
             result.Region = _mapper.Map<Region, RegionDto>(tempRegion);
             result.State = _mapper.Map<State, StateDto>(tempState);
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
-            result.User = _mapper.Map<User, UserDto>(ad.User);
 
-            result.Photos = new List<PhotoDto>();
-            foreach (var photo in ad.Photos)
-            {
-                result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
-            }
-
-            if (result.ShowEmail)
-            {
-                result.Email = ad.User.Email;
-            }
-
-            if (result.ShowPhone && !string.IsNullOrEmpty(ad.User.PhoneNumber))
-            {
-                result.PhoneNumber = ad.User.PhoneNumber;
-            }
+            FillEmailAndPhone(console.Advertisement, result);
 
             return result;
         }
 
-        private async Task<AdvertisementAccessoryDto> MapToAccessory(Advertisement ad)
+        private async Task<AdvertisementAccessoryDto> FillAccessory(Accessory accessory)
         {
-            Accessory accessory = ad.Item as Accessory;
-            var result = new AdvertisementAccessoryDto()
-            {
-                Id = ad.Id,
-                UserId = ad.UserId,
-                Discriminator = ad.Item.GetType().Name,
-                DateCreated = ad.DateCreated,
-                Description = ad.Item.Description,
-                ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
-                Price = ad.Price,
-                Title = ad.Title,
-                IsActive = ad.IsActive,
-                ShowEmail = ad.ShowEmail,
-                ShowPhone = ad.ShowPhone,
+            var result = _mapper.Map<Advertisement, AdvertisementAccessoryDto>(accessory.Advertisement);
+            _mapper.Map(accessory, result);
+            result.Discriminator = nameof(Accessory);
 
-                AccessoryManufacturer = accessory.AccessoryManufacturer,
-                AccessoryModel = accessory.AccessoryModel,
-                DateReleased = accessory.DateReleased
-            };
             var tempState = await _unitOfWork.States.GetASync(accessory.StateId);
             var tempSystem = await _unitOfWork.Systems.GetASync(accessory.SystemId);         
 
             result.State = _mapper.Map<State, StateDto>(tempState);
             result.System = _mapper.Map<Models.System, SystemDto>(tempSystem);
-            result.User = _mapper.Map<User, UserDto>(ad.User);
 
-            result.Photos = new List<PhotoDto>();
-            foreach (var photo in ad.Photos)
-            {
-                result.Photos.Add(_mapper.Map<Photo, PhotoDto>(photo));
-            }
-
-            if (result.ShowEmail)
-            {
-                result.Email = ad.User.Email;
-            }
-
-            if (result.ShowPhone && !string.IsNullOrEmpty(ad.User.PhoneNumber))
-            {
-                result.PhoneNumber = ad.User.PhoneNumber;
-            }
+            FillEmailAndPhone(accessory.Advertisement, result);
 
             return result;
+        }
+
+        private void FillEmailAndPhone (Advertisement source, AdvertisementBasicDto destanation)
+        {
+            if(source.ShowEmail)
+            {
+                destanation.Email = source.User.Email;
+            }
+
+            if(source.ShowPhone && !string.IsNullOrEmpty(source.User.PhoneNumber)) {
+                destanation.PhoneNumber = source.User.PhoneNumber;
+            }
         }
 
     }
