@@ -68,8 +68,7 @@ namespace Games4TradeTests
 
         public UsersFixture()
         {
-            var builder = new DbContextOptionsBuilder<ApplicationContext>();
-            builder.UseInMemoryDatabase();
+            var builder = new DbContextOptionsBuilder<ApplicationContext>().UseInMemoryDatabase("testBase");
             options = builder.Options;
             ctx = new ApplicationContext(options);
 

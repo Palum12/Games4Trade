@@ -140,35 +140,34 @@ namespace Games4Trade.Services
 
             if (currentAd.Item.GetType().Name.Equals(ad.Discriminator))
             {
-                if (currentAd.Item.GetType() == typeof(Game))
+                switch (currentAd.Item)
                 {
-                    var game = currentAd.Item as Game;
-                    game.Developer = ad.Developer;
-                    game.GameRegionId = ad.RegionId.Value;
-                    game.GenreId = ad.GenreId.Value;
-                    game.DateReleased = ad.DateReleased;
-                    game.StateId = ad.StateId;
-                    game.SystemId = ad.SystemId;
-                    game.Description = ad.Description;
-                }
-                else if (currentAd.Item.GetType() == typeof(Accessory))
-                {
-                    var accessory = currentAd.Item as Accessory;
-                    accessory.AccessoryManufacturer = ad.AccessoryManufacturer;
-                    accessory.AccessoryModel = ad.AccessoryModel;
-                    accessory.DateReleased = ad.DateReleased;
-                    accessory.StateId = ad.StateId;
-                    accessory.SystemId = ad.SystemId;
-                    accessory.Description = ad.Description;
-                }
-                else if (currentAd.Item.GetType() == typeof(Console))
-                {
-                    var console = currentAd.Item as Console;
-                    console.DateReleased = ad.DateReleased;
-                    console.ConsoleRegionId = ad.RegionId.Value;
-                    console.StateId = ad.StateId;
-                    console.SystemId = ad.SystemId;
-                    console.Description = ad.Description;
+                    case Game game:
+                        game.Developer = ad.Developer;
+                        game.GameRegionId = ad.RegionId.Value;
+                        game.GenreId = ad.GenreId.Value;
+                        game.DateReleased = ad.DateReleased;
+                        game.StateId = ad.StateId;
+                        game.SystemId = ad.SystemId;
+                        game.Description = ad.Description;
+                        break;
+                    case Accessory accessory:
+                        accessory.AccessoryManufacturer = ad.AccessoryManufacturer;
+                        accessory.AccessoryModel = ad.AccessoryModel;
+                        accessory.DateReleased = ad.DateReleased;
+                        accessory.StateId = ad.StateId;
+                        accessory.SystemId = ad.SystemId;
+                        accessory.Description = ad.Description;
+                        break;
+                    case Console console:
+                        console.DateReleased = ad.DateReleased;
+                        console.ConsoleRegionId = ad.RegionId.Value;
+                        console.StateId = ad.StateId;
+                        console.SystemId = ad.SystemId;
+                        console.Description = ad.Description;
+                        break;
+                    default:
+                        break;
                 }
                 
             }
@@ -177,17 +176,17 @@ namespace Games4Trade.Services
                 _unitOfWork.AdvertisementItems.Remove(currentAd.Item);
                 switch (ad.Discriminator)
                 {
-                    case "Game":
+                    case nameof(Game):
                         var game = _mapper.Map<AdvertisementSaveDto, Game>(ad);
                         await _unitOfWork.Games.AddASync(game);
                         currentAd.Item = game;
                         break;
-                    case "Accessory":
+                    case nameof(Accessory):
                         var accessory = _mapper.Map<AdvertisementSaveDto, Accessory>(ad);
                         await _unitOfWork.Accessories.AddASync(accessory);
                         currentAd.Item = accessory;
                         break;
-                    case "Console":
+                    case nameof(Console):
                         var console = _mapper.Map<AdvertisementSaveDto, Console>(ad);
                         await _unitOfWork.Consoles.AddASync(console);
                         currentAd.Item = console;
@@ -238,9 +237,9 @@ namespace Games4Trade.Services
             };
         }
 
-        public async Task<OperationResult> GetAdvetisementsForUser(int userId, int page, bool selfSerive)
+        public async Task<OperationResult> GetAdvetisementsForUser(int userId, int page, bool selfService)
         {
-            var ads = await _unitOfWork.Advertisements.GetAdsForUser(userId, page, DefaultPageSize, selfSerive);
+            var ads = await _unitOfWork.Advertisements.GetAdsForUser(userId, page, DefaultPageSize, selfService);
             var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable< AdvertisementWithoutItemDto>>(ads);
             return new OperationResult
             {
@@ -471,51 +470,30 @@ namespace Games4Trade.Services
         private async Task<(bool, string)> CheckIfRelationshipsAreCorrect(AdvertisementSaveDto ad)
         {
             IList<Object> objects;
-            Models.System system;
-            State state;
+            var system = await _unitOfWork.Systems.GetASync(ad.SystemId);
+            var state = await _unitOfWork.States.GetASync(ad.StateId);
             Region region;
             switch (ad.Discriminator)
             {
                 case nameof(Game):
                     var genre = await _unitOfWork.Genres.GetASync(ad.GenreId.GetValueOrDefault());
                     region = await _unitOfWork.Regions.GetASync(ad.RegionId.GetValueOrDefault());
-                    state = await _unitOfWork.States.GetASync(ad.StateId);
-                    system = await _unitOfWork.Systems.GetASync(ad.SystemId);
                     objects = new List<object> { region, system, state, genre };
-
-                    if (objects.Any(o => o == null))
-                    {
-                        var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
-                        return (false, message);
-                    }
-
                     break;
                 case nameof(Console):
                     region = await _unitOfWork.Regions.GetASync(ad.RegionId.GetValueOrDefault());
-                    state = await _unitOfWork.States.GetASync(ad.StateId);
-                    system = await _unitOfWork.Systems.GetASync(ad.SystemId);
                     objects = new List<object> { region, system, state };
-
-                    if (objects.Any(o => o == null))
-                    {
-                        var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
-                        return (false, message);
-                    }
                     break;
                 case nameof(Accessory):
-                    state = await _unitOfWork.States.GetASync(ad.StateId);
-                    system = await _unitOfWork.Systems.GetASync(ad.SystemId);
                     objects = new List<object> { system, state };
-
-                    if (objects.Any(o => o == null))
-                    {
-                        var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
-                        return (false, message);
-                    }
-
                     break;
                 default:
                     return (false, "Wrong discriminator!");
+            }
+            if (objects.Any(o => o == null))
+            {
+                var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
+                return (false, message);
             }
             return (true, null);
         }
