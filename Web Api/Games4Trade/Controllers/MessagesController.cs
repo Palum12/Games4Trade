@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Games4Trade.Dtos;
+using Games4Trade.Hubs;
 using Games4Trade.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Games4Trade.Controllers
 {
@@ -13,13 +15,13 @@ namespace Games4Trade.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMessageService _messageService;
-        
+        private readonly IHubContext<MessagesHub> _hubContext;
 
-        public MessagesController(IMessageService messageService, IUserService userService)
+        public MessagesController(IMessageService messageService, IUserService userService, IHubContext<MessagesHub> hub)
         {
             _messageService = messageService;
             _userService = userService;
-            
+            _hubContext = hub;
         }
 
         [HttpGet]
@@ -55,6 +57,11 @@ namespace Games4Trade.Controllers
             var result = await _messageService.AddMessage(currentUserId.Value, message);
             if (result.IsSuccessful)
             {
+                var connectionId = MessagesHub.TryGetUserConnection(targetUser.Login);
+                if (!string.IsNullOrEmpty(connectionId))
+                {
+                    await _hubContext.Clients.Client(connectionId).SendAsync("Recieve", message);
+                }
                 return Ok();
             }
 

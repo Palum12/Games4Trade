@@ -6,7 +6,7 @@
                         <div class="col-1">
                             <router-link :to="'/users/'+user.id" tag="div" class="userLink">
                             <div class="row">
-                                <img :src="`http://localhost:5000/api/users/${user.id}/photo`">
+                                <img :src="getPhotoUrl(user.id)">
                             </div>
                             <div class="row">
                                 <p class="mb-1 font-weight-bold">{{user.login}}</p>
@@ -61,6 +61,9 @@ export default {
         .catch(error => {
           console.log(error)
         })
+    },
+    getPhotoUrl (userId) {
+      return process.env.VUE_APP_API_URL + `users/${userId}/photo`
     },
     prepareDescription (content) {
       if (content == null) {

@@ -14,7 +14,7 @@ Vue.use(VueSweetAlert2)
 Vue.use(Vuelidate)
 Vue.component('tabs', Tabs)
 Vue.component('tab', Tab)
-axios.defaults.baseURL = 'http://localhost:5000/api/'
+axios.defaults.baseURL = process.env.VUE_APP_API_URL
 
 axios.interceptors.request.use((config) => {
   let authToken = store.getters.getToken

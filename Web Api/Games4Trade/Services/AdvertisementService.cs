@@ -203,8 +203,16 @@ namespace Games4Trade.Services
             }
 
             var repoResult = await _unitOfWork.CompleteASync();
-            
-            return new OperationResult(){IsSuccessful = true};
+
+            if (repoResult > 0)
+            {
+                return new OperationResult{ IsSuccessful = true };
+            }
+            return new OperationResult()
+            {
+                IsSuccessful = false,
+                IsClientError = false
+            };
         }
 
         public async Task<OperationResult> GetAdvertisement(int id, int? userId = null)

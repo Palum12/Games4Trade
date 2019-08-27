@@ -2,7 +2,7 @@
     <div v-if="hasDataLoaded" class="no-gutters profile">
         <div class="row">
             <div class="col-3">
-                <img :src="`http://localhost:5000/api/users/${user.id}/photo`">
+                <img :src="getPhotoUrl(user.id)">
                 <button
                         class="btn btn-success mt-2"
                         v-if="showButtonAddToObserved"
@@ -60,6 +60,9 @@ export default {
   methods: {
     ucFirst (string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
+    },
+    getPhotoUrl (userId) {
+      return process.env.VUE_APP_API_URL + `users/${userId}/photo`
     },
     prepareDescription (descrption) {
       if (descrption == null) {

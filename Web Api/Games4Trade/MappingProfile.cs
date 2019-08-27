@@ -50,26 +50,6 @@ namespace Games4Trade
             CreateMap<AdvertisementSaveDto, Console>().ForMember(c => c.ConsoleRegionId, opt => opt.MapFrom(a => a.RegionId));
             CreateMap<AdvertisementSaveDto, Accessory>();
 
-            /*
-             var result = new AdvertisementGameDto()
-            {
-                Id = ad.Id,
-                UserId = ad.UserId,
-                Discriminator = ad.Item.GetType().Name,
-                DateCreated = ad.DateCreated,
-                Description = ad.Item.Description,               
-                ExchangeActive = ad.ExchangeActive.GetValueOrDefault(),
-                Price = ad.Price,
-                Title = ad.Title,
-                IsActive = ad.IsActive,
-                ShowEmail = ad.ShowEmail,
-                ShowPhone = ad.ShowPhone,
-
-                DateReleased = game.DateReleased,
-                Developer = game.Developer
-            };
-             */
-
             CreateMap<Advertisement, AdvertisementGameDto>();
             CreateMap<Game, AdvertisementGameDto>()
                 .ForMember(a => a.Photos, opt => opt.Ignore())

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Games4Trade.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -26,7 +25,7 @@ namespace Games4Trade.Services
         public static async Task<bool> SendEmail(string address, string title, string text)
         {
             MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress("noreply@games4trade.pl"));
+            message.From.Add(new MailboxAddress(""));
             message.To.Add(new MailboxAddress(address));
             message.Subject = title;
 
@@ -44,10 +43,10 @@ namespace Games4Trade.Services
                     // Accept all SSL certificates (in case the server supports STARTTLS)
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-                    await client.ConnectAsync("serwer1845771.home.pl", 465, true);
+                    await client.ConnectAsync("", 465, true);
 
                     // Authenticate email with server
-                    await client.AuthenticateAsync("noreply@games4trade.pl", "Mocne12\\");
+                    await client.AuthenticateAsync("", "");
                     // Send message to receiver
                     await client.SendAsync(message);
                     // Disconect to unlock unnecessary resources

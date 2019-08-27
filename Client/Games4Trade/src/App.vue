@@ -13,14 +13,28 @@
 <script>
 import Navbar from './components/Navbar'
 import Loader from 'vue-spinner/src/PacmanLoader'
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
+import { HubConnectionBuilder } from '@aspnet/signalr'
 export default {
-  components: {Navbar, Loader},
+  components: { Navbar, Loader },
   computed: {
     ...mapGetters(['isSpinnerLoading'])
   },
   created () {
-    this.$store.dispatch('tryAutoLogin')
+    let vm = this
+    this.$store.dispatch('tryAutoLogin').then(() => {
+      if (vm.$store.getters.getToken) {
+          // todo: refactor messaging component
+          /* const hubConnection = new HubConnectionBuilder()
+          .withUrl(process.env.VUE_APP_MESSAGE_HUB_URL, {
+            accessTokenFactory: () => { return vm.$store.getters.getTokenWithoutHeader } })
+          .build()
+        hubConnection.on('Recieve', (value) => {
+          console.log(value)
+        })
+        hubConnection.start()*/
+      }
+    })
     this.$store.dispatch('getGenres')
     this.$store.dispatch('getSystems')
     this.$store.dispatch('getRegions')

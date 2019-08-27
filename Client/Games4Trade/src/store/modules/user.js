@@ -28,6 +28,9 @@ const getters = {
   },
   getToken (state) {
     return state.userData.token
+  },
+  getTokenWithoutHeader (state) {
+    return state.userData.token.split(' ').slice(1)[0]
   }
 }
 

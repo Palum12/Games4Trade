@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Games4Trade.Data;
 using Games4Trade.Dtos;
+using Games4Trade.Hubs;
 using Games4Trade.Repositories;
 using Games4Trade.Services;
 using Games4Trade.Validators;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +34,7 @@ namespace Games4Trade
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMvc().AddFluentValidation();
             services.AddSingleton(Configuration);
 
@@ -69,9 +72,11 @@ namespace Games4Trade
 
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = "Jwt";
-                options.DefaultChallengeScheme = "Jwt";
-            }).AddJwtBearer("Jwt", options =>
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
+                .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -85,10 +90,28 @@ namespace Games4Trade
 
                     ClockSkew = TimeSpan.FromMinutes(5) //5 minute tolerance for the expiration date
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        var accessToken = context.Request.Query["access_token"];
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/messagehub")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken.ToString();
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+            services.AddSignalR(opt => opt.EnableDetailedErrors = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -105,12 +128,16 @@ namespace Games4Trade
             }
 
             app.UseCors(builder => builder
-                .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
+                .SetIsOriginAllowed((host) => true)
                 .AllowCredentials());
-            app.UseCors("AnyOrigin");
+
             app.UseAuthentication();
+
+            app.UseSignalR(route => {
+                route.MapHub<MessagesHub>("/messagehub");
+            });
 
             app.UseMvc();
         }

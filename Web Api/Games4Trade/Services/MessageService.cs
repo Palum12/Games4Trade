@@ -42,7 +42,7 @@ namespace Games4Trade.Services
             var response = await _unitOfWork.CompleteASync();
             if (response > 0)
             {
-                return new OperationResult(){IsSuccessful = true};
+                return new OperationResult(){IsSuccessful = true, Payload = messageModel};
             }
             else
             {
