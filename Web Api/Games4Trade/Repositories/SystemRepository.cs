@@ -19,8 +19,7 @@ namespace Games4Trade.Repositories
         public async Task<Models.System> GetSameSystem(Models.System system)
         {
             return await Context.Systems
-                .Where(s => s.Manufacturer.Equals(system.Manufacturer, StringComparison.OrdinalIgnoreCase) &&
-                            s.Model.Equals(system.Model, StringComparison.OrdinalIgnoreCase))
+                .Where(s => s.Manufacturer == system.Manufacturer && s.Model == system.Model)
                 .SingleOrDefaultAsync();
         }
 

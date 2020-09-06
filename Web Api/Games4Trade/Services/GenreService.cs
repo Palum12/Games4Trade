@@ -38,7 +38,7 @@ namespace Games4Trade.Services
         public async Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre)
         {
             var genreModel = _mapper.Map<GenreCreateOrUpdateDto, Genre>(genre);
-            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value.Equals(genreModel.Value, StringComparison.OrdinalIgnoreCase));
+            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value == genreModel.Value);
             if (doesExists.Any())
             {
                 return new OperationResult()
@@ -67,7 +67,7 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> EditGenre(int id, GenreCreateOrUpdateDto genre)
         {
-            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value.Equals(genre.Value, StringComparison.OrdinalIgnoreCase) && g.Id != id);
+            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value == genre.Value && g.Id != id);
             if (doesExists.Any())
             {
                 return new OperationResult()

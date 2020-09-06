@@ -66,7 +66,7 @@ namespace Games4Trade.Repositories
             }
 
             if (!string.IsNullOrEmpty(options.Search))
-            {
+            {   // todo: not working
                 query = query.Where(a => a.Title.Contains($"{options.Search}", StringComparison.CurrentCultureIgnoreCase));
             }
 
