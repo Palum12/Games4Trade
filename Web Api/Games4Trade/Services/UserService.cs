@@ -412,7 +412,7 @@ namespace Games4Trade.Services
             var mappedUser = _mapper.Map<UserRegisterDto, User>(newUser);
             mappedUser.Salt = _loginService.GetSalt();
             mappedUser.Password = _loginService.ComputeHash(
-                mappedUser.Salt, Guid.NewGuid().ToString("N").ToUpper());
+                mappedUser.Salt, "TempPass");
             var tempUsers = await _unitOfWork.Users.GetAllASync();
             if (!tempUsers.Any())
             {
@@ -422,25 +422,25 @@ namespace Games4Trade.Services
             await _unitOfWork.Users.AddASync(mappedUser);
 
             var repoResult = await _unitOfWork.CompleteASync();
-
-            if (repoResult > 0)
-            {
-                result.IsSuccessful = true;
-                var mailPassword = await _loginService.RecoverPassword(mappedUser.Email);
-                if (mailPassword.IsSuccessful)
-                {
-                    result.IsSuccessful = true;
-                }
-                else
-                {
-                    result.IsSuccessful = false;
-                    result.Message = "Ups! Coś poszło nie tak podczas wysyłania wiadomości z hasłem!";
-                }
-            }
-            else
-            {
-                return OtherServices.GetIncorrectDatabaseConnectionResult();
-            }
+            // todo: FixThis
+            //if (repoResult > 0)
+            //{
+            //    result.IsSuccessful = true;
+            //    var mailPassword = await _loginService.RecoverPassword(mappedUser.Email);
+            //    if (mailPassword.IsSuccessful)
+            //    {
+            //        result.IsSuccessful = true;
+            //    }
+            //    else
+            //    {
+            //        result.IsSuccessful = false;
+            //        result.Message = "Ups! Coś poszło nie tak podczas wysyłania wiadomości z hasłem!";
+            //    }
+            //}
+            //else
+            //{
+            //    return OtherServices.GetIncorrectDatabaseConnectionResult();
+            //}
             return result;
         }
     }

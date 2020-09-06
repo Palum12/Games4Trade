@@ -9,12 +9,12 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Games4Trade.Repositories;
 using Microsoft.AspNetCore.Http;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 using Console = Games4Trade.Models.Console;
 using Image = SixLabors.ImageSharp.Image;
 using Region = Games4Trade.Models.Region;
-using Size = SixLabors.Primitives.Size;
 
 namespace Games4Trade.Services
 {
