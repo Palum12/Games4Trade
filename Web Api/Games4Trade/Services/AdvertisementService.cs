@@ -38,7 +38,6 @@ namespace Games4Trade.Services
                 var advertisement = _mapper.Map<AdvertisementSaveDto, Advertisement>(ad);
                 advertisement.UserId = userId;
 
-
                 switch (ad.Discriminator)
                 {
                     case nameof(Game):
@@ -516,9 +515,6 @@ namespace Games4Trade.Services
         {
             AdvertisementBasicDto result;
 
-            var taskState = _unitOfWork.States.GetASync(source.StateId);
-            var taskSystem = _unitOfWork.Systems.GetASync(source.SystemId);
-
             switch (source)
             {
                 case Game g:
@@ -546,9 +542,10 @@ namespace Games4Trade.Services
                     throw new NotSupportedException();
             }
 
-            await Task.WhenAll(taskState, taskSystem);
-            result.State = _mapper.Map<State, StateDto>(taskState.Result);
-            result.System = _mapper.Map<Models.System, SystemDto>(taskSystem.Result);
+            var state = await _unitOfWork.States.GetASync(source.StateId);
+            var system = await _unitOfWork.Systems.GetASync(source.SystemId);
+            result.State = _mapper.Map<State, StateDto>(state);
+            result.System = _mapper.Map<Models.System, SystemDto>(system);
 
             if (source.Advertisement.ShowEmail)
             {
