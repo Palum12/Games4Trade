@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Games4Trade.Data;
 using Games4Trade.Models;
 using Microsoft.EntityFrameworkCore;
+using Games4Trade.Interfaces.Repositories;
 
 namespace Games4Trade.Repositories
 {

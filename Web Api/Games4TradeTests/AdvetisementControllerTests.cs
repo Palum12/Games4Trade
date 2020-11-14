@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Games4Trade.Controllers;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
-using Games4Trade.Services;
+using Games4Trade.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

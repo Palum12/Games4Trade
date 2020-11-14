@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
-using Games4Trade.Repositories;
+using Games4Trade.Interfaces.Repositories;
+using Games4Trade.Interfaces.Services;
+
 
 namespace Games4Trade.Services
 {

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Games4Trade.Data;
 using Games4Trade.Models;
 using Microsoft.EntityFrameworkCore;
+using Games4Trade.Interfaces.Repositories;
 using Console = Games4Trade.Models.Console;
 
 namespace Games4Trade.Repositories

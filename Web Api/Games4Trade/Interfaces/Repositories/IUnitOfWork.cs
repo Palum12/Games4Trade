@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Games4Trade.Models;
 using Console = Games4Trade.Models.Console;
 
-namespace Games4Trade.Repositories
+namespace Games4Trade.Interfaces.Repositories
 {
     public interface IUnitOfWork : IDisposable
     {

@@ -5,10 +5,11 @@ using AutoMapper;
 using Games4Trade;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
-using Games4Trade.Repositories;
-using Games4Trade.Services;
+using Games4Trade.Interfaces.Repositories;
+using Games4Trade.Interfaces.Services;
 using Moq;
 using Xunit;
+using Games4Trade.Services;
 
 namespace Games4TradeTests
 {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Games4Trade.Models;
 
-namespace Games4Trade.Repositories
+namespace Games4Trade.Interfaces.Repositories
 {
     public interface IMessageRepository : IRepository<Message>
     {

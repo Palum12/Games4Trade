@@ -7,6 +7,8 @@ using FluentValidation.AspNetCore;
 using Games4Trade.Data;
 using Games4Trade.Dtos;
 using Games4Trade.Hubs;
+using Games4Trade.Interfaces.Repositories;
+using Games4Trade.Interfaces.Services;
 using Games4Trade.Repositories;
 using Games4Trade.Services;
 using Games4Trade.Validators;

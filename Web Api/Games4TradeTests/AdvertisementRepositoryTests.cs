@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Games4Trade.Data;
 using Games4Trade.Models;
-using Games4Trade.Repositories;
+using Games4Trade.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using Games4Trade.Repositories;
 
 namespace Games4TradeTests
 {

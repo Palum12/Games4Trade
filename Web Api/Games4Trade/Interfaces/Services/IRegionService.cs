@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Games4Trade.Dtos;
 
-namespace Games4Trade.Services
+namespace Games4Trade.Interfaces.Services
 {
     public interface IRegionService
     {

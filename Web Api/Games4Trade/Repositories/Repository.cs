@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
+using Games4Trade.Interfaces.Repositories;
 
 namespace Games4Trade.Repositories
 {

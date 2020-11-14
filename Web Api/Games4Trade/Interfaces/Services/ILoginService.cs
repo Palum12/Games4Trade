@@ -2,7 +2,7 @@
 using Games4Trade.Dtos;
 using Games4Trade.Models;
 
-namespace Games4Trade.Services
+namespace Games4Trade.Interfaces.Services
 {
     public interface ILoginService
     {

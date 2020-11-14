@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Games4Trade.Dtos;
 using Games4Trade.Models;
-using Games4Trade.Repositories;
+using Games4Trade.Interfaces.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using Games4Trade.Interfaces.Services;
 using static System.Console;
 using MimeKit;
 

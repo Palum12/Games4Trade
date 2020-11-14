@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Games4Trade.Repositories
+namespace Games4Trade.Interfaces.Repositories
 {
     public interface ISystemRepository : IRepository<Models.System>
     {

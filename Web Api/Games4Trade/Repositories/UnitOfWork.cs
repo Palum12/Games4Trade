@@ -1,6 +1,7 @@
 ﻿using Games4Trade.Data;
 using System.Threading.Tasks;
 using Games4Trade.Models;
+using Games4Trade.Interfaces.Repositories;
 
 namespace Games4Trade.Repositories
 {
