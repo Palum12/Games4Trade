@@ -25,10 +25,9 @@ namespace Games4Trade.Services
         public static async Task<bool> SendEmail(string address, string title, string text)
         {
             MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress(""));
-            message.To.Add(new MailboxAddress(address));
+            message.From.Add(new MailboxAddress("sender", "noreply@games4trade.pl"));
+            message.To.Add(new MailboxAddress("reciever", address));
             message.Subject = title;
-
 
             var bodyBuilder = new BodyBuilder
             {

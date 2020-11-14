@@ -47,7 +47,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(u => u.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(u => u.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(u => u.Id);
 
                 entity.HasIndex(u => u.Login).IsUnique();
@@ -72,7 +72,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<Announcement>(entity =>
             {
-                entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(a => a.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(a => a.Id);
                 entity.Property(a => a.Title).IsRequired();
                 entity.Property(a => a.Content).HasColumnType("text").IsRequired();
@@ -87,7 +87,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<Genre>(entity =>
             {
-                entity.Property(g => g.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(g => g.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(g => g.Id);
                 entity.Property(g => g.Value).IsRequired().HasMaxLength(128);
                 entity.HasIndex(u => u.Value).IsUnique();
@@ -108,7 +108,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<Models.System>(entity =>
             {
-                entity.Property(s => s.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(s => s.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(s => s.Id);
 
                 entity.Property(s => s.Manufacturer).IsRequired().HasMaxLength(128);
@@ -132,7 +132,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<Region>(entity =>
             {
-                entity.Property(r => r.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(r => r.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(r => r.Id);
                 entity.Property(r => r.Value).IsRequired().HasMaxLength(16);
                 entity.HasIndex(r => r.Value).IsUnique();
@@ -147,7 +147,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<State>(entity =>
             {
-                entity.Property(s => s.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(s => s.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(s => s.Id);
                 entity.Property(s => s.Value).IsRequired().HasMaxLength(16);
                 entity.HasIndex(s => s.Value).IsUnique();
@@ -161,7 +161,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<Photo>(entity =>
             {
-                entity.Property(p => p.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(p => p.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.DateCreated).HasDefaultValueSql("Now()");
                 entity.Property(p => p.Path).IsRequired();
@@ -174,7 +174,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<Advertisement>(entity =>
             {
-                entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(a => a.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(a => a.Id);               
                 entity.Property(a => a.DateCreated).HasDefaultValueSql("Now()");
                 entity.Property(a => a.IsActive).IsRequired().HasDefaultValue(true);
@@ -187,7 +187,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<AdvertisementItem>(entity =>
             {
-                entity.Property(a => a.Id).UseNpgsqlIdentityByDefaultColumn();
+                entity.Property(a => a.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(a => a.Id);
                 entity.Property(a => a.AdvertisementId).IsRequired();
                 entity.Property(a => a.StateId).IsRequired();
@@ -213,7 +213,7 @@ namespace Games4Trade.Data
 
             modelBuilder.Entity<Message>(entity =>
                 {
-                    entity.Property(m => m.Id).UseNpgsqlIdentityByDefaultColumn();
+                    entity.Property(m => m.Id).UseIdentityByDefaultColumn();
                     entity.HasKey(m => m.Id);
                     entity.Property(m => m.Content).HasColumnType("text").IsRequired();
                     entity.Property(m => m.DateCreated).HasDefaultValueSql("Now()");
