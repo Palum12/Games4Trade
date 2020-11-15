@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Games4Trade.Data.Migrations
+namespace Games4TradeAPI.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
     [Migration("20180716194152_init")]

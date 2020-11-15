@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Games4Trade.Interfaces.Repositories;
 using Console = Games4Trade.Models.Console;
 
-namespace Games4Trade.Repositories
+namespace Games4TradeAPI.Repositories
 {
     public class AdvertisementRepository : Repository<Advertisement>, IAdvertisementReposiotry
     {

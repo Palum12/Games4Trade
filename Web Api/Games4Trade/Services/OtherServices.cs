@@ -6,7 +6,7 @@ using Games4Trade.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MimeKit;
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public static class OtherServices
     {

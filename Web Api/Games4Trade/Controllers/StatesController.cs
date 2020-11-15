@@ -2,7 +2,7 @@
 using Games4Trade.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Games4Trade.Controllers
+namespace Games4TradeAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

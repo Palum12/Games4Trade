@@ -6,7 +6,7 @@ using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
 using Games4Trade.Interfaces.Repositories;
 
-namespace Games4Trade.Repositories
+namespace Games4TradeAPI.Repositories
 {
     public class SystemRepository : Repository<Models.System>, ISystemRepository
     {

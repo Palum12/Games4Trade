@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Games4Trade.Controllers
+namespace Games4TradeAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -5,7 +5,7 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Console = Games4Trade.Models.Console;
 
-namespace Games4Trade
+namespace Games4TradeAPI
 {
     public class MappingProfile : MapperConfigurationExpression
     {

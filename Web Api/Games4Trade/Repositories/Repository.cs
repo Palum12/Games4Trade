@@ -7,7 +7,7 @@ using Games4Trade.Data;
 using Microsoft.EntityFrameworkCore;
 using Games4Trade.Interfaces.Repositories;
 
-namespace Games4Trade.Repositories
+namespace Games4TradeAPI.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {

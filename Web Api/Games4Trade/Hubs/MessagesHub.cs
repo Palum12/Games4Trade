@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Games4Trade.Hubs
+namespace Games4TradeAPI.Hubs
 {
     [Authorize]
     public class MessagesHub : Hub<IMessagesClient>

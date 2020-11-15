@@ -14,7 +14,7 @@ using Games4Trade.Interfaces.Services;
 using static System.Console;
 using MimeKit;
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public class LoginService : ILoginService
     {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Games4Trade.Models;
 
-namespace Games4Trade.Interfaces.Repositories
+namespace Games4TradeAPI.Interfaces.Repositories
 {
     public interface IGenreRepository : IRepository<Genre>
     {

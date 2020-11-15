@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Games4TradeAPI.Middlewares
+namespace Games4TradeAPIAPI.Middlewares
 {
     public class JwtMiddleware
     {

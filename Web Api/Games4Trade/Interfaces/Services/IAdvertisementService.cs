@@ -4,7 +4,7 @@ using Games4Trade.Dtos;
 using Games4Trade.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Games4Trade.Interfaces.Services
+namespace Games4TradeAPI.Interfaces.Services
 {
     public interface IAdvertisementService
     {

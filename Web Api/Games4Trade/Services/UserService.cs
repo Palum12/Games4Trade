@@ -12,7 +12,7 @@ using Games4Trade.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public class UserService : IUserService
     {
@@ -159,7 +159,7 @@ namespace Games4Trade.Services
                 (await _unitOfWork.Genres.GetGenresForUser(user.Id))
                 .Select(g => g.Value).ToList();
 
-            var tempSystems = await _unitOfWork.Systems.GetSystemsForUser(user.Id);
+            var tempSystems = await repository.GetSystemsForUser(user.Id);
             result.InterestingSystems =
                 tempSystems.Select(s => s.Manufacturer + " " + s.Model).ToList();
             if (currentUser.HasValue)
@@ -199,7 +199,7 @@ namespace Games4Trade.Services
                     (await _unitOfWork.Genres.GetGenresForUser(user.Id))
                     .Select(g => g.Value).ToList();
 
-                var tempSystems = await _unitOfWork.Systems.GetSystemsForUser(user.Id);
+                var tempSystems = await repository.GetSystemsForUser(user.Id);
                 tempUser.InterestingSystems = 
                     tempSystems.Select(s => s.Manufacturer + " " + s.Model).ToList();
 
@@ -392,7 +392,7 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> ReplaceSystemsForUser(int userId, IList<int> systemsIds)
         {
-            var systems = await _unitOfWork.Systems.GetAllASync();
+            var systems = await repository.GetAllASync();
 
             var areIdsInDatabase = systemsIds.All(x => systems.Any(g => g.Id == x));
             if (!areIdsInDatabase)

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Games4Trade
+namespace Games4TradeAPI
 {
     public static class ExtensionMethods
     {

@@ -17,7 +17,7 @@ using Console = Games4Trade.Models.Console;
 using Image = SixLabors.ImageSharp.Image;
 using Region = Games4Trade.Models.Region;
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public class AdvertisementService : IAdvertisementService
     {
@@ -478,7 +478,7 @@ namespace Games4Trade.Services
         private async Task<(bool, string)> CheckIfRelationshipsAreCorrect(AdvertisementSaveDto ad)
         {
             IList<Object> objects;
-            var system = await _unitOfWork.Systems.GetASync(ad.SystemId);
+            var system = await repository.GetASync(ad.SystemId);
             var state = await _unitOfWork.States.GetASync(ad.StateId);
             Region region;
             switch (ad.Discriminator)
@@ -544,7 +544,7 @@ namespace Games4Trade.Services
             }
 
             var state = await _unitOfWork.States.GetASync(source.StateId);
-            var system = await _unitOfWork.Systems.GetASync(source.SystemId);
+            var system = await repository.GetASync(source.SystemId);
             result.State = _mapper.Map<State, StateDto>(state);
             result.System = _mapper.Map<Models.System, SystemDto>(system);
 

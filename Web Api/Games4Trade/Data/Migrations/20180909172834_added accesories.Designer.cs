@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Games4Trade.Data.Migrations
+namespace Games4TradeAPI.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
     [Migration("20180909172834_added accesories")]

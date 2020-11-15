@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Games4Trade.Dtos;
 
-namespace Games4Trade.Validators
+namespace Games4TradeAPI.Validators
 {
     public class AnnoucementSaveValidator : AbstractValidator<AnnouncementSaveDto>
     {

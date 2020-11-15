@@ -9,7 +9,7 @@ using Games4Trade.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace Games4Trade.Controllers
+namespace Games4TradeAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

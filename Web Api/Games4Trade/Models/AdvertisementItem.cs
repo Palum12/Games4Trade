@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Games4TradeAPI.Models
+namespace Games4TradeAPIAPI.Models
 {
     public class AdvertisementItem : ModelBase
     {

@@ -9,7 +9,7 @@ using Games4Trade.Interfaces.Repositories;
 using Games4Trade.Interfaces.Services;
 
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public class AnnouncementService : IAnnouncementService
     {
