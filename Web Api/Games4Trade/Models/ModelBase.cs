@@ -1,4 +1,4 @@
-﻿namespace Games4TradeAPIAPI.Models
+﻿namespace Games4TradeAPI.Models
 {
     public class ModelBase
     {

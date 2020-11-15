@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Games4TradeAPIAPI.Models
+namespace Games4TradeAPI.Models
 {
     public class Advertisement : ModelBase
     {
