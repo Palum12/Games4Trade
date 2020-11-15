@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Games4Trade.Models
+﻿namespace Games4TradeAPI.Models
 {
     public class Console : AdvertisementItem
     {

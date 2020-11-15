@@ -18,40 +18,21 @@ namespace Games4Trade.Repositories
             Context = context;
         }
 
-        public async Task AddASync(TEntity entity)
-        {
-            await Context.Set<TEntity>().AddAsync(entity);
-        }
+        public async Task AddASync(TEntity entity) => await Context.Set<TEntity>().AddAsync(entity);
 
-        public async Task AddRangeASync(IEnumerable<TEntity> entities)
-        {
-            await Context.Set<TEntity>().AddRangeAsync(entities);
-        }
+        public async Task AddRangeASync(IEnumerable<TEntity> entities) => await Context.Set<TEntity>().AddRangeAsync(entities);
+        
+        public async Task<IEnumerable<TEntity>> FindASync(Expression<Func<TEntity, bool>> predicate) =>
+            await Context.Set<TEntity>().Where(predicate).ToListAsync();
 
-        public async Task<IEnumerable<TEntity>> FindASync(Expression<Func<TEntity, bool>> predicate)
-        {
-            var result = await Context.Set<TEntity>().Where(predicate).ToListAsync();
-            return result;
-        }
+        public async Task<TEntity> GetASync(int id) => await Context.Set<TEntity>().FindAsync(id);
 
-        public async Task<TEntity> GetASync(int id)
-        {
-            return await Context.Set<TEntity>().FindAsync(id);
-        }
+        public async Task<IEnumerable<TEntity>> GetAllASync() => await Context.Set<TEntity>().ToListAsync();
+        
+        public void Remove(TEntity entity) => Context.Set<TEntity>().Remove(entity);
 
-        public async Task<IEnumerable<TEntity>> GetAllASync()
-        {
-            return await Context.Set<TEntity>().ToListAsync();
-        }
-
-        public void Remove(TEntity entity)
-        {
-            Context.Set<TEntity>().Remove(entity);
-        }
-
-        public void RemoveRange(IEnumerable<TEntity> entities)
-        {
-            Context.Set<TEntity>().RemoveRange(entities);
-        }
+        public void RemoveRange(IEnumerable<TEntity> entities) => Context.Set<TEntity>().RemoveRange(entities);
+       
+        public virtual async Task<int> SaveChangesASync() => await Context.SaveChangesAsync();
     }
 }

@@ -11,33 +11,33 @@ namespace Games4Trade.Services
 {
     public class SystemService : ISystemService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly ISystemRepository repository;
+        private readonly IMapper mapper;
 
-        public SystemService(IUnitOfWork unitOfWork, IMapper mapper)
+        public SystemService(ISystemRepository repository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            this.repository = repository;
+            this.mapper = mapper;
         }
 
         public async Task<IList<SystemDto>> GetSystems()
         {
-            var repoResponse = await _unitOfWork.Systems.GetAllASync();
-            var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
+            var repoResponse = await repository.GetAllASync();
+            var systems = mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
             return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s=> s.Model).ToList();
         }
 
         public async Task<IList<SystemDto>> GetSystemsForUser(int userId)
         {
-            var repoResponse = await _unitOfWork.Systems.GetSystemsForUser(userId);
-            var systems = _mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
+            var repoResponse = await repository.GetSystemsForUser(userId);
+            var systems = mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
             return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s => s.Model).ToList();
         }
 
         public async Task<OperationResult> CreateSystem(SystemCreateOrUpdateDto system)
         {
-            var systemModel = _mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);
-            var doesExists = await _unitOfWork.Systems.GetSameSystem(systemModel);
+            var systemModel = mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);
+            var doesExists = await repository.GetSameSystem(systemModel);
             if (doesExists != null)
             {
                 return new OperationResult()
@@ -48,14 +48,14 @@ namespace Games4Trade.Services
                 };
             }
 
-            await _unitOfWork.Systems.AddASync(systemModel);
-            var repoResult = await _unitOfWork.CompleteASync();
+            await repository.AddASync(systemModel);
+            var repoResult = await repository.SaveChangesASync();
             if (repoResult > 0)
             {
                 return new OperationResult()
                 {
                     IsSuccessful = true,
-                    Payload = _mapper.Map<Models.System, SystemDto>(systemModel)
+                    Payload = mapper.Map<Models.System, SystemDto>(systemModel)
                 };
             }
             else
@@ -66,8 +66,8 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> EditSystem(int id, SystemCreateOrUpdateDto system)
         {
-            var systemModel = _mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);
-            var doesExists = await _unitOfWork.Systems.GetSameSystem(systemModel);
+            var systemModel = mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);
+            var doesExists = await repository.GetSameSystem(systemModel);
             if (doesExists != null && doesExists.Id == id)
             {
                 return new OperationResult()
@@ -78,12 +78,12 @@ namespace Games4Trade.Services
                 };
             }
 
-            var systemInDb = await _unitOfWork.Systems.GetASync(id);
+            var systemInDb = await repository.GetASync(id);
             if (systemInDb != null)
             {
                 systemInDb.Model = system.Model;
                 systemInDb.Manufacturer = system.Manufacturer;
-                var repoResult = await _unitOfWork.CompleteASync();
+                var repoResult = await repository.SaveChangesASync();
                 if (repoResult > 0)
                 {
                     return new OperationResult()
@@ -110,7 +110,7 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> DeleteSystem(int id)
         {
-            var systemInDb = await _unitOfWork.Systems.GetSystemWithItems(id);
+            var systemInDb = await repository.GetSystemWithItems(id);
             if (systemInDb != null)
             {
                 if (systemInDb.AdvertisementItems.Any())
@@ -123,8 +123,8 @@ namespace Games4Trade.Services
                         Payload = systemInDb.AdvertisementItems
                     };
                 }
-                _unitOfWork.Systems.Remove(systemInDb);
-                var repoResult = await _unitOfWork.CompleteASync();
+                repository.Remove(systemInDb);
+                var repoResult = await repository.SaveChangesASync();
                 if (repoResult > 0)
                 {
                     return new OperationResult()

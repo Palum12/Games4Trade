@@ -27,8 +27,13 @@ namespace Games4Trade.Repositories
         public async Task<IList<Models.System>> GetSystemsForUser(int userId)
         {
             var arrayOfIds = await Context.UserSystemRelationship
-                .Where(x => x.UserId == userId).Select(x => x.SystemId).ToArrayAsync();
-            var systems = await Context.Systems.Where(s => arrayOfIds.Contains(s.Id)).ToListAsync();
+                .Where(x => x.UserId == userId)
+                .Select(x => x.SystemId)
+                .ToArrayAsync();
+            var systems = await Context
+                .Systems
+                .Where(s => arrayOfIds.Contains(s.Id))
+                .ToListAsync();
 
             return systems;
         }

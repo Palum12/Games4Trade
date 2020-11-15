@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Games4Trade.Data;
 using Games4Trade.Dtos;
-using Games4Trade.Hubs;
 using Games4Trade.Interfaces.Repositories;
 using Games4Trade.Interfaces.Services;
 using Games4Trade.Repositories;
@@ -32,7 +30,6 @@ namespace Games4Trade
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
@@ -44,7 +41,6 @@ namespace Games4Trade
 
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IGenreService, GenreService>();
@@ -60,6 +56,22 @@ namespace Games4Trade
             services.AddTransient<IValidator<ObservedUsersRelationshipDto>, ObservedUsersRelationshipValidator>();
             services.AddTransient<IValidator<AdvertisementSaveDto>, AdvertisementSaveValidator>();
 
+
+            /*
+             Users = new UserRepository(context);
+            Genres = new GenreRepository(context);
+            Systems = new SystemRepository(context);
+            Announcements = new AnnouncementRepository(context);
+            Photos = new Repository<Photo>(context);
+            Messages = new MessageRepository(context);
+            Advertisements = new AdvertisementRepository(context);
+            Regions = new Repository<Region>(context);
+            States = new Repository<State>(context);
+            Games = new Repository<Game>(context);
+            Consoles = new Repository<Console>(context);
+            Accessories = new Repository<Accessory>(context);
+            AdvertisementItems = new Repository<AdvertisementItem>(context);
+             */
 
             services.AddAuthentication(options =>
             {
