@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace Games4TradeAPI.Interfaces.Services

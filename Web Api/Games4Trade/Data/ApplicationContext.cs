@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Games4Trade.Models;
+using Games4TradeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Games4TradeAPI.Data

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Games4TradeAPI.Controllers

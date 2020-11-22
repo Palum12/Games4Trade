@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Games4Trade.Services;
+using Games4TradeAPI.Services;
 
 namespace Games4TradeAPI.Controllers
 {

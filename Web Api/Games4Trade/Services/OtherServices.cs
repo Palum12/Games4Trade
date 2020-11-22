@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Games4Trade.Models;
+using Games4TradeAPI.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MimeKit;
 

@@ -1,44 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Services;
 
 namespace Games4TradeAPI.Services
 {
     public class GenreService : IGenreService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IGenreRepository repository;
+        private readonly IMapper mapper;
 
-        public GenreService(IUnitOfWork unitOfWork, IMapper mapper)
+        public GenreService(IGenreRepository repository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            this.repository = repository;
+            this.mapper = mapper;
         }
 
         public async Task<IList<GenreDto>> GetGenres()
         {
-            var repoResponse = await _unitOfWork.Genres.GetAllASync();
-            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreDto>>(repoResponse);
+            var repoResponse = await repository.GetAllAsync();
+            var genres = mapper.Map<IEnumerable<Genre>, IEnumerable<GenreDto>>(repoResponse);
             return genres.OrderBy(g => g.Value).ToList();
         }
 
         public async Task<IList<GenreDto>> GetGenresForUser(int userId)
         {
-            var repoResponse = await _unitOfWork.Genres.GetGenresForUser(userId);
-            var genres = _mapper.Map<IEnumerable<Genre>, IEnumerable<GenreDto>>(repoResponse);
+            var repoResponse = await repository.GetGenresForUser(userId);
+            var genres = mapper.Map<IEnumerable<Genre>, IEnumerable<GenreDto>>(repoResponse);
             return genres.OrderBy(g => g.Value).ToList();
         }
 
         public async Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre)
         {
-            var genreModel = _mapper.Map<GenreCreateOrUpdateDto, Genre>(genre);
-            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value == genreModel.Value);
+            var genreModel = mapper.Map<GenreCreateOrUpdateDto, Genre>(genre);
+            var doesExists = await repository.FindAsync(g => g.Value == genreModel.Value);
             if (doesExists.Any())
             {
                 return new OperationResult()
@@ -49,8 +48,8 @@ namespace Games4TradeAPI.Services
                 };
             }
 
-            await _unitOfWork.Genres.AddASync(genreModel);
-            var repoResult = await _unitOfWork.CompleteASync();
+            await repository.AddAsync(genreModel);
+            var repoResult = await repository.SaveChangesAsync();
             if (repoResult > 0)
             {
                 return new OperationResult()
@@ -67,7 +66,7 @@ namespace Games4TradeAPI.Services
 
         public async Task<OperationResult> EditGenre(int id, GenreCreateOrUpdateDto genre)
         {
-            var doesExists = await _unitOfWork.Genres.FindASync(g => g.Value == genre.Value && g.Id != id);
+            var doesExists = await repository.FindAsync(g => g.Value == genre.Value && g.Id != id);
             if (doesExists.Any())
             {
                 return new OperationResult()
@@ -78,17 +77,17 @@ namespace Games4TradeAPI.Services
                 };
             }
 
-            var genreInDb = await _unitOfWork.Genres.GetASync(id);
+            var genreInDb = await repository.GetAsync(id);
             if (genreInDb != null)
             {
                 genreInDb.Value = genre.Value;
-                var repoResult = await _unitOfWork.CompleteASync();
+                var repoResult = await repository.SaveChangesAsync();
                 if (repoResult > 0)
                 {
                     return new OperationResult()
                     {
                         IsSuccessful = true,
-                        Payload = _mapper.Map<Genre, GenreDto>(genreInDb)
+                        Payload = mapper.Map<Genre, GenreDto>(genreInDb)
                     };
                 }
                 else
@@ -109,7 +108,7 @@ namespace Games4TradeAPI.Services
 
         public async Task<OperationResult> DeleteGenre(int id)
         {
-            var genreInDb = await _unitOfWork.Genres.GetGenreWithGames(id);
+            var genreInDb = await repository.GetGenreWithGames(id);
             if (genreInDb != null)
             {
                 if (genreInDb.Games.Any())
@@ -122,8 +121,8 @@ namespace Games4TradeAPI.Services
                         Payload = genreInDb.Games
                     };
                 }
-                _unitOfWork.Genres.Remove(genreInDb);
-                var repoResult = await _unitOfWork.CompleteASync();
+                repository.Remove(genreInDb);
+                var repoResult = await repository.SaveChangesAsync();
                 if (repoResult > 0)
                 {
                     return new OperationResult()
@@ -145,8 +144,6 @@ namespace Games4TradeAPI.Services
                     Message = "Object does not exist in database"
                 };
             }
-        }
-
-        
+        } 
     }
 }

@@ -1,30 +1,27 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
 using Microsoft.IdentityModel.Tokens;
-using Games4Trade.Interfaces.Services;
-using static System.Console;
-using MimeKit;
+using Games4TradeAPI.Interfaces.Services;
 
 namespace Games4TradeAPI.Services
 {
     public class LoginService : ILoginService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-
-        public LoginService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IUserRepository userRepository;
+        private readonly IMapper mapper;
+        
+        public LoginService(IUserRepository userRepository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            this.userRepository = userRepository;
+            this.mapper = mapper;
         }
 
         /// <summary>
@@ -34,7 +31,7 @@ namespace Games4TradeAPI.Services
         /// <returns>Token or message if login has failed.</returns>
         public async Task<OperationResult> LoginUser(UserLoginDto user)
         {
-            var userInDb = await _unitOfWork.Users.GetUserByLogin(user.Login);
+            var userInDb = await userRepository.GetUserByLogin(user.Login);
             var result = new OperationResult();
 
             if (userInDb == null)
@@ -67,7 +64,7 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> ChangePassword(UserRecoverDto recoverDto)
         {
             var result = new OperationResult();
-            var user = await _unitOfWork.Users.GetUserByRecoveryAddress(recoverDto.RecoveryString);
+            var user = await userRepository.GetUserByRecoveryAddress(recoverDto.RecoveryString);
             if (user == null)
             {
                 result.IsSuccessful = false;
@@ -79,7 +76,7 @@ namespace Games4TradeAPI.Services
             user.Password = ComputeHash(user.Salt, recoverDto.NewPassword);
             user.RecoveryAddress = "";
 
-            var repoResult = await _unitOfWork.CompleteASync();
+            var repoResult = await userRepository.SaveChangesAsync();
             if (repoResult > 0)
             {
                 result.IsSuccessful = true;
@@ -97,7 +94,7 @@ namespace Games4TradeAPI.Services
         {
             var result = new OperationResult();
 
-            var user = await _unitOfWork.Users.GetUserByEmail(email);
+            var user = await userRepository.GetUserByEmail(email);
             if (user == null)
             {
                 result.IsSuccessful = false;
@@ -113,7 +110,7 @@ namespace Games4TradeAPI.Services
             var emailResult = await OtherServices.SendEmail(user.Email, "Przywracanie hasla", text);
 
 
-            var repoResult = await _unitOfWork.CompleteASync();
+            var repoResult = await userRepository.SaveChangesAsync();
             if (repoResult > 0 && emailResult)
             {
                 result.IsSuccessful = true;
@@ -129,7 +126,7 @@ namespace Games4TradeAPI.Services
 
         public async Task<OperationResult> CheckIfLoginIsTaken(string login)
         {
-            var user = await _unitOfWork.Users.GetUserByLogin(login);
+            var user = await userRepository.GetUserByLogin(login);
             var result = new OperationResult
             {
                 IsSuccessful = user != null
@@ -188,6 +185,5 @@ namespace Games4TradeAPI.Services
             return !string.IsNullOrEmpty(password) &&
                    user.Password.Equals(ComputeHash(user.Salt, password));
         }
-
     }
 }

@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Services;
 
 namespace Games4TradeAPI.Services
 {
     public class StateService : IStateService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IRepository<State> repository;
+        private readonly IMapper mapper;
 
-        public StateService(IUnitOfWork unitOfWork, IMapper mapper)
+        public StateService(IRepository<State> repository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            this.repository = repository;
+            this.mapper = mapper;
         }
 
         public async Task<IEnumerable<StateDto>> Get()
         {
-            var states = await _unitOfWork.States.GetAllASync();
-            var dtos = _mapper.Map<IEnumerable<State>, IEnumerable<StateDto>>(states);
+            var states = await repository.GetAllAsync();
+            var dtos = mapper.Map<IEnumerable<State>, IEnumerable<StateDto>>(states);
             return dtos;
         }
     }

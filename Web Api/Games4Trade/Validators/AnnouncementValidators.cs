@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Games4Trade.Dtos;
+using Games4TradeAPI.Dtos;
 
 namespace Games4TradeAPI.Validators
 {

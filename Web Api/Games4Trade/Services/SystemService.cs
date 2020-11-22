@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Services;
 
 namespace Games4TradeAPI.Services
 {
@@ -22,7 +22,7 @@ namespace Games4TradeAPI.Services
 
         public async Task<IList<SystemDto>> GetSystems()
         {
-            var repoResponse = await repository.GetAllASync();
+            var repoResponse = await repository.GetAllAsync();
             var systems = mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
             return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s=> s.Model).ToList();
         }
@@ -48,8 +48,8 @@ namespace Games4TradeAPI.Services
                 };
             }
 
-            await repository.AddASync(systemModel);
-            var repoResult = await repository.SaveChangesASync();
+            await repository.AddAsync(systemModel);
+            var repoResult = await repository.SaveChangesAsync();
             if (repoResult > 0)
             {
                 return new OperationResult()
@@ -78,12 +78,12 @@ namespace Games4TradeAPI.Services
                 };
             }
 
-            var systemInDb = await repository.GetASync(id);
+            var systemInDb = await repository.GetAsync(id);
             if (systemInDb != null)
             {
                 systemInDb.Model = system.Model;
                 systemInDb.Manufacturer = system.Manufacturer;
-                var repoResult = await repository.SaveChangesASync();
+                var repoResult = await repository.SaveChangesAsync();
                 if (repoResult > 0)
                 {
                     return new OperationResult()
@@ -124,7 +124,7 @@ namespace Games4TradeAPI.Services
                     };
                 }
                 repository.Remove(systemInDb);
-                var repoResult = await repository.SaveChangesASync();
+                var repoResult = await repository.SaveChangesAsync();
                 if (repoResult > 0)
                 {
                     return new OperationResult()

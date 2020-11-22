@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Games4Trade.Dtos;
-using Games4Trade.Hubs;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Hubs;
+using Games4TradeAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;

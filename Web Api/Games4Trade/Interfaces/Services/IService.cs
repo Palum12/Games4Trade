@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Games4TradeAPI.Models;
 
 namespace Games4TradeAPI.Interfaces.Services
 {
