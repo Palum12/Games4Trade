@@ -7,6 +7,7 @@ using Games4TradeAPI.Data;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Interfaces.Repositories;
 using Games4TradeAPI.Interfaces.Services;
+using Games4TradeAPI.Models;
 using Games4TradeAPI.Repositories;
 using Games4TradeAPI.Services;
 using Games4TradeAPI.Validators;
@@ -50,28 +51,23 @@ namespace Games4TradeAPI
             services.AddScoped<IAdvertisementService, AdvertisementService>();
             services.AddScoped<IRegionService, RegionService>();
             services.AddScoped<IStateService, StateService>();
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<ISystemRepository, SystemRepository>();
+            services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+            services.AddScoped<IRepository<Photo>, Repository<Photo>>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IAdvertisementReposiotry, AdvertisementRepository>();
+            services.AddScoped<IRepository<AdvertisementItem>, AdvertisementItemRepository>();
+            services.AddScoped<IRepository<Region>, Repository<Region>>();
+            services.AddScoped<IRepository<State>, Repository<State>>();
+
             services.AddTransient<IValidator<UserRegisterDto>, UserRegisterDtoValidator> ();
             services.AddTransient<IValidator<UserRecoverDto>, UserRecoverDtoValidator> ();
             services.AddTransient<IValidator<AnnouncementSaveDto>, AnnoucementSaveValidator>();
             services.AddTransient<IValidator<ObservedUsersRelationshipDto>, ObservedUsersRelationshipValidator>();
             services.AddTransient<IValidator<AdvertisementSaveDto>, AdvertisementSaveValidator>();
-
-
-            /*
-             Users = new UserRepository(context);
-            Genres = new GenreRepository(context);
-            Systems = new SystemRepository(context);
-            Announcements = new AnnouncementRepository(context);
-            Photos = new Repository<Photo>(context);
-            Messages = new MessageRepository(context);
-            Advertisements = new AdvertisementRepository(context);
-            Regions = new Repository<Region>(context);
-            States = new Repository<State>(context);
-            Games = new Repository<Game>(context);
-            Consoles = new Repository<Console>(context);
-            Accessories = new Repository<Accessory>(context);
-            AdvertisementItems = new Repository<AdvertisementItem>(context);
-             */
 
             services.AddAuthentication(options =>
             {

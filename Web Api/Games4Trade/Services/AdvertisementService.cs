@@ -28,24 +28,29 @@ namespace Games4TradeAPI.Services
         private readonly IGenreRepository genreRepository;
         private readonly IRepository<Region> regionRepository;
         private readonly ISystemRepository systemRepository;
+        private readonly IRepository<AdvertisementItem> advertisementItemRepository;
         private readonly IMapper mapper;
         private const int DefaultPageSize = 10;
 
         public AdvertisementService(
             IAdvertisementReposiotry repository,
+            IUserRepository userRepository,
             IRepository<Photo> photoRepository,
             IRepository<State> stateRepository,
             IGenreRepository genreRepository,
             IRepository<Region> regionRepository,
             ISystemRepository systemRepository,
+            IRepository<AdvertisementItem> advertisementItemRepository,
             IMapper mapper)
         {
             this.repository = repository;
+            this.userRepository = userRepository;
             this.photoRepository = photoRepository;
             this.stateRepository = stateRepository;
             this.genreRepository = genreRepository;
             this.regionRepository = regionRepository;
             this.systemRepository = systemRepository;
+            this.advertisementItemRepository = advertisementItemRepository;
             this.mapper = mapper;
         }
         
@@ -57,21 +62,21 @@ namespace Games4TradeAPI.Services
                 var advertisement = mapper.Map<AdvertisementSaveDto, Advertisement>(ad);
                 advertisement.UserId = userId;
 
-                switch (ad.Discriminator)
+                switch (ad.Discriminator) // todo: test this
                 {
                     case nameof(Game):
                         var game = mapper.Map<AdvertisementSaveDto, Game>(ad);
-                        await _unitOfWork.Games.AddAsync(game);
+                        await advertisementItemRepository.AddAsync(game);
                         advertisement.Item = game;
                         break;
                     case nameof(Accessory):
                         var accessory = mapper.Map<AdvertisementSaveDto, Accessory>(ad);
-                        await _unitOfWork.Accessories.AddAsync(accessory);
+                        await advertisementItemRepository.AddAsync(accessory);
                         advertisement.Item = accessory;
                         break;
                     case nameof(Console):
                         var console = mapper.Map<AdvertisementSaveDto, Console>(ad);
-                        await _unitOfWork.Consoles.AddAsync(console);
+                        await advertisementItemRepository.AddAsync(console);
                         advertisement.Item = console;
                         break;
                     default:
@@ -191,22 +196,22 @@ namespace Games4TradeAPI.Services
             }
             else
             {
-                _unitOfWork.AdvertisementItems.Remove(currentAd.Item);
+                advertisementItemRepository.Remove(currentAd.Item);
                 switch (ad.Discriminator)
                 {
                     case nameof(Game):
                         var game = mapper.Map<AdvertisementSaveDto, Game>(ad);
-                        await _unitOfWork.Games.AddAsync(game);
+                        await advertisementItemRepository.AddAsync(game);
                         currentAd.Item = game;
                         break;
                     case nameof(Accessory):
                         var accessory = mapper.Map<AdvertisementSaveDto, Accessory>(ad);
-                        await _unitOfWork.Accessories.AddAsync(accessory);
+                        await advertisementItemRepository.AddAsync(accessory);
                         currentAd.Item = accessory;
                         break;
                     case nameof(Console):
                         var console = mapper.Map<AdvertisementSaveDto, Console>(ad);
-                        await _unitOfWork.Consoles.AddAsync(console);
+                        await advertisementItemRepository.AddAsync(console);
                         currentAd.Item = console;
                         break;
                     default:
