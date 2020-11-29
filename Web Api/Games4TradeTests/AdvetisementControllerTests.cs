@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Security.Claims;
-using Games4Trade.Controllers;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Controllers;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace Games4TradeTests
+namespace Games4TradeAPITests
 {
     public class AdvertisementsControllerFixture : IDisposable
     {
