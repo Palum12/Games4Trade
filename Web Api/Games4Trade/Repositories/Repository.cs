@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Games4Trade.Data;
+using Games4TradeAPI.Data;
 using Microsoft.EntityFrameworkCore;
-using Games4Trade.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Repositories;
 
-namespace Games4Trade.Repositories
+namespace Games4TradeAPI.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
@@ -18,40 +18,21 @@ namespace Games4Trade.Repositories
             Context = context;
         }
 
-        public async Task AddASync(TEntity entity)
-        {
-            await Context.Set<TEntity>().AddAsync(entity);
-        }
+        public async Task AddAsync(TEntity entity) => await Context.Set<TEntity>().AddAsync(entity);
 
-        public async Task AddRangeASync(IEnumerable<TEntity> entities)
-        {
-            await Context.Set<TEntity>().AddRangeAsync(entities);
-        }
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities) => await Context.Set<TEntity>().AddRangeAsync(entities);
+        
+        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate) =>
+            await Context.Set<TEntity>().Where(predicate).ToListAsync();
 
-        public async Task<IEnumerable<TEntity>> FindASync(Expression<Func<TEntity, bool>> predicate)
-        {
-            var result = await Context.Set<TEntity>().Where(predicate).ToListAsync();
-            return result;
-        }
+        public async Task<TEntity> GetAsync(int id) => await Context.Set<TEntity>().FindAsync(id);
 
-        public async Task<TEntity> GetASync(int id)
-        {
-            return await Context.Set<TEntity>().FindAsync(id);
-        }
+        public async Task<IEnumerable<TEntity>> GetAllAsync() => await Context.Set<TEntity>().ToListAsync();
+        
+        public void Remove(TEntity entity) => Context.Set<TEntity>().Remove(entity);
 
-        public async Task<IEnumerable<TEntity>> GetAllASync()
-        {
-            return await Context.Set<TEntity>().ToListAsync();
-        }
-
-        public void Remove(TEntity entity)
-        {
-            Context.Set<TEntity>().Remove(entity);
-        }
-
-        public void RemoveRange(IEnumerable<TEntity> entities)
-        {
-            Context.Set<TEntity>().RemoveRange(entities);
-        }
+        public void RemoveRange(IEnumerable<TEntity> entities) => Context.Set<TEntity>().RemoveRange(entities);
+       
+        public virtual async Task<int> SaveChangesAsync() => await Context.SaveChangesAsync();
     }
 }

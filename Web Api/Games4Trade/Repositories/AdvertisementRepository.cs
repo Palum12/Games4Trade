@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Games4Trade.Data;
-using Games4Trade.Models;
+using Games4TradeAPI.Data;
+using Games4TradeAPI.Interfaces.Repositories;
+using Games4TradeAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Games4Trade.Interfaces.Repositories;
-using Console = Games4Trade.Models.Console;
+using Console = Games4TradeAPI.Models.Console;
 
-namespace Games4Trade.Repositories
+namespace Games4TradeAPI.Repositories
 {
     public class AdvertisementRepository : Repository<Advertisement>, IAdvertisementReposiotry
     {

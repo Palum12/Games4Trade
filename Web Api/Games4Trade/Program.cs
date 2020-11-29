@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 
 
-namespace Games4Trade
+namespace Games4TradeAPI
 {
     public class Program
     {

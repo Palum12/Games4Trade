@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Games4Trade.Data;
-using Games4Trade.Models;
+using Games4TradeAPI.Data;
+using Games4TradeAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Games4Trade.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Repositories;
 
-namespace Games4Trade.Repositories
+namespace Games4TradeAPI.Repositories
 {
-    public class AnnouncementRepository : Repository<Announcement>, IAnnouncementReposiotry
+    public class AnnouncementRepository : Repository<Announcement>, IAnnouncementRepository
     {
         public AnnouncementRepository(ApplicationContext context) : base(context) {}
 

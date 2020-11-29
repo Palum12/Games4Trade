@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using AutoMapper.Configuration;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Console = Games4Trade.Models.Console;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Console = Games4TradeAPI.Models.Console;
 
-namespace Games4Trade
+namespace Games4TradeAPI
 {
     public class MappingProfile : MapperConfigurationExpression
     {

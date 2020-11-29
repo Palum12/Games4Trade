@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Games4Trade.Data;
-using Games4Trade.Dtos;
-using Games4Trade.Hubs;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
-using Games4Trade.Repositories;
-using Games4Trade.Services;
-using Games4Trade.Validators;
+using Games4TradeAPI.Data;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Services;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Repositories;
+using Games4TradeAPI.Services;
+using Games4TradeAPI.Validators;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,7 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Games4Trade
+namespace Games4TradeAPI
 {
     public class Startup
     {
@@ -32,7 +31,6 @@ namespace Games4Trade
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
@@ -44,7 +42,6 @@ namespace Games4Trade
 
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IGenreService, GenreService>();
@@ -54,12 +51,23 @@ namespace Games4Trade
             services.AddScoped<IAdvertisementService, AdvertisementService>();
             services.AddScoped<IRegionService, RegionService>();
             services.AddScoped<IStateService, StateService>();
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<ISystemRepository, SystemRepository>();
+            services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+            services.AddScoped<IRepository<Photo>, Repository<Photo>>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IAdvertisementReposiotry, AdvertisementRepository>();
+            services.AddScoped<IRepository<AdvertisementItem>, AdvertisementItemRepository>();
+            services.AddScoped<IRepository<Region>, Repository<Region>>();
+            services.AddScoped<IRepository<State>, Repository<State>>();
+
             services.AddTransient<IValidator<UserRegisterDto>, UserRegisterDtoValidator> ();
             services.AddTransient<IValidator<UserRecoverDto>, UserRecoverDtoValidator> ();
             services.AddTransient<IValidator<AnnouncementSaveDto>, AnnoucementSaveValidator>();
             services.AddTransient<IValidator<ObservedUsersRelationshipDto>, ObservedUsersRelationshipValidator>();
             services.AddTransient<IValidator<AdvertisementSaveDto>, AdvertisementSaveValidator>();
-
 
             services.AddAuthentication(options =>
             {

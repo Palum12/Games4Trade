@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 
 
-namespace Games4Trade.Models
+namespace Games4TradeAPI.Models
 {
-    public class Genre
+    public class Genre : ModelBase
     {
-        public int Id { get; set; }
         public string Value { get; set; }
         public virtual ICollection<UserLikedGenre> LikedByUsers { get; set; }
         public virtual ICollection<Game> Games { get; set; }

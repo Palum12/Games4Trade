@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Games4Trade.Data;
+using Games4TradeAPI.Data;
 using Microsoft.EntityFrameworkCore;
-using Games4Trade.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Repositories;
 
-namespace Games4Trade.Repositories
+namespace Games4TradeAPI.Repositories
 {
     public class SystemRepository : Repository<Models.System>, ISystemRepository
     {
@@ -27,8 +27,13 @@ namespace Games4Trade.Repositories
         public async Task<IList<Models.System>> GetSystemsForUser(int userId)
         {
             var arrayOfIds = await Context.UserSystemRelationship
-                .Where(x => x.UserId == userId).Select(x => x.SystemId).ToArrayAsync();
-            var systems = await Context.Systems.Where(s => arrayOfIds.Contains(s.Id)).ToListAsync();
+                .Where(x => x.UserId == userId)
+                .Select(x => x.SystemId)
+                .ToArrayAsync();
+            var systems = await Context
+                .Systems
+                .Where(s => arrayOfIds.Contains(s.Id))
+                .ToListAsync();
 
             return systems;
         }

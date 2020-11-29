@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Games4Trade.Data;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
+using Games4TradeAPI.Data;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using Games4Trade.Repositories;
+using Games4TradeAPI.Repositories;
 
-namespace Games4TradeTests
+namespace Games4TradeAPITests
 {
     public class UsersFixture : IDisposable
     {

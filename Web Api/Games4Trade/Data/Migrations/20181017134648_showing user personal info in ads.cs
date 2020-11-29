@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Games4Trade.Data.Migrations
+namespace Games4TradeAPI.Data.Migrations
 {
     public partial class showinguserpersonalinfoinads : Migration
     {

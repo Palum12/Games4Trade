@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Games4Trade.Models
+namespace Games4TradeAPI.Models
 {
-    public class System
+    public class System : ModelBase
     {
-        public int Id { get; set; }
         public string Manufacturer { get; set; }
         public string Model { get; set; }
         public virtual ICollection<UserOwnedSystem> OwnedByUsers { get; set; }

@@ -1,8 +1,8 @@
 ﻿using System;
-using Games4Trade.Models;
+using Games4TradeAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Games4Trade.Data
+namespace Games4TradeAPI.Data
 {
     public interface IApplicationContext
     {

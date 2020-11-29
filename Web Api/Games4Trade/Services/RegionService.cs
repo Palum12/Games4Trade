@@ -1,28 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Services;
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public class RegionService : IRegionService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IMapper mapper;
+        private readonly IRepository<Region> repository; 
 
-        public RegionService(IUnitOfWork unitOfWork, IMapper mapper)
+        public RegionService(IRepository<Region> repository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            this.repository = repository;
+            this.mapper = mapper;
         }
 
         public async Task<IEnumerable<RegionDto>> Get()
         {
-            var regions = await _unitOfWork.Regions.GetAllASync();
-            var dtos = _mapper.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(regions);
+            var regions = await repository.GetAllAsync();
+            var dtos = mapper.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(regions);
             return dtos;
         }
     }

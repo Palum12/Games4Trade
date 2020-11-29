@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
 
-namespace Games4Trade.Interfaces.Services
+namespace Games4TradeAPI.Interfaces.Services
 {
     public interface ILoginService
     {

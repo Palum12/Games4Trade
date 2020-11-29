@@ -2,30 +2,32 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Services;
+using Games4TradeAPI.Interfaces.Repositories;
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public class MessageService : IMessageService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IMessageRepository repository;
+        private readonly IUserRepository userRepository;
+        private readonly IMapper mapper;
         private const int PageSize = 20;
 
-        public MessageService(IUnitOfWork unitOfWork, IMapper mapper)
+        public MessageService(IMessageRepository repository, IUserRepository userRepository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            this.repository = repository;
+            this.userRepository = userRepository;
+            this.mapper = mapper;
         }
 
         public async Task<IEnumerable<MessageDto>> GetMessagesWithUser(int currentUserId, int selectedUserId, int page)
         {
             var repoResponse =
-                await _unitOfWork.Messages.GetMessagesWithReciver(currentUserId, selectedUserId, page, PageSize);
-            var result = _mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(repoResponse);
+                await repository.GetMessagesWithReciever(currentUserId, selectedUserId, page, PageSize);
+            var result = mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(repoResponse);
             return result;
         }
 
@@ -39,8 +41,8 @@ namespace Games4Trade.Services
                 ReceiverId = message.ReceiverId,
                 SenderId = currentUserId
             };
-            await _unitOfWork.Messages.AddASync(messageModel);
-            var response = await _unitOfWork.CompleteASync();
+            await repository.AddAsync(messageModel);
+            var response = await repository.SaveChangesAsync();
             if (response > 0)
             {
                 return new OperationResult(){IsSuccessful = true, Payload = messageModel};
@@ -53,7 +55,7 @@ namespace Games4Trade.Services
 
         public async Task<IEnumerable<NewestMessageDto>> GetNewestMessages(int currentUserId)
         {
-            var repoResponse = await _unitOfWork.Messages.GetNewestMessagesForUser(currentUserId);
+            var repoResponse = await repository.GetNewestMessagesForUser(currentUserId);
             var result = new List<NewestMessageDto>();
             foreach (var message in repoResponse)
             {
@@ -67,8 +69,8 @@ namespace Games4Trade.Services
                         OtherUserId = message.ReceiverId,
                         DateCreated = message.DateCreated
                     };
-                    otherUser = await _unitOfWork.Users.GetASync(message.ReceiverId);
-                    newestMessageSent.OtherUser = _mapper.Map<User, UserSimpleDto>(otherUser);
+                    otherUser = await userRepository.GetAsync(message.ReceiverId);
+                    newestMessageSent.OtherUser = mapper.Map<User, UserSimpleDto>(otherUser);
                     result.Add(newestMessageSent);
                 }
                 else
@@ -80,8 +82,8 @@ namespace Games4Trade.Services
                         OtherUserId = message.SenderId,
                         DateCreated = message.DateCreated
                     };
-                    otherUser = await _unitOfWork.Users.GetASync(message.SenderId);
-                    newestMessageRecieved.OtherUser = _mapper.Map<User, UserSimpleDto>(otherUser);
+                    otherUser = await userRepository.GetAsync(message.SenderId);
+                    newestMessageRecieved.OtherUser = mapper.Map<User, UserSimpleDto>(otherUser);
                     result.Add(newestMessageRecieved);
                 }
             }
@@ -92,19 +94,19 @@ namespace Games4Trade.Services
         public async Task<OperationResult> SetMessagesAsRead(int currentUserId, int selectedUserId)
         {
             var messages =
-                await _unitOfWork.Messages
-                    .FindASync(m => m.ReceiverId == currentUserId && m.SenderId == selectedUserId && !m.IsDelivered);
+                await repository
+                    .FindAsync(m => m.ReceiverId == currentUserId && m.SenderId == selectedUserId && !m.IsDelivered);
             foreach (var message in messages)
             {
                 message.IsDelivered = true;
             }
-            await _unitOfWork.CompleteASync();
+            await repository.SaveChangesAsync();
             return new OperationResult{IsSuccessful = true};
         }
 
         public async Task<bool> CheckIfThereAreNewMessages(int senderId, int reciverId)
         {
-            return await _unitOfWork.Messages.CheckIfThereAreNewMessages(senderId, reciverId);
+            return await repository.CheckIfThereAreNewMessages(senderId, reciverId);
         }
     }
 }

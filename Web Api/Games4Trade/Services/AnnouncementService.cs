@@ -3,46 +3,48 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Services;
 
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public class AnnouncementService : IAnnouncementService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IAnnouncementRepository repository;
+        private readonly IUserRepository userRepository;
+        private readonly IMapper mapper;
         private const int PageSize = 10;
 
-        public AnnouncementService(IUnitOfWork unitOfWork, IMapper mapper)
+        public AnnouncementService(IAnnouncementRepository repository, IUserRepository userRepository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            this.repository = repository;
+            this.userRepository = userRepository;
+            this.mapper = mapper;
         }
 
         public async Task<AnnouncementGetDto> GetAnnouncement(int id, bool isAdmin)
         {
-            var result = await _unitOfWork.Announcements.GetAnnouncementWithAuthor(id, isAdmin);
-            return _mapper.Map<Announcement, AnnouncementGetDto>(result);
+            var result = await repository.GetAnnouncementWithAuthor(id, isAdmin);
+            return mapper.Map<Announcement, AnnouncementGetDto>(result);
         }
 
         public async Task<IList<AnnouncementGetDto>> GetAnnouncementsPage(int page, bool isAdmin)
         {
-            var result = await _unitOfWork.Announcements.GetAnnouncementsPageWithAuthors(page, PageSize, isAdmin);
-            var response = _mapper.Map<IEnumerable<Announcement>, IEnumerable<AnnouncementGetDto>>(result);
+            var result = await repository.GetAnnouncementsPageWithAuthors(page, PageSize, isAdmin);
+            var response = mapper.Map<IEnumerable<Announcement>, IEnumerable<AnnouncementGetDto>>(result);
             return response.ToList();
         }
 
         public async Task<OperationResult> ChangeStatus(int id, AnnouncementArchiveDto value)
         {
-            var announcement = await _unitOfWork.Announcements.GetASync(id);
+            var announcement = await repository.GetAsync(id);
             if (announcement != null)
             {
                 announcement.IsActive = value.IsActive;
-                var result = await _unitOfWork.CompleteASync();
+                var result = await repository.SaveChangesAsync();
 
                 return new OperationResult()
                 {
@@ -59,12 +61,12 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> CreateAnnouncement(AnnouncementSaveDto announcement, string login)
         {
-            var currentUser = await _unitOfWork.Users.GetUserByLogin(login);
-            var announcementModel = _mapper.Map<AnnouncementSaveDto, Announcement>(announcement);
+            var currentUser = await userRepository.GetUserByLogin(login);
+            var announcementModel = mapper.Map<AnnouncementSaveDto, Announcement>(announcement);
             announcementModel.UserId = currentUser.Id;
             announcementModel.DateCreated = DateTime.Now;
-            await _unitOfWork.Announcements.AddASync(announcementModel);
-            var result = await _unitOfWork.CompleteASync();
+            await repository.AddAsync(announcementModel);
+            var result = await repository.SaveChangesAsync();
             if (result > 0)
             {
                 return new OperationResult()
@@ -81,7 +83,7 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> EditAnnouncement(int id, AnnouncementSaveDto announcement)
         {
-            var announcementInDb = await _unitOfWork.Announcements.GetASync(id);
+            var announcementInDb = await repository.GetAsync(id);
             if (announcementInDb == null)
             {
                 return new OperationResult()
@@ -106,7 +108,7 @@ namespace Games4Trade.Services
             announcementInDb.Content = announcement.Content;
             announcementInDb.Title = announcement.Title;
 
-            var result = await _unitOfWork.CompleteASync();
+            var result = await repository.SaveChangesAsync();
             if (result > 0)
             {
                 return new OperationResult()
@@ -122,7 +124,7 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> DeleteAnnouncement(int id)
         {
-            var entity = await _unitOfWork.Announcements.GetASync(id);
+            var entity = await repository.GetAsync(id);
             if (entity == null)
             {
                 return new OperationResult()
@@ -132,8 +134,8 @@ namespace Games4Trade.Services
                     Message = "Announcement was not found"
                 };
             }
-            _unitOfWork.Announcements.Remove(entity);
-            var result = await _unitOfWork.CompleteASync();
+            repository.Remove(entity);
+            var result = await repository.SaveChangesAsync();
             if (result > 0)
             {
                 return new OperationResult()

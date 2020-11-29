@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Games4Trade.Data;
-using Games4Trade.Models;
+using Games4TradeAPI.Data;
+using Games4TradeAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Games4Trade.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Repositories;
 
-namespace Games4Trade.Repositories
+namespace Games4TradeAPI.Repositories
 {
     public class MessageRepository : Repository<Message>, IMessageRepository
     {
@@ -25,13 +25,13 @@ namespace Games4Trade.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesWithReciver(int senderId, int reciverId, int page, int pageSize)
+        public async Task<IEnumerable<Message>> GetMessagesWithReciever(int senderId, int recieverId, int page, int pageSize)
         {
             var skip = page * pageSize;
             return await Context.Messages
                 .Where(m => 
-                    (m.ReceiverId == reciverId && m.SenderId == senderId) || 
-                    (m.SenderId == reciverId && m.ReceiverId == senderId))
+                    (m.ReceiverId == recieverId && m.SenderId == senderId) || 
+                    (m.SenderId == recieverId && m.ReceiverId == senderId))
                 .OrderByDescending(a => a.DateCreated)
                 .Skip(skip).Take(pageSize)
                 .ToListAsync();

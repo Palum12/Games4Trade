@@ -5,30 +5,53 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
+using Games4TradeAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using Console = Games4Trade.Models.Console;
+using Console = Games4TradeAPI.Models.Console;
 using Image = SixLabors.ImageSharp.Image;
-using Region = Games4Trade.Models.Region;
+using Region = Games4TradeAPI.Models.Region;
 
-namespace Games4Trade.Services
+namespace Games4TradeAPI.Services
 {
     public class AdvertisementService : IAdvertisementService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IAdvertisementReposiotry repository;
+        private readonly IUserRepository userRepository;
+        private readonly IRepository<Photo> photoRepository;
+        private readonly IRepository<State> stateRepository;
+        private readonly IGenreRepository genreRepository;
+        private readonly IRepository<Region> regionRepository;
+        private readonly ISystemRepository systemRepository;
+        private readonly IRepository<AdvertisementItem> advertisementItemRepository;
+        private readonly IMapper mapper;
         private const int DefaultPageSize = 10;
 
-        public AdvertisementService(IUnitOfWork unitOfWork, IMapper mapper)
+        public AdvertisementService(
+            IAdvertisementReposiotry repository,
+            IUserRepository userRepository,
+            IRepository<Photo> photoRepository,
+            IRepository<State> stateRepository,
+            IGenreRepository genreRepository,
+            IRepository<Region> regionRepository,
+            ISystemRepository systemRepository,
+            IRepository<AdvertisementItem> advertisementItemRepository,
+            IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            this.repository = repository;
+            this.userRepository = userRepository;
+            this.photoRepository = photoRepository;
+            this.stateRepository = stateRepository;
+            this.genreRepository = genreRepository;
+            this.regionRepository = regionRepository;
+            this.systemRepository = systemRepository;
+            this.advertisementItemRepository = advertisementItemRepository;
+            this.mapper = mapper;
         }
         
         public async Task<OperationResult> AddAdvertisement(int userId, AdvertisementSaveDto ad)
@@ -36,24 +59,24 @@ namespace Games4Trade.Services
             var isCorrectResultTuple = await CheckIfRelationshipsAreCorrect(ad);
             if (isCorrectResultTuple.Item1)
             {
-                var advertisement = _mapper.Map<AdvertisementSaveDto, Advertisement>(ad);
+                var advertisement = mapper.Map<AdvertisementSaveDto, Advertisement>(ad);
                 advertisement.UserId = userId;
 
-                switch (ad.Discriminator)
+                switch (ad.Discriminator) // todo: test this
                 {
                     case nameof(Game):
-                        var game = _mapper.Map<AdvertisementSaveDto, Game>(ad);
-                        await _unitOfWork.Games.AddASync(game);
+                        var game = mapper.Map<AdvertisementSaveDto, Game>(ad);
+                        await advertisementItemRepository.AddAsync(game);
                         advertisement.Item = game;
                         break;
                     case nameof(Accessory):
-                        var accessory = _mapper.Map<AdvertisementSaveDto, Accessory>(ad);
-                        await _unitOfWork.Accessories.AddASync(accessory);
+                        var accessory = mapper.Map<AdvertisementSaveDto, Accessory>(ad);
+                        await advertisementItemRepository.AddAsync(accessory);
                         advertisement.Item = accessory;
                         break;
                     case nameof(Console):
-                        var console = _mapper.Map<AdvertisementSaveDto, Console>(ad);
-                        await _unitOfWork.Consoles.AddASync(console);
+                        var console = mapper.Map<AdvertisementSaveDto, Console>(ad);
+                        await advertisementItemRepository.AddAsync(console);
                         advertisement.Item = console;
                         break;
                     default:
@@ -64,9 +87,9 @@ namespace Games4Trade.Services
                             Message = "Invalid discriminator!"
                         };
                 }
-                await _unitOfWork.Advertisements.AddASync(advertisement);
+                await repository.AddAsync(advertisement);
 
-                var result = await _unitOfWork.CompleteASync();
+                var result = await repository.SaveChangesAsync();
                 if (result > 0)
                 {
                     return new OperationResult
@@ -100,9 +123,9 @@ namespace Games4Trade.Services
                     Message = "Nie można archwizować cudzego ogłoszenia!"
                 };
             }
-            var ad = await _unitOfWork.Advertisements.GetASync(adId);
+            var ad = await repository.GetAsync(adId);
             ad.IsActive = false;
-            await _unitOfWork.CompleteASync();
+            await repository.SaveChangesAsync();
 
             return new OperationResult(){IsSuccessful = true};
         }
@@ -130,7 +153,7 @@ namespace Games4Trade.Services
                 };
             }
 
-            var currentAd = await _unitOfWork.Advertisements.GetAdvertisementWithDetails(adId, userId);
+            var currentAd = await repository.GetAdvertisementWithDetails(adId, userId);
 
             currentAd.ExchangeActive = ad.ExchangeActive;
             currentAd.ShowEmail = ad.ShowEmail;
@@ -173,22 +196,22 @@ namespace Games4Trade.Services
             }
             else
             {
-                _unitOfWork.AdvertisementItems.Remove(currentAd.Item);
+                advertisementItemRepository.Remove(currentAd.Item);
                 switch (ad.Discriminator)
                 {
                     case nameof(Game):
-                        var game = _mapper.Map<AdvertisementSaveDto, Game>(ad);
-                        await _unitOfWork.Games.AddASync(game);
+                        var game = mapper.Map<AdvertisementSaveDto, Game>(ad);
+                        await advertisementItemRepository.AddAsync(game);
                         currentAd.Item = game;
                         break;
                     case nameof(Accessory):
-                        var accessory = _mapper.Map<AdvertisementSaveDto, Accessory>(ad);
-                        await _unitOfWork.Accessories.AddASync(accessory);
+                        var accessory = mapper.Map<AdvertisementSaveDto, Accessory>(ad);
+                        await advertisementItemRepository.AddAsync(accessory);
                         currentAd.Item = accessory;
                         break;
                     case nameof(Console):
-                        var console = _mapper.Map<AdvertisementSaveDto, Console>(ad);
-                        await _unitOfWork.Consoles.AddASync(console);
+                        var console = mapper.Map<AdvertisementSaveDto, Console>(ad);
+                        await advertisementItemRepository.AddAsync(console);
                         currentAd.Item = console;
                         break;
                     default:
@@ -202,7 +225,7 @@ namespace Games4Trade.Services
 
             }
 
-            var repoResult = await _unitOfWork.CompleteASync();
+            var repoResult = await repository.SaveChangesAsync();
 
             if (repoResult > 0)
             {
@@ -217,7 +240,7 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> GetAdvertisement(int id, int? userId = null)
         {
-            var ad =  await _unitOfWork.Advertisements.GetAdvertisementWithDetails(id, userId);
+            var ad =  await repository.GetAdvertisementWithDetails(id, userId);
             if (ad == null)
             {
                 return new OperationResult()
@@ -236,8 +259,8 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> GetRecommendedAdsForUser(int userId, int page)
         {
-            var ads = await _unitOfWork.Advertisements.GetRecommendedAdvertisements(userId, page, DefaultPageSize);
-            var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
+            var ads = await repository.GetRecommendedAdvertisements(userId, page, DefaultPageSize);
+            var result = mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
             return new OperationResult()
             {
                 IsSuccessful = true,
@@ -247,8 +270,8 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> GetAdvetisementsForUser(int userId, int page, bool selfService)
         {
-            var ads = await _unitOfWork.Advertisements.GetAdsForUser(userId, page, DefaultPageSize, selfService);
-            var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable< AdvertisementWithoutItemDto>>(ads);
+            var ads = await repository.GetAdsForUser(userId, page, DefaultPageSize, selfService);
+            var result = mapper.Map<IEnumerable<Advertisement>, IEnumerable< AdvertisementWithoutItemDto>>(ads);
             return new OperationResult
             {
                 IsSuccessful = true,
@@ -258,8 +281,8 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> GetAdvetisements(AdQueryOptions queryOptions)
         {
-            var ads = await _unitOfWork.Advertisements.GetQueriedAds(queryOptions);
-            var result = _mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
+            var ads = await repository.GetQueriedAds(queryOptions);
+            var result = mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
             
             return new OperationResult()
             {
@@ -270,10 +293,10 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, string message = null)
         {
-            var ad = await _unitOfWork.Advertisements.GetASync(adId);
+            var ad = await repository.GetAsync(adId);
             if (ad.UserId != userId)
             {
-                var user = await _unitOfWork.Users.GetASync(userId);
+                var user = await userRepository.GetAsync(userId);
                 if (user.Role.Equals("Admin"))
                 {
                     if (message == null)
@@ -286,7 +309,7 @@ namespace Games4Trade.Services
                         };
                     }                   
                     
-                    var otherUser = await _unitOfWork.Users.GetASync(ad.UserId);
+                    var otherUser = await userRepository.GetAsync(ad.UserId);
                     var text = string.Format(
                         @"Witaj. </br> Twoje ogłoszenie z serwisu Games4Trade o tytule: '{0}' zostało usunięte. Oto powód usunięcia ogłoszenia:<br>{1}",
                         ad.Title, message);
@@ -332,7 +355,7 @@ namespace Games4Trade.Services
         {
             if (photoId.HasValue)
             {
-                var photo = await _unitOfWork.Photos.GetASync(photoId.Value);
+                var photo = await photoRepository.GetAsync(photoId.Value);
                 if (photo?.AdvertisementId == null || photo.AdvertisementId != adId)
                 {
                     return null;
@@ -343,7 +366,7 @@ namespace Games4Trade.Services
             else
             {
                 var photos =
-                    await _unitOfWork.Photos.FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
+                    await photoRepository.FindAsync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
                 if (photos.Any())
                 {
                     var directory = @"photos/ad" + adId;
@@ -356,8 +379,8 @@ namespace Games4Trade.Services
 
         public async Task<OperationResult> ChangeAdPhotos(int adId, int userId, IFormFileCollection photos)
         {
-            var user = await _unitOfWork.Users.GetASync(userId);
-            var ad = await _unitOfWork.Advertisements.GetASync(adId);
+            var user = await userRepository.GetAsync(userId);
+            var ad = await repository.GetAsync(adId);
             if (! await IsSelfService(userId, adId))
             {
                 return new OperationResult()
@@ -367,8 +390,8 @@ namespace Games4Trade.Services
                     Message = "Nie można edytować zdjęć innego użytkownika"
                 };
             }
-            var temp = await _unitOfWork.Photos
-                .FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
+            var temp = await photoRepository
+                .FindAsync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
             var oldPhotos = temp.ToArray();
             if (oldPhotos.Any())
             {
@@ -380,13 +403,13 @@ namespace Games4Trade.Services
             foreach (var oldPhoto in oldPhotos)
             {
                 File.Delete(oldPhoto.Path);
-                _unitOfWork.Photos.Remove(oldPhoto);
+                photoRepository.Remove(oldPhoto);
             }
 
             int repoRes;
             if (!photos.Any())
             {
-                repoRes = await _unitOfWork.CompleteASync();
+                repoRes = await repository.SaveChangesAsync();
                 if (repoRes == oldPhotos.Length)
                 {
                     return new OperationResult { IsSuccessful = true };
@@ -412,7 +435,7 @@ namespace Games4Trade.Services
                 }
                 var newPhoto = new Photo {DateCreated = DateTime.Now, Path = path, AdvertisementId = adId};
                 photosAdded.Add(newPhoto);
-                await _unitOfWork.Photos.AddASync(newPhoto);
+                await photoRepository.AddAsync(newPhoto);
 
                 // here create miniature
                 if (i == 0)
@@ -433,7 +456,7 @@ namespace Games4Trade.Services
                 }
             }
 
-            repoRes = await _unitOfWork.CompleteASync();
+            repoRes = await repository.SaveChangesAsync();
             if (repoRes == oldPhotos.Length + photos.Count)
             {
                 return new OperationResult
@@ -456,10 +479,10 @@ namespace Games4Trade.Services
 
         private async Task<int> RemoveAdWithPhotos(Advertisement ad)
         {
-            var photos = await _unitOfWork.Photos
-                .FindASync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
-            _unitOfWork.Advertisements.Remove(ad);
-            var repoResult = await _unitOfWork.CompleteASync();
+            var photos = await photoRepository
+                .FindAsync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
+            repository.Remove(ad);
+            var repoResult = await repository.SaveChangesAsync();
             if (repoResult > 0)
             {
                 var directory = @"photos/ad" + ad.Id;
@@ -478,18 +501,18 @@ namespace Games4Trade.Services
         private async Task<(bool, string)> CheckIfRelationshipsAreCorrect(AdvertisementSaveDto ad)
         {
             IList<Object> objects;
-            var system = await _unitOfWork.Systems.GetASync(ad.SystemId);
-            var state = await _unitOfWork.States.GetASync(ad.StateId);
+            var system = await repository.GetAsync(ad.SystemId);
+            var state = await stateRepository.GetAsync(ad.StateId);
             Region region;
             switch (ad.Discriminator)
             {
                 case nameof(Game):
-                    var genre = await _unitOfWork.Genres.GetASync(ad.GenreId.GetValueOrDefault());
-                    region = await _unitOfWork.Regions.GetASync(ad.RegionId.GetValueOrDefault());
+                    var genre = await genreRepository.GetAsync(ad.GenreId.GetValueOrDefault());
+                    region = await regionRepository.GetAsync(ad.RegionId.GetValueOrDefault());
                     objects = new List<object> { region, system, state, genre };
                     break;
                 case nameof(Console):
-                    region = await _unitOfWork.Regions.GetASync(ad.RegionId.GetValueOrDefault());
+                    region = await regionRepository.GetAsync(ad.RegionId.GetValueOrDefault());
                     objects = new List<object> { region, system, state };
                     break;
                 case nameof(Accessory):
@@ -508,7 +531,7 @@ namespace Games4Trade.Services
 
         private async Task<bool> IsSelfService(int userId, int adId)
         {
-            var ad = await _unitOfWork.Advertisements.GetASync(adId);
+            var ad = await repository.GetAsync(adId);
             return ad.UserId == userId;
         }
 
@@ -519,34 +542,34 @@ namespace Games4Trade.Services
             switch (source)
             {
                 case Game g:
-                    result = _mapper.Map<Advertisement, AdvertisementGameDto>(g.Advertisement);
-                    _mapper.Map(g, result);
+                    result = mapper.Map<Advertisement, AdvertisementGameDto>(g.Advertisement);
+                    mapper.Map(g, result);
                     result.Discriminator = nameof(Game);
-                    var tempGenre = await _unitOfWork.Genres.GetASync(g.GenreId);
-                    var tempRegionGame = await _unitOfWork.Regions.GetASync(g.GameRegionId);
-                    ((AdvertisementGameDto)result).Genre = _mapper.Map<Genre, GenreDto>(tempGenre);
-                    ((AdvertisementGameDto)result).Region = _mapper.Map<Region, RegionDto>(tempRegionGame);
+                    var tempGenre = await genreRepository.GetAsync(g.GenreId);
+                    var tempRegionGame = await regionRepository.GetAsync(g.GameRegionId);
+                    ((AdvertisementGameDto)result).Genre = mapper.Map<Genre, GenreDto>(tempGenre);
+                    ((AdvertisementGameDto)result).Region = mapper.Map<Region, RegionDto>(tempRegionGame);
                     break;
                 case Console c:
-                    result = _mapper.Map<Advertisement, AdvertisementConsoleDto>(c.Advertisement);
-                    _mapper.Map(c, result);
+                    result = mapper.Map<Advertisement, AdvertisementConsoleDto>(c.Advertisement);
+                    mapper.Map(c, result);
                     result.Discriminator = nameof(Console);
-                    var tempRegionConsole = await _unitOfWork.Regions.GetASync(c.ConsoleRegionId);
-                    ((AdvertisementConsoleDto)result).Region = _mapper.Map<Region, RegionDto>(tempRegionConsole);
+                    var tempRegionConsole = await regionRepository.GetAsync(c.ConsoleRegionId);
+                    ((AdvertisementConsoleDto)result).Region = mapper.Map<Region, RegionDto>(tempRegionConsole);
                     break;
                 case Accessory a:
-                    result = _mapper.Map<Advertisement, AdvertisementAccessoryDto>(a.Advertisement);
-                    _mapper.Map(a, result);
+                    result = mapper.Map<Advertisement, AdvertisementAccessoryDto>(a.Advertisement);
+                    mapper.Map(a, result);
                     result.Discriminator = nameof(Accessory);
                     break;
                 default:
                     throw new NotSupportedException();
             }
 
-            var state = await _unitOfWork.States.GetASync(source.StateId);
-            var system = await _unitOfWork.Systems.GetASync(source.SystemId);
-            result.State = _mapper.Map<State, StateDto>(state);
-            result.System = _mapper.Map<Models.System, SystemDto>(system);
+            var state = await stateRepository.GetAsync(source.StateId);
+            var system = await systemRepository.GetAsync(source.SystemId);
+            result.State = mapper.Map<State, StateDto>(state);
+            result.System = mapper.Map<Models.System, SystemDto>(system);
 
             if (source.Advertisement.ShowEmail)
             {

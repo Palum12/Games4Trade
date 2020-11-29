@@ -1,11 +1,9 @@
-﻿
-using System;
+﻿using System;
 
-namespace Games4Trade.Models
+namespace Games4TradeAPI.Models
 {
-    public class Announcement
+    public class Announcement : ModelBase
     {
-        public int Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public bool IsActive { get; set; }

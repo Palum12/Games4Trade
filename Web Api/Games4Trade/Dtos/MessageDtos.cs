@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Games4Trade.Dtos
+namespace Games4TradeAPI.Dtos
 {
     public class NewestMessageDto
     {

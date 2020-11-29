@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Games4Trade.Data;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
+using Games4TradeAPI.Data;
+using Games4TradeAPI.Models;
+using Games4TradeAPI.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using Games4Trade.Repositories;
+using Games4TradeAPI.Repositories;
 
-namespace Games4TradeTests
+namespace Games4TradeAPITests
 {
     public class AdvertisementRepositoryFixture : IDisposable
     {
@@ -63,7 +63,7 @@ namespace Games4TradeTests
                 IsActive = true,
                 Title = "search",
                 Price = 300,
-                Item = new Games4Trade.Models.Console()
+                Item = new Games4TradeAPI.Models.Console()
                 {
                     AdvertisementId = 3,
                     ConsoleRegionId = 1,
@@ -81,7 +81,7 @@ namespace Games4TradeTests
                 IsActive = true,
                 Title = "test1",
                 Price = 400,
-                Item = new Games4Trade.Models.Console()
+                Item = new Games4TradeAPI.Models.Console()
                 {
                     AdvertisementId = 4,
                     ConsoleRegionId = 1,
@@ -99,7 +99,7 @@ namespace Games4TradeTests
                 IsActive = true,
                 Title = "test1",
                 Price = 100,
-                Item = new Games4Trade.Models.Console()
+                Item = new Games4TradeAPI.Models.Console()
                 {
                     AdvertisementId = 5,
                     ConsoleRegionId = 1,
@@ -188,8 +188,8 @@ namespace Games4TradeTests
                     GenreId = 1,
                 }
             };
-            await advertisementRepository.AddASync(advert);
-            var ads = await advertisementRepository.GetASync(6);
+            await advertisementRepository.AddAsync(advert);
+            var ads = await advertisementRepository.GetAsync(6);
             Assert.NotNull(ads);
         }
 

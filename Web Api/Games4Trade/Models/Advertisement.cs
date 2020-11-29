@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Games4Trade.Models
+namespace Games4TradeAPI.Models
 {
-    public class Advertisement
+    public class Advertisement : ModelBase
     {
-        public int Id { get; set; }
         public DateTime DateCreated { get; set; }
         public string Title { get; set; }
         public bool IsActive { get; set; }

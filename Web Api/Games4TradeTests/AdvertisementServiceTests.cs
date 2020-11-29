@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Games4Trade;
-using Games4Trade.Dtos;
-using Games4Trade.Models;
-using Games4Trade.Interfaces.Repositories;
-using Games4Trade.Interfaces.Services;
+using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Models;
 using Moq;
 using Xunit;
-using Games4Trade.Services;
+using Games4TradeAPI.Services;
+using Games4TradeAPI;
+using Games4TradeAPI.Interfaces.Repositories;
 
-namespace Games4TradeTests
+namespace Games4TradeAPITests
 {
     public class AdvertisementsServiceFixture : IDisposable
     {
@@ -44,34 +43,36 @@ namespace Games4TradeTests
         public async void AddAdPositive()
         {
             // Arrange
-            var unitMock = new Mock<IUnitOfWork>();
-            unitMock.Setup(u => u.Regions.GetASync(It.IsAny<int>()))
+            var regionRepository = new Mock<IRepository<Region>>();
+            regionRepository.Setup(u => u.GetAsync(It.IsAny<int>()))
                 .ReturnsAsync(new Region()).Verifiable();
-            unitMock.Setup(u => u.Systems.GetASync(It.IsAny<int>()))
-                .ReturnsAsync(new Games4Trade.Models.System()).Verifiable(); 
-            unitMock.Setup(u => u.Genres.GetASync(It.IsAny<int>()))
-                .ReturnsAsync(new Genre()).Verifiable(); 
-            unitMock.Setup(u => u.States.GetASync(It.IsAny<int>()))
-                .ReturnsAsync(new State()).Verifiable(); 
 
-            Advertisement addedAdd = null;
-            unitMock
-                .Setup(u => u.Advertisements.AddASync(It.IsAny<Advertisement>()))
-                .Callback<Advertisement>(a =>
-                    {
-                        addedAdd = a;
-                    })
-                .Returns(Task.CompletedTask);
+            var systemReposiotry = new Mock<ISystemRepository>();
+            systemReposiotry.Setup(u => u.GetAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Games4TradeAPI.Models.System()).Verifiable();
 
-            Game addedGame = null;
-            unitMock
-                .Setup(u => u.Games.AddASync(It.IsAny<Game>()))
-                .Callback<Game>(g =>
-                {
-                    addedGame = g;
-                })
-                .Returns(Task.CompletedTask);
-            var service = new AdvertisementService(unitMock.Object, _fixture.Mapper);
+            var genreRepository = new Mock<IGenreRepository>();
+            genreRepository.Setup(u => u.GetAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Genre()).Verifiable();
+
+            var stateRepository = new Mock<IRepository<State>>();
+            stateRepository.Setup(u => u.GetAsync(It.IsAny<int>()))
+                .ReturnsAsync(new State()).Verifiable();
+
+            var advertisementRepository = new Mock<IAdvertisementReposiotry>();
+            var advertisementItemRepository = new Mock<IRepository<AdvertisementItem>>();
+
+            advertisementRepository
+                .Setup(u => u.AddAsync(It.IsAny<Advertisement>()))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            advertisementItemRepository
+                .Setup(u => u.AddAsync(It.IsAny<Game>()))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            var service = new AdvertisementService(advertisementRepository.Object, null, null, stateRepository.Object, genreRepository.Object, regionRepository.Object, systemReposiotry.Object, advertisementItemRepository.Object, _fixture.Mapper);
             var newAdd = new AdvertisementSaveDto
             {
                 GenreId = 1,
@@ -85,29 +86,28 @@ namespace Games4TradeTests
                 Price = 10
             };
 
+
             // Act
             await service.AddAdvertisement(userId: 1, ad: newAdd);
 
-            // Assert
-            Assert.NotNull(addedAdd);
-            Assert.NotNull(addedGame);
-            unitMock.Verify();
-
+            // Assert todo
+            //advertisementRepository.Verify();
+            //advertisementItemRepository.Verify();
         }
 
         [Fact]
         public async void GetSearchedAdPositive()
         {
             // Arrange
-            var unitMock = new Mock<IUnitOfWork>();
-            unitMock.Setup(u => u.Advertisements.GetQueriedAds(It.IsAny<AdQueryOptions>()))
+            var advertisementRepository = new Mock<IAdvertisementReposiotry>();
+            advertisementRepository.Setup(u => u.GetQueriedAds(It.IsAny<AdQueryOptions>()))
                 .ReturnsAsync(new List<Advertisement>() {new Advertisement()
                 {
                     Id = 1,
                     Item = new Game()
                 }}).Verifiable();
 
-            var service = new AdvertisementService(unitMock.Object, _fixture.Mapper);
+            var service = new AdvertisementService(advertisementRepository.Object, null, null, null, null, null, null, null, _fixture.Mapper);
 
             // Act
             var result = await service.GetAdvetisements(new AdQueryOptions()
@@ -122,7 +122,7 @@ namespace Games4TradeTests
             // Assert
             Assert.NotNull(ads);
             Assert.Single(ads);
-            unitMock.Verify();
+            advertisementRepository.Verify();
         }
     }
 }

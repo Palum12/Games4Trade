@@ -1,7 +1,7 @@
-﻿using Games4Trade.Dtos;
+﻿using Games4TradeAPI.Dtos;
 using System.Threading.Tasks;
 
-namespace Games4Trade.Hubs
+namespace Games4TradeAPI.Hubs
 {
     public interface IMessagesClient
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Games4Trade.Dtos;
+using Games4TradeAPI.Dtos;
 
-namespace Games4Trade.Interfaces.Services
+namespace Games4TradeAPI.Interfaces.Services
 {
     public interface IRegionService
     {

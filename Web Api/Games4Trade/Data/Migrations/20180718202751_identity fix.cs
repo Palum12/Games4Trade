@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Games4Trade.Data.Migrations
+namespace Games4TradeAPI.Data.Migrations
 {
     public partial class identityfix : Migration
     {

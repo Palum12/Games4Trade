@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace Games4Trade.Models
+namespace Games4TradeAPI.Models
 {
-    public class AdvertisementItem
+    public class AdvertisementItem : ModelBase
     {
-        public int Id { get; set; }
         public DateTime? DateReleased { get; set; }
         public string Description { get; set; }
         public int AdvertisementId { get; set; }
