@@ -61,9 +61,7 @@ namespace Games4TradeAPI.Repositories
             }
             else
             {
-                query = query
-                    .OrderByPropertyName(options.Sort,
-                        !(options.Desc.HasValue && options.Desc.Value));
+                query = query.OrderByPropertyName(options.Sort, !(options.Desc.HasValue && options.Desc.Value));
             }
 
             if (!string.IsNullOrEmpty(options.Search))
@@ -71,11 +69,13 @@ namespace Games4TradeAPI.Repositories
                 query = query.Where(a => EF.Functions.ILike(a.Title, "%" + options.Search + "%"));
             }
 
+
             if (!string.IsNullOrEmpty(options.Type))
             {
+                options.Type = char.ToUpper(options.Type[0]) + options.Type.Substring(1);
                 switch (options.Type)
                 {
-                    case "game":
+                    case nameof(Game):
                     {
                         query = query.Where(a => a.Item is Game);
                         if (options.Genres.Any())
@@ -89,12 +89,12 @@ namespace Games4TradeAPI.Repositories
                         }
                         break;
                     }
-                    case "accessory":
+                    case nameof(Accessory):
                     {
                         query = query.Where(a => a.Item is Accessory);
                         break;
                     }
-                    case "console":
+                    case nameof(Console):
                     {
                         query = query.Where(a => a.Item is Console);
                         if (options.Region.HasValue)
