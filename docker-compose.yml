@@ -21,6 +21,14 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__ApplicationContext: Server=db;Port=5432; User Id=postgres; Password=admin; Database=Games4Trade;
+  client:
+    depends_on: 
+      - api
+    build:
+      context: "Client/Games4Trade"
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
 
 volumes: 
   postgres_data:
