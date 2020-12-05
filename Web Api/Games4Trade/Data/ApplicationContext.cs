@@ -231,9 +231,7 @@ namespace Games4TradeAPI.Data
                 });
 
             base.OnModelCreating(modelBuilder);
-        }
-
-
+        } 
         
     }
 }

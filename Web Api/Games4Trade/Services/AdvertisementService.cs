@@ -501,7 +501,7 @@ namespace Games4TradeAPI.Services
         private async Task<(bool, string)> CheckIfRelationshipsAreCorrect(AdvertisementSaveDto ad)
         {
             IList<Object> objects;
-            var system = await repository.GetAsync(ad.SystemId);
+            var system = await systemRepository.GetAsync(ad.SystemId);
             var state = await stateRepository.GetAsync(ad.StateId);
             Region region;
             switch (ad.Discriminator)
@@ -523,7 +523,7 @@ namespace Games4TradeAPI.Services
             }
             if (objects.Any(o => o == null))
             {
-                var message = objects.Where(o => o == null).Select(o => nameof(o)) + "nie mogą być puste !";
+                var message = "Invalid data";
                 return (false, message);
             }
             return (true, null);
