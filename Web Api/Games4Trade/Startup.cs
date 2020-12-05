@@ -112,7 +112,7 @@ namespace Games4TradeAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationContext context)
         {
 
             if (env.EnvironmentName == "Development")
@@ -139,6 +139,21 @@ namespace Games4TradeAPI
                 endpoints.MapControllers();
             });
 
+            context.Database.Migrate();
+
+            if (env.EnvironmentName == "Development" && !context.Users.AnyAsync(u => u.Role == "Admin").Result)
+            {
+                context.Users.Add(new User
+                {
+                    Login = "admin",
+                    Email = "admin@games4trade.pl",
+                    Role = "Admin",
+                    Salt = "fd97ee1734377936bf51ac4ada3d1763",
+                    Password = "tCw/FKbLk78uwFEh120FVO7+lBd/p5ExJIeEpXgDiW0oI5dGgX1Mt+52Yd7wa/FGG7D0Awz+IXm1Hhibahb1DXT4SHlmwuLm1MOY5fvqoebnh1hVCZEZieK62Fk+6MLrJGn+3tdW90af8AuAZVTFRuQxft7XHBGA3Qop/qfsyNRrE064gQ17e2CSW2HYOzN/zHPFnwrj6JmdPgDtZiPxZyE7tLCYJ0nyPM6HLD01xd1rdS4rHqcn5EL5yEhsiYsIMR9g+6+XLR/IwpqmXW1beNf6t6m1wv8C6RltsB5j5rsfgcCapGLbW0TGmuyR0pC/HOdJ6o/1GQp2RRVS7GLyVA=="
+                });
+                context.SaveChanges();
+            }
+            
             //app.UseSignalR(route => {
             //    route.MapHub<MessagesHub>("/messagehub");
             //});
