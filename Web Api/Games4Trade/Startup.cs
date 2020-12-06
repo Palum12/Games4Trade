@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Games4TradeAPI.Data;
 using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Hubs;
 using Games4TradeAPI.Interfaces.Repositories;
 using Games4TradeAPI.Interfaces.Services;
 using Games4TradeAPI.Models;
@@ -75,43 +77,12 @@ namespace Games4TradeAPI
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
             })
-                .AddJwtBearer(options =>
-                {
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = false,
-                        ValidateIssuer = false,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("7uUzzYky7Lxb4pkGLRzU77dxpazhWEr4")),
-                        ValidateLifetime = true, //validate the expiration and not before values in the token
-                        ClockSkew = TimeSpan.FromMinutes(5) //5 minute tolerance for the expiration date
-                    };
-
-                    //options.Events = new JwtBearerEvents
-                    //{
-                    //    OnMessageReceived = context =>
-                    //    {
-                    //        // If the request is for our hub...
-                    //        var path = context.HttpContext.Request.Path;
-                    //        var accessToken = context.Request.Query["access_token"];
-
-                    //        if (!string.IsNullOrEmpty(accessToken) &&
-                    //            (path.StartsWithSegments("/messagehub")))
-                    //        {
-                    //            // Read the token out of the query string
-                    //            context.Token = accessToken.ToString();
-                    //        }
-                    //        return Task.CompletedTask;
-                    //    }
-                    //};
-                });
+            .AddJwtBearer(ConfigureJwtBearer);
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            // services.AddSignalR(opt => opt.EnableDetailedErrors = true);
+            services.AddSignalR(opt => opt.EnableDetailedErrors = true);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationContext context)
         {
 
@@ -137,6 +108,7 @@ namespace Games4TradeAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<MessagesHub>("/messagehub", options => options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets);
             });
 
             context.Database.Migrate();
@@ -152,13 +124,39 @@ namespace Games4TradeAPI
                     Password = "tCw/FKbLk78uwFEh120FVO7+lBd/p5ExJIeEpXgDiW0oI5dGgX1Mt+52Yd7wa/FGG7D0Awz+IXm1Hhibahb1DXT4SHlmwuLm1MOY5fvqoebnh1hVCZEZieK62Fk+6MLrJGn+3tdW90af8AuAZVTFRuQxft7XHBGA3Qop/qfsyNRrE064gQ17e2CSW2HYOzN/zHPFnwrj6JmdPgDtZiPxZyE7tLCYJ0nyPM6HLD01xd1rdS4rHqcn5EL5yEhsiYsIMR9g+6+XLR/IwpqmXW1beNf6t6m1wv8C6RltsB5j5rsfgcCapGLbW0TGmuyR0pC/HOdJ6o/1GQp2RRVS7GLyVA=="
                 });
                 context.SaveChanges();
-            }
-            
-            //app.UseSignalR(route => {
-            //    route.MapHub<MessagesHub>("/messagehub");
-            //});
-        }
+            }                  
+        }     
 
-       
+        private void ConfigureJwtBearer (JwtBearerOptions options)
+        {
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("7uUzzYky7Lxb4pkGLRzU77dxpazhWEr4")),
+                ValidateLifetime = true, //validate the expiration and not before values in the token
+                ClockSkew = TimeSpan.FromMinutes(5) //5 minute tolerance for the expiration date
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    // If the request is for our hub...
+                    var path = context.HttpContext.Request.Path;
+                    var accessToken = context.Request.Query["access_token"];
+
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        (path.StartsWithSegments("/messagehub")))
+                    {
+                        // Read the token out of the query string
+                        context.Token = accessToken.ToString();
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+        }
     }
 }

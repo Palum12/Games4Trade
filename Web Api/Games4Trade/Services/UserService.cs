@@ -226,7 +226,7 @@ namespace Games4TradeAPI.Services
             var result = new OperationResult();
             var user = await userRepository.FindAsync(u => u.Email.Equals(email));
             result.IsSuccessful = user.Any();
-            if (!result.IsSuccessful)
+            if (result.IsSuccessful)
             {
                 result.Message = "This email adress is already taken";
             }
@@ -426,7 +426,7 @@ namespace Games4TradeAPI.Services
             mappedUser.Salt = loginService.GetSalt();
             mappedUser.Password = loginService.ComputeHash(
                 mappedUser.Salt, "TempPass");
-            var tempUsers = await userRepository.GetAllAsync();
+            var tempUsers = await userRepository.FindAsync(u => u.Role == "Admin");
             if (!tempUsers.Any())
             {
                 mappedUser.Role = "Admin";
@@ -435,6 +435,12 @@ namespace Games4TradeAPI.Services
             await userRepository.AddAsync(mappedUser);
 
             var repoResult = await userRepository.SaveChangesAsync();
+
+            if (repoResult > 0)
+            {
+                result.IsSuccessful = true;
+            }
+
             // todo: FixThis
             //if (repoResult > 0)
             //{
