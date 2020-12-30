@@ -1,5 +1,7 @@
 version: "3.8"
 services:
+  minio:
+    image: minio/minio
   db:
     image: postgres:latest
     volumes: 
@@ -12,3 +14,4 @@ services:
 
 volumes: 
   postgres_data:
+  minioData:

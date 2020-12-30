@@ -6,6 +6,15 @@ services:
     environment: 
       POSTGRES_DB: Games4Trade
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+  minio:
+    volumes:
+      - minioData:/data
+    command: server /data
+    ports:
+      - '9000:9000'
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESSKEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRETKEY}
   api:
     build:
       context: "Web Api/Games4Trade"
@@ -15,6 +24,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__ApplicationContext: Server=db;Port=5432; User Id=${DB_USER}; Password=${DB_PASSWORD}; Database=Games4Trade;
+      MinIOConfig_Address: "minio:9000"
+      MinIOConfig_AccessKey: ${MINIO_ACCESSKEY}
+      MinIOConfig_SecretKey: ${MINIO_SECRETKEY}
   client:
     build:
       context: "Client/Games4Trade"
