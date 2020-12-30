@@ -25,14 +25,14 @@ export default {
     this.$store.dispatch('tryAutoLogin').then(() => {
       if (vm.$store.getters.getToken) {
           // todo: refactor messaging component
-          /* const hubConnection = new HubConnectionBuilder()
-          .withUrl(process.env.VUE_APP_MESSAGE_HUB_URL, {
-            accessTokenFactory: () => { return vm.$store.getters.getTokenWithoutHeader } })
-          .build()
+          const hubConnection = new HubConnectionBuilder()
+            .withUrl(process.env.VUE_APP_MESSAGE_HUB_URL, {
+              accessTokenFactory: () => { return vm.$store.getters.getTokenWithoutHeader } })
+            .build()
         hubConnection.on('Recieve', (value) => {
           console.log(value)
         })
-        hubConnection.start()*/
+        hubConnection.start()
       }
     })
     this.$store.dispatch('getGenres')
