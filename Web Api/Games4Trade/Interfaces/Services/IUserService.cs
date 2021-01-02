@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Common;
 using Games4TradeAPI.Models;
 using Microsoft.AspNetCore.Http;
 

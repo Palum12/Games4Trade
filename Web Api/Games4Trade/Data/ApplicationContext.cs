@@ -66,7 +66,7 @@ namespace Games4TradeAPI.Data
                     .HasDefaultValueSql("'User'");
                 entity.Property(e => e.RecoveryAddress).HasMaxLength(32);
 
-                entity.HasOne(u => u.Photo).WithOne(p => p.User).HasForeignKey<User>(u => u.PhotoId);
+                entity.HasOne(u => u.Photo).WithOne().HasForeignKey<User>(u => u.PhotoId);
 
             });
 
@@ -164,7 +164,8 @@ namespace Games4TradeAPI.Data
                 entity.Property(p => p.Id).UseIdentityByDefaultColumn();
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.DateCreated).HasDefaultValueSql("Now()");
-                entity.Property(p => p.Path).IsRequired();
+                entity.Property(p => p.FileName).IsRequired();
+                entity.Property(p => p.ObjectName).IsRequired();
                 entity.Property(p => p.AdvertisementId);
                 entity.HasOne(p => p.Advertisement)
                     .WithMany(a => a.Photos)

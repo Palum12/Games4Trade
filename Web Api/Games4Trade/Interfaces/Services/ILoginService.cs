@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Games4TradeAPI.Dtos;
-using Games4TradeAPI.Models;
+using Games4TradeAPI.Common;
 
 namespace Games4TradeAPI.Interfaces.Services
 {

@@ -1,46 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4TradeAPI.Dtos;
+using Games4TradeAPI.Common;
 using Games4TradeAPI.Models;
 using Games4TradeAPI.Interfaces.Repositories;
 using Games4TradeAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
 using Console = Games4TradeAPI.Models.Console;
-using Image = SixLabors.ImageSharp.Image;
 using Region = Games4TradeAPI.Models.Region;
 
 namespace Games4TradeAPI.Services
 {
     public class AdvertisementService : IAdvertisementService
     {
+        private const int DefaultPageSize = 10;
+
+        #region Dependencies
         private readonly IAdvertisementReposiotry repository;
         private readonly IUserRepository userRepository;
-        private readonly IRepository<Photo> photoRepository;
+        private readonly IPhotoRepository photoRepository;
         private readonly IRepository<State> stateRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IRepository<Region> regionRepository;
         private readonly ISystemRepository systemRepository;
         private readonly IRepository<AdvertisementItem> advertisementItemRepository;
+        private readonly IImageService imageService;
         private readonly IMapper mapper;
-        private const int DefaultPageSize = 10;
+        #endregion
 
         public AdvertisementService(
             IAdvertisementReposiotry repository,
             IUserRepository userRepository,
-            IRepository<Photo> photoRepository,
+            IPhotoRepository photoRepository,
             IRepository<State> stateRepository,
             IGenreRepository genreRepository,
             IRepository<Region> regionRepository,
             ISystemRepository systemRepository,
             IRepository<AdvertisementItem> advertisementItemRepository,
+            IImageService imageService,
             IMapper mapper)
         {
             this.repository = repository;
@@ -51,6 +52,7 @@ namespace Games4TradeAPI.Services
             this.regionRepository = regionRepository;
             this.systemRepository = systemRepository;
             this.advertisementItemRepository = advertisementItemRepository;
+            this.imageService = imageService;
             this.mapper = mapper;
         }
         
@@ -353,35 +355,25 @@ namespace Games4TradeAPI.Services
 
         public async Task<byte[]> GetAdPhoto(int adId, int? photoId = null)
         {
+            Photo photo;
             if (photoId.HasValue)
             {
-                var photo = await photoRepository.GetAsync(photoId.Value);
-                if (photo?.AdvertisementId == null || photo.AdvertisementId != adId)
+                photo = await photoRepository.GetAsync(photoId.Value);
+                if (photo is not null)
                 {
-                    return null;
+                    return photo?.Bytes;
                 }
-                var bytes = await File.ReadAllBytesAsync(photo.Path);
-                return bytes;
             }
-            else
-            {
-                var photos =
-                    await photoRepository.FindAsync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
-                if (photos.Any())
-                {
-                    var directory = @"photos/ad" + adId;
-                    var path = Path.Combine(directory, "miniature");
-                    return await File.ReadAllBytesAsync(path);
-                }
-                return await File.ReadAllBytesAsync(@"photos/adPhoto.png");
-            }
+            photo = await photoRepository.FirstOrDefaultAsync(p => p.AdvertisementId == adId);
+            return photo?.Bytes;
         }
 
         public async Task<OperationResult> ChangeAdPhotos(int adId, int userId, IFormFileCollection photos)
         {
             var user = await userRepository.GetAsync(userId);
             var ad = await repository.GetAsync(adId);
-            if (! await IsSelfService(userId, adId))
+
+            if (!await IsSelfService(userId, adId))
             {
                 return new OperationResult()
                 {
@@ -390,74 +382,24 @@ namespace Games4TradeAPI.Services
                     Message = "Nie można edytować zdjęć innego użytkownika"
                 };
             }
-            var temp = await photoRepository
-                .FindAsync(p => p.AdvertisementId.HasValue && p.AdvertisementId == adId);
-            var oldPhotos = temp.ToArray();
-            if (oldPhotos.Any())
-            {
-                var directory = @"photos/ad" + ad.Id;
-                var path = Path.Combine(directory, "miniature");
-                File.Delete(path);
-            }
-            // here delete old photos
-            foreach (var oldPhoto in oldPhotos)
-            {
-                File.Delete(oldPhoto.Path);
-                photoRepository.Remove(oldPhoto);
-            }
 
-            int repoRes;
-            if (!photos.Any())
-            {
-                repoRes = await repository.SaveChangesAsync();
-                if (repoRes == oldPhotos.Length)
+            var oldPhotos = await photoRepository.FindAsync(p => p.AdvertisementId == adId, ImageDownloadFormat.MetadataOnly);
+            await photoRepository.RemoveRangeAsync(oldPhotos);
+
+            var newPhotos = photos.Select(file =>
+            (
+                new Photo
                 {
-                    return new OperationResult { IsSuccessful = true };
-                }
-                throw new DataException();
-            }
+                    AdvertisementId = adId,
+                    FileName = file.FileName,
+                    ObjectName = $"{userId}/{adId}/{file.FileName}"
+                },
+                file
+            ));
 
-            var photosAdded = new List<Photo>();
-
-            // here add new photos
-            for (var i = 0; i < photos.Count; i++)
-            {
-                var photo = photos[i];
-                var fileId = Guid.NewGuid().ToString("N").ToUpper();
-                var directory = @"photos/ad" + adId;
-                Directory.CreateDirectory(directory);
-
-                var path = Path.Combine(directory, fileId);
-
-                using (var fileStream = new FileStream(path, FileMode.Create))
-                {
-                    await photo.CopyToAsync(fileStream);
-                }
-                var newPhoto = new Photo {DateCreated = DateTime.Now, Path = path, AdvertisementId = adId};
-                photosAdded.Add(newPhoto);
-                await photoRepository.AddAsync(newPhoto);
-
-                // here create miniature
-                if (i == 0)
-                {
-                    var newPath = Path.Combine(directory, "miniature");
-                    using (var outputStream = new FileStream(newPath, FileMode.Create))
-                    using (Stream inputStream = photo.OpenReadStream())
-                    {
-                        var image = Image.Load(inputStream);
-                        image.Mutate(img => img.Resize(new ResizeOptions()
-                            {
-                                Mode = ResizeMode.Max,
-                                Size = new Size(300, 200)
-                            }
-                        ));
-                        image.Save(outputStream, new JpegEncoder());
-                    }                    
-                }
-            }
-
-            repoRes = await repository.SaveChangesAsync();
-            if (repoRes == oldPhotos.Length + photos.Count)
+            var photosAdded = await photoRepository.AddRangeAsync(newPhotos);
+            var repoRes = await photoRepository.SaveChangesAsync();
+            if (repoRes == oldPhotos.Count() + photos.Count)
             {
                 return new OperationResult
                 {
@@ -466,41 +408,23 @@ namespace Games4TradeAPI.Services
             }
             else
             {
-                var directory = @"photos/ad" + ad.Id;
-                var path = Path.Combine(directory, "miniature");
-                File.Delete(path);
-                foreach (var photo in photosAdded)
-                {
-                    File.Delete(photo.Path);
-                }
                 throw new DataException();
             }
         }
 
         private async Task<int> RemoveAdWithPhotos(Advertisement ad)
         {
-            var photos = await photoRepository
-                .FindAsync(p => p.AdvertisementId.HasValue && p.AdvertisementId == ad.Id);
+            var photos = await photoRepository.FindAsync(p =>  p.AdvertisementId == ad.Id, ImageDownloadFormat.MetadataOnly);
             repository.Remove(ad);
-            var repoResult = await repository.SaveChangesAsync();
-            if (repoResult > 0)
-            {
-                var directory = @"photos/ad" + ad.Id;
-                var path = Path.Combine(directory, "miniature");
-                File.Delete(path);
-                foreach (var photo in photos)
-                {
-                    File.Delete(photo.Path);
-                }
-                return repoResult;
-            }
+            await photoRepository.RemoveRangeAsync(photos);
+            var repoResult = await photoRepository.SaveChangesAsync();
 
-            return 0;
+            return repoResult;
         }
 
         private async Task<(bool, string)> CheckIfRelationshipsAreCorrect(AdvertisementSaveDto ad)
         {
-            IList<Object> objects;
+            IList<ModelBase> objects;
             var system = await systemRepository.GetAsync(ad.SystemId);
             var state = await stateRepository.GetAsync(ad.StateId);
             Region region;
@@ -509,14 +433,14 @@ namespace Games4TradeAPI.Services
                 case nameof(Game):
                     var genre = await genreRepository.GetAsync(ad.GenreId.GetValueOrDefault());
                     region = await regionRepository.GetAsync(ad.RegionId.GetValueOrDefault());
-                    objects = new List<object> { region, system, state, genre };
+                    objects = new List<ModelBase> { region, system, state, genre };
                     break;
                 case nameof(Console):
                     region = await regionRepository.GetAsync(ad.RegionId.GetValueOrDefault());
-                    objects = new List<object> { region, system, state };
+                    objects = new List<ModelBase> { region, system, state };
                     break;
                 case nameof(Accessory):
-                    objects = new List<object> { system, state };
+                    objects = new List<ModelBase> { system, state };
                     break;
                 default:
                     return (false, "Wrong discriminator!");
@@ -582,6 +506,5 @@ namespace Games4TradeAPI.Services
             }
             return result;
         }
-
     }
 }

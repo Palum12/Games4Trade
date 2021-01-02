@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats;
-using Games4TradeAPI.Consts;
+using Games4TradeAPI.Common.Consts;
 
 namespace Games4TradeAPI.Services
 {

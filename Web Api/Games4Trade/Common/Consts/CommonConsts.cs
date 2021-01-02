@@ -1,4 +1,4 @@
-﻿namespace Games4TradeAPI.Consts
+﻿namespace Games4TradeAPI.Common.Consts
 {
     public static class CommonConsts
     {

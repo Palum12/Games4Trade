@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
+using Games4TradeAPI.Common;
 using Games4TradeAPI.Interfaces.Services;
 using Games4TradeAPI.Interfaces.Repositories;
 

@@ -1,4 +1,4 @@
-﻿namespace Games4TradeAPI.Models
+﻿namespace Games4TradeAPI.Common
 {
     public class OperationResult
     {

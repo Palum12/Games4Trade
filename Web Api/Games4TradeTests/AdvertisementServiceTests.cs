@@ -72,7 +72,7 @@ namespace Games4TradeAPITests
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            var service = new AdvertisementService(advertisementRepository.Object, null, null, stateRepository.Object, genreRepository.Object, regionRepository.Object, systemReposiotry.Object, advertisementItemRepository.Object, _fixture.Mapper);
+            var service = new AdvertisementService(advertisementRepository.Object, null, null, stateRepository.Object, genreRepository.Object, regionRepository.Object, systemReposiotry.Object, advertisementItemRepository.Object, null, _fixture.Mapper);
             var newAdd = new AdvertisementSaveDto
             {
                 GenreId = 1,
@@ -107,7 +107,7 @@ namespace Games4TradeAPITests
                     Item = new Game()
                 }}).Verifiable();
 
-            var service = new AdvertisementService(advertisementRepository.Object, null, null, null, null, null, null, null, _fixture.Mapper);
+            var service = new AdvertisementService(advertisementRepository.Object, null, null, null, null, null, null, null, null, _fixture.Mapper);
 
             // Act
             var result = await service.GetAdvetisements(new AdQueryOptions()

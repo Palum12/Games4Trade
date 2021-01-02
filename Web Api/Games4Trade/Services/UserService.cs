@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
+using Games4TradeAPI.Common;
 using Games4TradeAPI.Interfaces.Repositories;
 using Games4TradeAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +21,7 @@ namespace Games4TradeAPI.Services
         private readonly ISystemRepository systemRepository;
         private readonly IUserRepository userRepository;
         private readonly IGenreRepository genreRepository;
-        private readonly IRepository<Photo> photoRepository;
+        private readonly IPhotoRepository photoRepository;
         private const int PageSize = 5;
 
         public UserService(
@@ -29,7 +29,7 @@ namespace Games4TradeAPI.Services
             ILoginService loginService,
             ISystemRepository systemRepository,
             IGenreRepository genreRepository,
-            IRepository<Photo> photoRepository,
+            IPhotoRepository photoRepository,
             IUserRepository userRepository)
         {
             this.mapper = mapper;
@@ -308,73 +308,55 @@ namespace Games4TradeAPI.Services
         public async Task<byte[]> GetUserPhoto(int userId)
         {
             var user = await userRepository.GetAsync(userId);
+
             if (user?.PhotoId != null)
             {
                 var photo = await photoRepository.GetAsync(user.PhotoId.Value);
-                var bytes = await File.ReadAllBytesAsync(photo.Path);
-                return bytes;
+                if (photo?.Bytes is not null)
+                {
+                    return photo.Bytes;
+                }
             }
 
-            return await File.ReadAllBytesAsync(@"photos/defaultUserPhoto.png");
+            var defaultPhoto = await photoRepository.GetDefaultUserPhoto();
+
+            return defaultPhoto.Bytes;
         }
 
         public async Task<OperationResult> ChangeUserPhoto(int userId, IFormFile photo)
         {
             var user = await userRepository.GetAsync(userId);
-            if (photo == null && user.PhotoId.HasValue)
-            {
-                var oldPhoto = await photoRepository.GetAsync(user.PhotoId.Value);
-                if (oldPhoto != null)
-                {
-                    File.Delete(oldPhoto.Path);
-                }
-                photoRepository.Remove(oldPhoto);
-                user.PhotoId = null;
-                var repoRes = await userRepository.SaveChangesAsync();
-                if (repoRes > 0)
-                {
-                    return new OperationResult{IsSuccessful = true};
-                }
-                throw new DataException();
-            }
-
-            if (photo == null)
-            {
-                return new OperationResult { IsSuccessful = true };
-            }
-
-            var fileId = Guid.NewGuid().ToString("N").ToUpper();
-            var directory = @"photos/user" + userId;
-            Directory.CreateDirectory(directory);
-
-            var path = Path.Combine(directory, fileId);
-            using (var fileStream = new FileStream(path, FileMode.Create))
-            {
-                await photo.CopyToAsync(fileStream);
-            }
-            var newPhoto = new Photo {DateCreated = DateTime.Now, Path = path};
 
             if (user.PhotoId.HasValue)
             {
-                var oldPhoto = await photoRepository.GetAsync(user.PhotoId.Value);
-                if (oldPhoto != null)
+                var oldPhoto = await photoRepository.GetAsync(user.PhotoId.Value, ImageDownloadFormat.MetadataOnly);
+
+                if (oldPhoto is not null)
                 {
-                    File.Delete(oldPhoto.Path);
+                    await photoRepository.RemoveAsync(oldPhoto.Id);
                 }
-                photoRepository.Remove(oldPhoto);
+
                 user.PhotoId = null;
-                user.Photo = null;
-                var repoRes = await userRepository.SaveChangesAsync();
-                if (repoRes == 0)
+                if (photo is null)
                 {
-                    File.Delete(path);
-                    throw new DataException();
-                }
+                    var repoRes = await photoRepository.SaveChangesAsync();
+                    if (repoRes > 0)
+                    {
+                        return new OperationResult { IsSuccessful = true };
+                    }
+                } 
             }
 
-            await photoRepository.AddAsync(newPhoto);
+            var newPhoto = new Photo
+            {
+                FileName = photo.FileName,
+                ObjectName = $"{user.Id}/{photo.FileName}"
+            };
+            newPhoto = await photoRepository.AddAsync(newPhoto, photo);
             user.Photo = newPhoto;
+            user.PhotoId = newPhoto.Id;
             var repoResult = await userRepository.SaveChangesAsync();
+
             if (repoResult > 0)
             {
                 return new OperationResult
@@ -382,7 +364,7 @@ namespace Games4TradeAPI.Services
                     IsSuccessful = true
                 };
             }
-            File.Delete(path);
+
             return OtherServices.GetIncorrectDatabaseConnectionResult();
         }
 

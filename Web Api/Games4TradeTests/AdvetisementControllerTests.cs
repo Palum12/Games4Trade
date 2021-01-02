@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using Games4TradeAPI.Common;
 
 namespace Games4TradeAPITests
 {

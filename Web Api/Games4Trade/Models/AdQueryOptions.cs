@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Games4TradeAPI.Models
+﻿namespace Games4TradeAPI.Models
 {
     public class AdQueryOptions
     {
