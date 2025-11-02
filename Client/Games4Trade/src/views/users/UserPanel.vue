@@ -1,11 +1,11 @@
 <template>
     <div v-if="dataLoaded" class="row admin no-gutters ">
-        <tabs :options="{ useUrlFragment: false }">
-            <tab name="Mój profil" class="tabs-height">
+        <Tabs>
+            <TabPanel title="Mój profil" class="tabs-height">
                 <h5>W tym miejscu możesz modyfikować swój opis widoczny dla innych użytkowników, oraz swoje dane.</h5>
                 <my-profile :user-id="userId" @somethingChanged="onSomethingChanged"></my-profile>
-            </tab>
-            <tab name="Moje preferencje" class="tabs-height">
+            </TabPanel>
+            <TabPanel title="Moje preferencje" class="tabs-height">
                 <h5>W tym miejscu wybierz jakie gatunki gier oraz systemy Cię interesują.</h5>
                 <h5>Kliknij przycisk na dole aby zapisać wszelkie zmiany</h5>
                 <div class="row">
@@ -16,24 +16,25 @@
                         <my-systems :user-id="userId"></my-systems>
                     </div>
                 </div>
-            </tab>
-            <tab name="Obserwowani użytkownicy" class="tabs-height">
+            </TabPanel>
+            <TabPanel title="Obserwowani użytkownicy" class="tabs-height">
                 <h5>W tym miejscu możesz przeglądać listę obserwowanych przez siebie użytkowników.<br>
                     Ogłoszenia obserwowanych użytkowników będą się pojawiały w rekomandowanych dla Ciebie ogłoszeniach
                     na stronie głównej.</h5>
                 <observed-users :user-id="userId" class="scrollable"></observed-users>
-            </tab>
-            <tab name="Moje ogłoszenia" class="tabs-height">
+            </TabPanel>
+            <TabPanel title="Moje ogłoszenia" class="tabs-height">
                 <h5>W tym miejscu możesz przeglądać swoje ogłoszenia.</h5>
                 <my-ads :user-id="userId"></my-ads>
-            </tab>
-        </tabs>
+            </TabPanel>
+        </Tabs>
     </div>
 
 </template>
 
 <script>
-import 'vue-tabs-component/docs/resources/tabs-component.css'
+import Tabs from '../../components/ui/Tabs.vue'
+import TabPanel from '../../components/ui/TabPanel.vue'
 import ObservedUsers from '../../components/users/ObservedUsers'
 import MyProfile from '../../components/users/MyProfile'
 import MyGenres from '../../components/users/MyGenres'
@@ -44,6 +45,8 @@ import mixins from '../../mixins/mixins'
 export default {
   name: 'UserPanel',
   components: {
+    Tabs,
+    TabPanel,
     MyProfile,
     MyGenres,
     MySystems,
@@ -54,7 +57,7 @@ export default {
     return {
       dataLoaded: false,
       hasUnSavedChanges: false,
-      userId: Number
+      userId: null
     }
   },
   methods: {
@@ -96,25 +99,14 @@ export default {
 </script>
 
 <style scoped>
-    .tabs-component {
-        width: 100vw;
-        margin-top: 0;
-        margin-bottom: 0;
-        margin-left: 1vw;
-        margin-right: 1vw;
-    }
-
-    .tabs-component >>> .tabs-component-panels{
-        padding-top: 2em !important;
-        padding-bottom: 2em !important;
-    }
     .tabs-height {
-        height: 73vh !important;
+        min-height: 400px;
     }
 
     .scrollable {
         min-height: 200px;
         height: 60vh;
         max-height: 100%;
+        overflow-y: auto;
     }
 </style>

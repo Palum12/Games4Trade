@@ -63,7 +63,8 @@ export default {
         })
     },
     getPhotoUrl (userId) {
-      return process.env.VUE_APP_API_URL + `users/${userId}/photo`
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      return `${baseUrl}/users/${userId}/photo`
     },
     prepareDescription (content) {
       if (content == null) {

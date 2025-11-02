@@ -1,22 +1,22 @@
 <template>
     <div>
-        <nav class="navbar sticky-top navbar-expand-lg navbar-light " id="mainNavbar">
-            <router-link class="navbar-brand" to="/"><a>Games4Trade</a></router-link>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar sticky-top navbar-expand-lg navbar-light" id="mainNavbar">
+            <router-link class="navbar-brand" to="/">Games4Trade</router-link>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse " id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto" >
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item" v-if="isAuthenticated">
-                        <router-link to="/advertisements/add" class="nav-link"><a id="addAddvertisement">Dodaj ogłoszenie</a></router-link>
+                        <router-link to="/advertisements/add" class="nav-link" id="addAddvertisement">Dodaj ogłoszenie</router-link>
                     </li>
                     <li class="nav-item" v-if="isAuthenticated">
-                        <router-link to="/messages" class="nav-link"><a>Wiadomości</a></router-link>
+                        <router-link to="/messages" class="nav-link">Wiadomości</router-link>
                     </li>
                     <li class="nav-item">
-                            <form class="form-inline" @submit.prevent="goToSearch">
+                            <form class="d-flex ms-lg-5" @submit.prevent="goToSearch">
                                 <input
-                                        class="form-control ml-5 mr-sm-2"
+                                        class="form-control me-2"
                                         type="search"
                                         id="searchInput"
                                         placeholder="Szukaj ogłoszeń"
@@ -24,27 +24,26 @@
                                         v-model="searchText">
                                 <button
                                         id="searchButton"
-                                        class="btn btn-outline-light my-2 my-sm-0"
-                                        type="button"
-                                        @click="goToSearch">Szukaj</button>
+                                        class="btn btn-outline-light"
+                                        type="submit">Szukaj</button>
                             </form>
                     </li>
                 </ul>
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item" v-if="isAuthenticated">
-                        <router-link to="/userPanel" class="nav-link"><a>Panel użytkownika</a></router-link>
+                        <router-link to="/userPanel" class="nav-link">Panel użytkownika</router-link>
                     </li>
                     <li class="nav-item" v-if="isAdmin">
-                        <router-link to="/admin" class="nav-link"><a>Panel administratora</a></router-link>
+                        <router-link to="/admin" class="nav-link">Panel administratora</router-link>
                     </li>
                     <li class="nav-item" v-if="!isAuthenticated">
-                        <router-link to="/signup" class="nav-link"><a>Utwórz konto</a></router-link>
+                        <router-link to="/signup" class="nav-link">Utwórz konto</router-link>
                     </li>
                     <li class="nav-item" v-if="!isAuthenticated">
-                        <router-link to="/login" class="nav-link"><a>Zaloguj</a></router-link>
+                        <router-link to="/login" class="nav-link">Zaloguj</router-link>
                     </li>
-                    <li class="nav-item" v-if="isAuthenticated" @click="logout">
-                        <a class="nav-link" style="cursor: pointer">Wyloguj</a>
+                    <li class="nav-item" v-if="isAuthenticated">
+                        <button class="nav-link btn btn-link text-white p-0" type="button" @click="logout">Wyloguj</button>
                     </li>
                 </ul>
             </div>

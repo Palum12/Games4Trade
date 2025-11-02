@@ -1,5 +1,5 @@
 import axios from 'axios'
-import router from '../../router/router'
+import router from '../../router'
 import jwt from 'jwt-decode'
 
 const state = {

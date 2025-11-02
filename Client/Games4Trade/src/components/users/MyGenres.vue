@@ -15,17 +15,17 @@
                     </div>
                     <button
                             v-if="isLiked(genre)"
-                            class="btn btn-success ml-sm-1"
+                            class="btn btn-success ms-sm-1"
                             @click="dislike(genre)">Lubisz ten gatunek!</button>
                     <button
                             v-else
-                            class="btn btn-primary ml-sm-1"
+                            class="btn btn-primary ms-sm-1"
                             @click="like(genre)">Polub ten gatunek!</button>
                 </div>
             </div>
         </form>
     </div>
-        <button class="btn btn-primary btn-block" @click="saveLikedGenres">Zapisz</button>
+        <button class="btn btn-primary w-100" @click="saveLikedGenres">Zapisz</button>
     </div>
 </template>
 

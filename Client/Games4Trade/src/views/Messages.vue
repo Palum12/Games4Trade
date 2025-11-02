@@ -1,5 +1,5 @@
 <template>
-    <div class="row ml-5 no-gutters ">
+    <div class="row ms-5 no-gutters ">
         <div class="col-3">
             <div class="row">
                 <h5>Najnowsze wiadmości</h5>
@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-8 ml-5">
+        <div class="col-8 ms-5">
             <div class="row">
                 <h5>Rozmowa</h5>
             </div>
@@ -70,7 +70,7 @@ export default {
       vm.getNewestMessages()
     }, 5000)
   },
-  beforeDestroy () {
+  beforeUnmount () {
     clearInterval(this.interval)
   },
   beforeRouteEnter (to, from, next) {

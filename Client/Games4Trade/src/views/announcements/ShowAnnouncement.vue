@@ -9,7 +9,7 @@
         <div class="container-fluid" style="white-space: pre-line;">
             {{announcement.content}}
         </div>
-        <button class="btn btn-info ml-3" @click="goBack">Powrót</button>
+        <button class="btn btn-info ms-3" @click="goBack">Powrót</button>
     </div>
 </template>
 

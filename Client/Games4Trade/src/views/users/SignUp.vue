@@ -8,13 +8,13 @@
                     <input
                             type="text"
                             id="email"
-                            v-bind:class="[$v.email.$error || isEmailTaken ? invalidClass : '',
-                                !$v.email.$invalid ? validClass : '', formClass]"
+                            v-bind:class="[v$.email.$error || isEmailTaken ? invalidClass : '',
+                                !v$.email.$invalid ? validClass : '', formClass]"
                             @keydown="isEmailTaken = false"
-                            @blur="$v.email.$touch()"
+                            @blur="v$.email.$touch()"
                             v-model="email">
-                    <p v-if="!$v.email.email">Proszę podać prawidłowy adres email.</p>
-                    <p v-if="!$v.email.required">To pole nie może być puste.</p>
+                    <p v-if="!v$.email.email">Proszę podać prawidłowy adres email.</p>
+                    <p v-if="!v$.email.required">To pole nie może być puste.</p>
                     <p v-if="isEmailTaken">Ten adres email został już zajęty.</p>
                 </div>
                 <div class="form-group">
@@ -22,13 +22,13 @@
                     <input
                             type="text"
                             id="login"
-                            v-bind:class="[$v.login.$error ? invalidClass : '',
-                                !$v.login.$invalid ? validClass : '', formClass]"
-                            @blur="$v.login.$touch()"
+                            v-bind:class="[v$.login.$error ? invalidClass : '',
+                                !v$.login.$invalid ? validClass : '', formClass]"
+                            @blur="v$.login.$touch()"
                             v-model.lazy="login">
                 </div>
-                <p v-if="!$v.login.unique">Ten login jest już zajęty!.</p>
-                <p v-if="!$v.login.required">To pole nie może być puste.</p>
+                <p v-if="!v$.login.unique">Ten login jest już zajęty!.</p>
+                <p v-if="!v$.login.required">To pole nie może być puste.</p>
                 <div class="form-group">
                     <input type="checkbox" id="acceptTerms" v-model="hasAcceptedTerms">
                     <label for="acceptTerms">Czy akceptujesz <span><a @click="showTerms" href="#">regulamin</a></span> ?</label>
@@ -37,8 +37,8 @@
                 <div class="submit">
                     <button
                         type="submit"
-                        class="btn btn-info btn-block"
-                        :disabled="$v.$invalid || !hasAcceptedTerms"
+                        class="btn btn-info w-100"
+                        :disabled="v$.$invalid || !hasAcceptedTerms"
                         @click="onSubmit">Utwórz konto !</button>
                 </div>
             </form>
@@ -48,10 +48,14 @@
 </template>
 
 <script>
-import { required, email } from 'vuelidate/lib/validators'
+import { required, email } from '@vuelidate/validators'
+import useVuelidate from '@vuelidate/core'
 import axios from 'axios'
 export default {
   name: 'signup',
+  setup () {
+    return { v$: useVuelidate() }
+  },
   data () {
     return {
       login: '',
@@ -105,21 +109,23 @@ export default {
       })
     }
   },
-  validations: {
-    login: {
-      required,
-      unique: val => {
-        if (val === '') return true
-        return axios.head(`login?login=${val}`)
-          .then(() => { return false })
-          .catch(error => {
-            return error.response.status === 404
-          })
+  validations () {
+    return {
+      login: {
+        required,
+        unique: val => {
+          if (val === '') return true
+          return axios.head(`login?login=${val}`)
+            .then(() => { return false })
+            .catch(error => {
+              return error.response.status === 404
+            })
+        }
+      },
+      email: {
+        required,
+        email
       }
-    },
-    email: {
-      required,
-      email
     }
   }
 }

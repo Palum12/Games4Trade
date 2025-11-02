@@ -13,11 +13,11 @@
                     </a>
                     <button
                             v-if="isAdminLook && !announcement.isActive"
-                            class="btn btn-primary mt-1 mb-2 mr-2"
+                            class="btn btn-primary mt-1 mb-2 me-2"
                             @click="changeStatus(announcement)">Udostępnij</button>
                     <button
                             v-if="isAdminLook && announcement.isActive"
-                            class="btn btn-warning mt-1 mb-2 mr-2"
+                            class="btn btn-warning mt-1 mb-2 me-2"
                             @click="changeStatus(announcement)">Archiwizuj</button>
                     <button v-if="isAdminLook" class="btn btn-info mt-1 mb-2" @click="modify(announcement.id)">Modyfikuj</button>
                     <button v-if="isAdminLook" class="btn btn-danger mt-1 mb-2 mx-2" @click="remove(announcement.id)">X</button>

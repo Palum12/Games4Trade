@@ -13,12 +13,12 @@
                             :sort-criteria="sortCriteria"
                             @filter="search"></advertisement-sort>
                 </div>
-                <div v-if="advertisements.length > 0" class="row no-gutters scrollable-ads btn-block">
+                <div v-if="advertisements.length > 0" class="row no-gutters scrollable-ads">
                     <advertisement-list class="scrollable-ads" :advertisement-list="advertisements"></advertisement-list>
                     <button
                             :disabled="!isNextPage"
                             type="button"
-                            class="btn btn-primary btn-block"
+                            class="btn btn-primary w-100"
                             @click="getNextPage">Pobierz więcej</button>
                 </div>
                 <div v-else>

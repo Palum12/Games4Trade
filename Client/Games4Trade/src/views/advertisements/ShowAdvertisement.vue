@@ -2,21 +2,11 @@
 <div v-if="hasDataLoaded" class="no-gutters advertisement">
     <div class="row">
         <div class="col-12 col-md-7">
-            <div v-if="advertisement.photos.length > 1" class="gallery">
-                <vue-flux
-                        :options="fluxOptions"
-                        :images="images"
-                        :transitions="fluxTransitions"
-                        ref="slider">
-                    <flux-controls slot="controls"></flux-controls>
-                    <flux-pagination slot="pagination"></flux-pagination>
-                </vue-flux>
-            </div>
-            <div v-else-if="advertisement.photos.length === 1">
-                <img :src="images[0]">
+            <div v-if="advertisement.photos.length > 0" class="gallery">
+                <image-carousel :images="images"></image-carousel>
             </div>
             <div v-else>
-                <img src="../../assets/no_image_available.svg"/>
+                <img src="../../assets/no_image_available.svg" alt="Brak zdjęcia"/>
             </div>
         </div>
         <div class="col-12 col-md-5">
@@ -44,7 +34,7 @@
             </div>
             <p v-if="advertisement.dateReleased != null">Data wydania: {{advertisement.dateReleased.substring(0, 10)}}</p>
             <div v-if="!isOwner && $store.getters.isAuthenticated">
-                <button type="button" class="btn btn-primary btn-block" @click="sendMessage">Napisz do użytkownika!</button>
+        <button type="button" class="btn btn-primary w-100" @click="sendMessage">Napisz do użytkownika!</button>
             </div>
         </div>
     </div>
@@ -72,23 +62,14 @@
 <script>
 import axios from 'axios'
 import mixnis from '../../mixins/mixins'
-import { VueFlux, FluxControls, FluxPagination, Transitions } from 'vue-flux'
+import ImageCarousel from '../../components/common/ImageCarousel.vue'
 export default {
   name: 'ShowAdvertisement',
   components: {
-    VueFlux,
-    FluxControls,
-    FluxPagination
+    ImageCarousel
   },
   data () {
     return {
-      fluxOptions: {
-        autoplay: true,
-        enableGestures: true
-      },
-      fluxTransitions: {
-        transitionBook: Transitions.transitionSwipe
-      },
       userId: null,
       hasDataLoaded: false,
       isOwner: false,
@@ -97,7 +78,8 @@ export default {
   },
   computed: {
     images () {
-      return this.advertisement.photos.map(x => `http://localhost:5000/api/advertisements/${this.advertisement.id}/photos/${x.id}`)
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      return this.advertisement.photos.map(x => `${baseUrl}/advertisements/${this.advertisement.id}/photos/${x.id}`)
     }
   },
   methods: {

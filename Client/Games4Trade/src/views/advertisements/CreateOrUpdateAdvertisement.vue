@@ -9,9 +9,9 @@
                                 type="text"
                                 id="title"
                                 class="form-control"
-                                @blur="$v.advertisement.title.$touch()"
+                                @blur="v$.advertisement.title.$touch()"
                                 v-model="advertisement.title">
-                        <p v-show="!$v.advertisement.title.required">
+                        <p v-show="!v$.advertisement.title.required">
                             Proszę podać tytuł ogłoszenia
                         </p>
                     </div>
@@ -35,16 +35,16 @@
                                     min="1960-01-01"
                                     max="2030-01-01"
                                     class="form-control"
-                                    v-bind:class="[$v.advertisement.dateReleased.$error ? invalidClass : ''
+                                    v-bind:class="[v$.advertisement.dateReleased.$error ? invalidClass : ''
                                             , formClass]"
                                     id="dateReleased"
-                                    @blur="$v.advertisement.dateReleased.$touch()"
+                                    @blur="v$.advertisement.dateReleased.$touch()"
                                     v-model="advertisement.dateReleased"
                                     >
-                            <p v-show="!$v.advertisement.dateReleased.isAfter">
+                            <p v-show="!v$.advertisement.dateReleased.isAfter">
                                 Proszę podać realną datę po roku 1960
                             </p>
-                            <p v-show="!$v.advertisement.dateReleased.isBefore">
+                            <p v-show="!v$.advertisement.dateReleased.isBefore">
                                 Proszę podać realną datę do miesiąca w przyszłość
                             </p>
                         </div>
@@ -55,19 +55,19 @@
                                     <input
                                             type="text"
                                             class="form-control"
-                                            v-bind:class="[$v.advertisement.price.$error ? invalidClass : ''
+                                            v-bind:class="[v$.advertisement.price.$error ? invalidClass : ''
                                             , formClass]"
                                             id="price"
-                                            @blur="$v.advertisement.price.$touch()"
+                                            @blur="v$.advertisement.price.$touch()"
                                             v-model.number="advertisement.price">
                                 </div>
-                                <p v-show="!$v.advertisement.price.required">
+                                <p v-show="!v$.advertisement.price.required">
                                     Proszę podać wycenę
                                 </p>
-                                <p v-if="!$v.advertisement.price.decimal">
+                                <p v-if="!v$.advertisement.price.decimal">
                                     Proszę wpisać liczbę!
                                 </p>
-                                <p v-else-if="!$v.advertisement.price.minVal">
+                                <p v-else-if="!v$.advertisement.price.minVal">
                                     Cena nie może być ujemna!
                                 </p>
                             </div>
@@ -124,12 +124,12 @@
                                 <select
                                         class="form-control"
                                         id="state"
-                                        @blur="$v.advertisement.stateId.$touch()"
+                                        @blur="v$.advertisement.stateId.$touch()"
                                         v-model="advertisement.stateId">
                                     <option v-for="state in states" :key="state.id" :value="state.id">{{state.value}}</option>
                                 </select>
                             </div>
-                            <p v-show="!$v.advertisement.stateId.required">
+                            <p v-show="!v$.advertisement.stateId.required">
                                 Proszę wskazać stan przedmiotu ogłoszenia
                             </p>
                         </div>
@@ -139,7 +139,7 @@
                                 <select
                                         class="form-control"
                                         id="system"
-                                        @blur="$v.advertisement.systemId.$touch()"
+                                        @blur="v$.advertisement.systemId.$touch()"
                                         v-model="advertisement.systemId">
                                     <option
                                             v-for="system in systems"
@@ -147,7 +147,7 @@
                                             :value="system.id">{{system.manufacturer + ' ' + system.model}}</option>
                                 </select>
                             </div>
-                            <p v-show="!$v.advertisement.systemId.required">
+                            <p v-show="!v$.advertisement.systemId.required">
                                 Proszę wybrać system
                             </p>
                         </div>
@@ -194,10 +194,10 @@
                                 id="description"
                                 class="form-control"
                                 rows="3"
-                                @blur="$v.advertisement.description.$touch()"
+                                @blur="v$.advertisement.description.$touch()"
                                 v-model="advertisement.description">
                         </textarea>
-                        <p v-show="!$v.advertisement.description.required">
+                        <p v-show="!v$.advertisement.description.required">
                             Opis nie może być pusty
                         </p>
                     </div>
@@ -254,12 +254,16 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 import mixins from '../../mixins/mixins'
 import axios from 'axios'
-import { required, minValue, decimal } from 'vuelidate/lib/validators'
+import useVuelidate from '@vuelidate/core'
+import { required, minValue, decimal } from '@vuelidate/validators'
 export default {
   name: 'AddAdvertisement',
+  setup () {
+    return { v$: useVuelidate() }
+  },
   data () {
     return {
       hasDataLoaded: false,
@@ -566,7 +570,7 @@ export default {
         this.isAccessoryModel &&
         this.isGenreSelected &&
         this.isRegionSelected &&
-              !this.$v.$invalid
+              !this.v$.$invalid
     },
     monthFromNow () {
       let now = new Date()
@@ -579,34 +583,36 @@ export default {
       return current
     }
   },
-  validations: {
-    advertisement: {
-      dateReleased: {
-        isAfter (date) {
-          return date == null || date === '' ||
-          new Date(date) > new Date('1960-01-01T00:00:00Z')
+  validations () {
+    return {
+      advertisement: {
+        dateReleased: {
+          isAfter (date) {
+            return date == null || date === '' ||
+            new Date(date) > new Date('1960-01-01T00:00:00Z')
+          },
+          isBefore: (date) => {
+            return date == null || date === '' ||
+              new Date(date) < (this.monthFromNow)
+          }
         },
-        isBefore (date) {
-          return date == null || date === '' ||
-            new Date(date) < (this.monthFromNow)
+        title: {
+          required
+        },
+        description: {
+          required
+        },
+        price: {
+          required,
+          decimal,
+          minVal: minValue(0)
+        },
+        stateId: {
+          required
+        },
+        systemId: {
+          required
         }
-      },
-      title: {
-        required
-      },
-      description: {
-        required
-      },
-      price: {
-        required,
-        decimal,
-        minVal: minValue(0)
-      },
-      stateId: {
-        required
-      },
-      systemId: {
-        required
       }
     }
   },

@@ -32,14 +32,14 @@
                             <button class="btn btn-warning"
                                     :disabled="system.manufacturer === '' || system.model === ''"
                                     @click="modify(system)">Modyfikuj</button>
-                            <button class="btn btn-danger ml-1"
+                            <button class="btn btn-danger ms-1"
                                     @click="remove(system.id)">X</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-        <button class="btn btn-info btn-block" :disabled="!canAdd" @click="addPlace">Dodaj nowy system</button>
+        <button class="btn btn-info w-100" :disabled="!canAdd" @click="addPlace">Dodaj nowy system</button>
     </div>
 </template>
 

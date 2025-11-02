@@ -9,11 +9,11 @@
                         ref="fileInput"
                         accept="image/x-png, image/gif, image/jpeg"
                         @change="changePhoto">
-                <img :src="`http://localhost:5000/api/users/${userId}/photo`">
+                <img :src="photoUrl" alt="Zdjęcie profilowe użytkownika">
             </div>
             <div class="mt-4 pr-1">
-                <button class="btn btn-primary btn-block" @click="$refs.fileInput.click()">Zmień</button>
-                <button class="btn btn-danger btn-block" @click="deletePhoto">Usuń</button>
+                <button class="btn btn-primary w-100" @click="$refs.fileInput.click()">Zmień</button>
+                <button class="btn btn-danger w-100 mt-2 mt-md-3" @click="deletePhoto">Usuń</button>
             </div>
             <div class="mt-3 pr-1 d-flex align-items-end">
                 <form class="w-100">
@@ -26,13 +26,13 @@
                                         class="form-control"
                                         id="email"
                                         :disabled="!isEditingEmail"
-                                        @blur="$v.user.email.$touch()"
+                                        @blur="v$.user.email.$touch()"
                                         v-model="user.email">
-                                <p v-if="!$v.user.email.email">Nieprawidłowy adres email!</p>
-                                <p v-if="!$v.user.email.required">To pole nie może być puste.</p>
+                                <p v-if="!v$.user.email.email">Nieprawidłowy adres email!</p>
+                                <p v-if="!v$.user.email.required">To pole nie może być puste.</p>
                                 <button
                                         v-if="!isEditingEmail"
-                                        class="btn btn-primary btn-block mt-1"
+                                        class="btn btn-primary w-100 mt-1"
                                         type="button"
                                         @click="onEditingEmail">Zmień adres email
                                 </button>
@@ -44,8 +44,8 @@
                                 </button>
                                 <button
                                         v-if="isEditingEmail"
-                                        class="btn btn-warning mt-1 ml-3"
-                                        :disabled="$v.$invalid"
+                                        class="btn btn-warning mt-1 ms-0 ms-md-3"
+                                        :disabled="v$.$invalid"
                                         type="button"
                                         @click="saveChanges('email')">Zapisz zmiany
                                 </button>
@@ -61,17 +61,17 @@
                                         id="phoneNumber"
                                         class="form-control"
                                         :disabled="!isEditingPhone"
-                                        @blur="$v.user.phoneNumber.$touch()"
+                                        @blur="v$.user.phoneNumber.$touch()"
                                         v-model="user.phoneNumber">
-                                <p v-show="!$v.user.phoneNumber.minLen">
-                                    Nie mniej niż {{ $v.user.phoneNumber.$params.minLen.min }} znaków!
+                                <p v-show="!v$.user.phoneNumber.minLen">
+                                    Nie mniej niż {{ v$.user.phoneNumber.$params.minLen.min }} znaków!
                                 </p>
-                                <p v-if="!$v.user.phoneNumber.maxLen">
-                                    Nie więcej niż {{ $v.user.phoneNumber.$params.maxLen.max }} znaków!
+                                <p v-if="!v$.user.phoneNumber.maxLen">
+                                    Nie więcej niż {{ v$.user.phoneNumber.$params.maxLen.max }} znaków!
                                 </p>
                                 <button
                                         v-if="!isEditingPhone"
-                                        class="btn btn-primary btn-block mt-1"
+                                        class="btn btn-primary w-100 mt-1"
                                         type="button"
                                         @click="onEditingPhone">Zmień numer telefonu
                                 </button>
@@ -83,8 +83,8 @@
                                 </button>
                                 <button
                                         v-if="isEditingPhone"
-                                        class="btn btn-warning mt-1 ml-3"
-                                        :disabled="$v.$invalid"
+                                        class="btn btn-warning mt-1 ms-0 ms-md-3"
+                                        :disabled="v$.$invalid"
                                         type="button"
                                         @click="saveChanges('phone')">Zapisz zmiany
                                 </button>
@@ -94,7 +94,7 @@
                 </form>
             </div>
         </div>
-        <div class="col-8 ml-3">
+        <div class="col-8 ms-3">
             <div class="row mt-1 pl-3">
                 <p class="font-weight-bold">Twój opis: </p>
                 <textarea
@@ -112,7 +112,7 @@
                         @click="onEditingDescription">Edytuj opis
                 </button>
                 <button v-if="isEditingDescription"
-                        class="btn btn-warning mr-2"
+                        class="btn btn-warning me-2"
                         @click="saveChanges('description')">Zapisz opis
                 </button>
                 <button
@@ -128,11 +128,15 @@
 <script>
 import mixins from '../../mixins/mixins'
 import axios from 'axios'
-import { required, email, maxLength, minLength } from 'vuelidate/lib/validators'
+import useVuelidate from '@vuelidate/core'
+import { required, email, maxLength, minLength } from '@vuelidate/validators'
 export default {
   name: 'MyProfile',
   props: {
     userId: Number
+  },
+  setup () {
+    return { v$: useVuelidate() }
   },
   data () {
     return {
@@ -150,6 +154,10 @@ export default {
   computed: {
     isUserEditing () {
       return this.isEditingPhone || this.isEditingEmail || this.isEditingDescription
+    },
+    photoUrl () {
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      return `${baseUrl}/users/${this.userId}/photo`
     }
   },
   methods: {
@@ -294,15 +302,17 @@ export default {
         })
     }
   },
-  validations: {
-    user: {
-      email: {
-        required,
-        email
-      },
-      phoneNumber: {
-        minLen: minLength(7),
-        maxLen: maxLength(11)
+  validations () {
+    return {
+      user: {
+        email: {
+          required,
+          email
+        },
+        phoneNumber: {
+          minLen: minLength(7),
+          maxLen: maxLength(11)
+        }
       }
     }
   },

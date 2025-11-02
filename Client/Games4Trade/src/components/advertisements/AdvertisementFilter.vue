@@ -54,8 +54,8 @@
             </div >
             <div class="w-100 py-3">
                 <div class="filter-buttons">
-                    <button class="btn btn-warning btn-block" @click="cleanFilters">Wyczyść filtry</button>
-                    <button class="btn btn-primary btn-block mb-2" @click="applyFilters">Filtruj</button>
+                    <button class="btn btn-warning w-100" @click="cleanFilters">Wyczyść filtry</button>
+                    <button class="btn btn-primary w-100 mb-2" @click="applyFilters">Filtruj</button>
                 </div>
             </div>
         </div>

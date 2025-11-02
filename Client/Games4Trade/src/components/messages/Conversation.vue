@@ -118,7 +118,7 @@ export default {
     document.getElementById('inner').addEventListener('scroll', this.scrollEnded)
     this.addInterval()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     clearInterval(this.interval)
   }
 }
