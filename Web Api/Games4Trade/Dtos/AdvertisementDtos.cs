@@ -43,15 +43,15 @@ namespace Games4TradeAPI.Dtos
 
     public class AdvertisementGameDto : AdvertisementBasicDto
     {       
-        public string Developer { get; set; }
+        public string? Developer { get; set; }
         public GenreDto Genre { get; set; }
         public RegionDto Region { get; set; }
     }
 
     public class AdvertisementAccessoryDto : AdvertisementBasicDto
     {
-        public string AccessoryManufacturer { get; set; }
-        public string AccessoryModel { get; set; }
+        public string? AccessoryManufacturer { get; set; }
+        public string? AccessoryModel { get; set; }
     }
 
     public class AdvertisementConsoleDto : AdvertisementBasicDto
@@ -74,10 +74,10 @@ namespace Games4TradeAPI.Dtos
         // game & console
         public int? RegionId { get; set; }
         //game part       
-        public string Developer { get; set; }
+        public string? Developer { get; set; }
         public int? GenreId { get; set; }
         //accessory part
-        public string AccessoryManufacturer { get; set; }
-        public string AccessoryModel { get; set; }
+        public string? AccessoryManufacturer { get; set; }
+        public string? AccessoryModel { get; set; }
     }
 }

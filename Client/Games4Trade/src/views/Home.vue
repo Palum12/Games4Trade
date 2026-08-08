@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import HomePageAdvertisements from '../components/advertisements/HomePageAdvertisements'
-import AnnouncementsList from '../components/announcements/AnnouncementsList'
+import HomePageAdvertisements from '../components/advertisements/HomePageAdvertisements.vue'
+import AnnouncementsList from '../components/announcements/AnnouncementsList.vue'
 export default {
   name: 'home',
   components: {

@@ -29,6 +29,7 @@ namespace Games4TradeAPITests
                 {
                     AdvertisementId = 1,
                     Description = "Hey",
+                    Developer = "Test developer",
                     GameRegionId = 1,
                     GenreId = 1,
                     SystemId = 1,
@@ -49,6 +50,7 @@ namespace Games4TradeAPITests
                     AdvertisementId = 2,
                     GameRegionId = 1,
                     Description = "Not active",
+                    Developer = "Test developer",
                     GenreId = 2,
                     SystemId = 2,
                     Id = 2
@@ -184,6 +186,7 @@ namespace Games4TradeAPITests
                     Id = 6,
                     AdvertisementId = 6,
                     Description = "Hey",
+                    Developer = "Test developer",
                     GameRegionId = 1,
                     GenreId = 1,
                 }

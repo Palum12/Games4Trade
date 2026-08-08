@@ -9,7 +9,7 @@
 
 <script>
 import axios from 'axios'
-import AdvertisementList from '../advertisements/AdvertisementList'
+import AdvertisementList from '../advertisements/AdvertisementList.vue'
 export default {
   name: 'MyAdvertisements',
   props: {

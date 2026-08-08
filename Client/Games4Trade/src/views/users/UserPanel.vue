@@ -35,11 +35,11 @@
 <script>
 import Tabs from '../../components/ui/Tabs.vue'
 import TabPanel from '../../components/ui/TabPanel.vue'
-import ObservedUsers from '../../components/users/ObservedUsers'
-import MyProfile from '../../components/users/MyProfile'
-import MyGenres from '../../components/users/MyGenres'
-import MySystems from '../../components/users/MySystems'
-import MyAds from '../../components/users/MyAdvertisements'
+import ObservedUsers from '../../components/users/ObservedUsers.vue'
+import MyProfile from '../../components/users/MyProfile.vue'
+import MyGenres from '../../components/users/MyGenres.vue'
+import MySystems from '../../components/users/MySystems.vue'
+import MyAds from '../../components/users/MyAdvertisements.vue'
 import mixins from '../../mixins/mixins'
 
 export default {

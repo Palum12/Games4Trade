@@ -43,12 +43,17 @@ namespace Games4TradeAPI
                 });
 
             CreateMap<AdvertisementSaveDto, Advertisement>()
-                .ForMember(a => a.DateCreated, opt => opt.MapFrom(a => DateTime.Now))
+                .ForMember(a => a.DateCreated, opt => opt.MapFrom(a => DateTime.UtcNow))
                 .ForMember(a => a.ExchangeActive, opt => opt.MapFrom(a => true))
                 .ForMember(a => a.UserId, opt => opt.Ignore());
-            CreateMap<AdvertisementSaveDto, Game>().ForMember(g => g.GameRegionId, opt => opt.MapFrom(a => a.RegionId));
-            CreateMap<AdvertisementSaveDto, Console>().ForMember(c => c.ConsoleRegionId, opt => opt.MapFrom(a => a.RegionId));
-            CreateMap<AdvertisementSaveDto, Accessory>();
+            CreateMap<AdvertisementSaveDto, Game>()
+                .ForMember(g => g.GameRegionId, opt => opt.MapFrom(a => a.RegionId))
+                .ForMember(g => g.DateReleased, opt => opt.MapFrom(a => ToUtc(a.DateReleased)));
+            CreateMap<AdvertisementSaveDto, Console>()
+                .ForMember(c => c.ConsoleRegionId, opt => opt.MapFrom(a => a.RegionId))
+                .ForMember(c => c.DateReleased, opt => opt.MapFrom(a => ToUtc(a.DateReleased)));
+            CreateMap<AdvertisementSaveDto, Accessory>()
+                .ForMember(a => a.DateReleased, opt => opt.MapFrom(a => ToUtc(a.DateReleased)));
 
             CreateMap<Advertisement, AdvertisementGameDto>();
             CreateMap<Game, AdvertisementGameDto>()
@@ -64,6 +69,13 @@ namespace Games4TradeAPI
             CreateMap<Console, AdvertisementConsoleDto>()
                 .ForMember(a => a.Photos, opt => opt.Ignore())
                 .ForMember(a => a.Id, opt => opt.Ignore());
+        }
+
+        private static DateTime? ToUtc(DateTime? value)
+        {
+            return value.HasValue
+                ? DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+                : null;
         }
     }
 }

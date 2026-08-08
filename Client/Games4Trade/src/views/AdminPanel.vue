@@ -23,9 +23,9 @@
 <script>
 import Tabs from '../components/ui/Tabs.vue'
 import TabPanel from '../components/ui/TabPanel.vue'
-import genres from '../components/admin/Genres'
-import systems from '../components/admin/Systems'
-import announcementsList from '../components/announcements/AnnouncementsList'
+import genres from '../components/admin/Genres.vue'
+import systems from '../components/admin/Systems.vue'
+import announcementsList from '../components/announcements/AnnouncementsList.vue'
 export default {
   name: 'AdminPanel',
   components: {

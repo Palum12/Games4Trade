@@ -1,10 +1,10 @@
-version: "3.8"
 services:
   db:
     ports:
       - "5432:5432"
     environment: 
       POSTGRES_DB: Games4Trade
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
   api:
     build:

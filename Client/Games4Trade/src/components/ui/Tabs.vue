@@ -18,8 +18,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { provide, reactive, ref, watchEffect } from 'vue'
+<script lang="ts">
 import type { InjectionKey, Ref } from 'vue'
 
 type TabInfo = {
@@ -36,6 +35,10 @@ export interface TabsContext {
 }
 
 export const tabsInjectionKey: InjectionKey<TabsContext> = Symbol('TabsContext')
+</script>
+
+<script setup lang="ts">
+import { provide, reactive, ref, watchEffect } from 'vue'
 
 const props = defineProps<{ defaultIndex?: number }>()
 

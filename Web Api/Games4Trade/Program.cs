@@ -34,7 +34,7 @@ var connectionString = builder.Configuration.GetConnectionString("ApplicationCon
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseNpgsql(connectionString));
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(configuration => configuration.AddProfile<MappingProfile>());
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -137,22 +137,45 @@ static void ConfigureJwtBearer(JwtBearerOptions options)
 
 static async Task ApplyMigrationsAndSeedAsync(IServiceProvider services, bool isDevelopment)
 {
+    const string developmentAdminLogin = "admin";
+    const string developmentAdminEmail = "admin@games4trade.pl";
+    const string developmentAdminPassword = "Admin123!";
+    const string legacyDevelopmentAdminSalt = "fd97ee1734377936bf51ac4ada3d1763";
+
     using var scope = services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+    var loginService = scope.ServiceProvider.GetRequiredService<ILoginService>();
 
     await context.Database.MigrateAsync();
 
-    if (isDevelopment && !await context.Users.AnyAsync(u => u.Role == "Admin"))
+    if (isDevelopment && !await context.Users.AnyAsync(u => u.Login == developmentAdminLogin))
     {
-        context.Users.Add(new User
+        var seededAdmin = new User
         {
             Login = "admin",
             Email = "admin@games4trade.pl",
             Role = "Admin",
             Salt = "fd97ee1734377936bf51ac4ada3d1763",
             Password = "tCw/FKbLk78uwFEh120FVO7+lBd/p5ExJIeEpXgDiW0oI5dGgX1Mt+52Yd7wa/FGG7D0Awz+IXm1Hhibahb1DXT4SHlmwuLm1MOY5fvqoebnh1hVCZEZieK62Fk+6MLrJGn+3tdW90af8AuAZVTFRuQxft7XHBGA3Qop/qfsyNRrE064gQ17e2CSW2HYOzN/zHPFnwrj6JmdPgDtZiPxZyE7tLCYJ0nyPM6HLD01xd1rdS4rHqcn5EL5yEhsiYsIMR9g+6+XLR/IwpqmXW1beNf6t6m1wv8C6RltsB5j5rsfgcCapGLbW0TGmuyR0pC/HOdJ6o/1GQp2RRVS7GLyVA=="
-        });
+        };
+
+        seededAdmin.Login = developmentAdminLogin;
+        seededAdmin.Email = developmentAdminEmail;
+        seededAdmin.Salt = loginService.GetSalt();
+        seededAdmin.Password = loginService.ComputeHash(seededAdmin.Salt, developmentAdminPassword);
+        context.Users.Add(seededAdmin);
 
         await context.SaveChangesAsync();
+    }
+
+    if (isDevelopment)
+    {
+        var legacyAdmin = await context.Users.SingleOrDefaultAsync(u => u.Login == developmentAdminLogin);
+        if (legacyAdmin?.Email == developmentAdminEmail && legacyAdmin.Salt == legacyDevelopmentAdminSalt)
+        {
+            legacyAdmin.Salt = loginService.GetSalt();
+            legacyAdmin.Password = loginService.ComputeHash(legacyAdmin.Salt, developmentAdminPassword);
+            await context.SaveChangesAsync();
+        }
     }
 }

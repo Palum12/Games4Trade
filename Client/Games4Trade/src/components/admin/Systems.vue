@@ -77,9 +77,9 @@ export default {
     },
     save (system) {
       let vm = this
-      this.$store.dispatch('setSpinnerLoading')
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.post('systems', {manufacturer: system.manufacturer, model: system.model})
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -106,9 +106,9 @@ export default {
         mixins.methods.customErrorPopUp(vm, 'Proszę zmień coś zanim spróbujesz zapisać zmiany !')
         return
       }
-      this.$store.dispatch('setSpinnerLoading')
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.put(`systems/${system.id}`, {manufacturer: system.manufacturer, model: system.model})
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -132,10 +132,10 @@ export default {
         })
     },
     remove (systemId) {
-      this.$store.dispatch('setSpinnerLoading')
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.delete(`systems/${systemId}`)
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')

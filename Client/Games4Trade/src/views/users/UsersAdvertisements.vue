@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import AdvertisementList from '../../components/advertisements/AdvertisementList'
+import AdvertisementList from '../../components/advertisements/AdvertisementList.vue'
 import axios from 'axios'
 export default {
   name: 'UsersAdvertisements',

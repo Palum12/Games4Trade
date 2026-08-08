@@ -87,7 +87,7 @@ export default {
     getAnnouncements () {
       let vm = this
       this.$store.dispatch('setSpinnerLoading')
-      axios.get('/announcements/page/1')
+      axios.get('announcements/page/1')
         .then(response => {
           vm.$store.dispatch('unsetSpinnerLoading')
           vm.announcements = response.data

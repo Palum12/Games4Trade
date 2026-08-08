@@ -29,9 +29,9 @@
 </template>
 
 <script>
-import AdvertisementList from '../../components/advertisements/AdvertisementList'
-import AdvertisementFilter from '../../components/advertisements/AdvertisementFilter'
-import AdvertisementSort from '../../components/advertisements/AdvertisementSort'
+import AdvertisementList from '../../components/advertisements/AdvertisementList.vue'
+import AdvertisementFilter from '../../components/advertisements/AdvertisementFilter.vue'
+import AdvertisementSort from '../../components/advertisements/AdvertisementSort.vue'
 import axios from 'axios'
 export default {
   name: 'SearchAdvertisements',

@@ -17,7 +17,7 @@
 
 <script>
 import axios from 'axios'
-import AdvertisementList from './AdvertisementList'
+import AdvertisementList from './AdvertisementList.vue'
 export default {
   name: 'HomePageAdvertisements',
   components: {

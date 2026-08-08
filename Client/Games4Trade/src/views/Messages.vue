@@ -26,7 +26,7 @@
 
 <script>
 import axios from 'axios'
-import Miniature from '../components/messages/Miniature'
+import Miniature from '../components/messages/Miniature.vue'
 export default {
   name: 'Messages',
   components: {

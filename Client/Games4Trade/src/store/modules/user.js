@@ -1,6 +1,6 @@
 import axios from 'axios'
 import router from '../../router'
-import jwt from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 
 const state = {
   userLoggedIn: false,
@@ -30,6 +30,9 @@ const getters = {
     return state.userData.token
   },
   getTokenWithoutHeader (state) {
+    if (!state.userData.token) {
+      return null
+    }
     return state.userData.token.split(' ').slice(1)[0]
   }
 }
@@ -73,7 +76,7 @@ const actions = {
       login: authData.login,
       password: authData.password
     }).then(response => {
-      let decodedToken = jwt(response.data)
+      let decodedToken = jwtDecode(response.data)
       decodedToken['token'] = `Bearer ${response.data}`
       commit('authUser', decodedToken)
       localStorage.setItem('token', response.data)
@@ -94,7 +97,7 @@ const actions = {
     if (dateNow.getTime() / 1000 >= expirationDate) {
       return
     }
-    let decodedToken = jwt(token)
+    let decodedToken = jwtDecode(token)
     decodedToken['token'] = `Bearer ${token}`
     commit('authUser', decodedToken)
   },

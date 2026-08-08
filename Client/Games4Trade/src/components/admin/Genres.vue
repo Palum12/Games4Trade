@@ -66,9 +66,9 @@ export default {
     },
     save (genre) {
       let vm = this
-      this.$store.dispatch('setSpinnerLoading')
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.post('genres', {value: genre.value})
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -94,9 +94,9 @@ export default {
         mixins.methods.customErrorPopUp(vm, 'Proszę zmień coś zanim spróbujesz zapisać zmiany !')
         return
       }
-      this.$store.dispatch('setSpinnerLoading')
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.put(`genres/${genre.id}`, {value: genre.value})
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -118,10 +118,10 @@ export default {
         })
     },
     remove (genreId) {
-      this.$store.dispatch('setSpinnerLoading')
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.delete(`genres/${genreId}`)
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')

@@ -18,7 +18,7 @@ const mutations = {
 
 const actions = {
   getRegions ({commit}) {
-    return axios.get('/regions')
+    return axios.get('regions')
       .then(response => {
         commit('setRegions', response.data)
         return Promise.resolve()

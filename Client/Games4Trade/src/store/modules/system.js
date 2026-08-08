@@ -18,7 +18,7 @@ const mutations = {
 
 const actions = {
   getSystems ({commit}) {
-    return axios.get('/systems')
+    return axios.get('systems')
       .then(response => {
         commit('setSystems', response.data)
         return Promise.resolve()

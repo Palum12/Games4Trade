@@ -352,7 +352,7 @@ namespace Games4TradeAPI.Services
             {
                 await photo.CopyToAsync(fileStream);
             }
-            var newPhoto = new Photo {DateCreated = DateTime.Now, Path = path};
+            var newPhoto = new Photo {DateCreated = DateTime.UtcNow, Path = path};
 
             if (user.PhotoId.HasValue)
             {
