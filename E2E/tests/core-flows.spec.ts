@@ -28,6 +28,7 @@ test('administrator can sign in and add a genre and system', async ({ page }) =>
   await page.getByRole('button', { name: 'Zaloguj' }).click()
 
   await expect(page.getByRole('link', { name: 'Panel administratora' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Wyloguj' })).toHaveCSS('padding-top', '8px')
   await page.getByRole('link', { name: 'Panel administratora' }).click()
 
   await page.getByRole('button', { name: 'Dodaj nowy gatunek' }).click()
@@ -69,6 +70,15 @@ test('visitor can create an account, sign in and add an advertisement', async ({
   await expect(page.getByRole('link', { name: 'Dodaj ogłoszenie' })).toBeVisible()
 
   await page.getByRole('link', { name: 'Dodaj ogłoszenie' }).click()
+  const addButton = page.getByRole('button', { name: 'Dodaj ogłoszenie!' })
+  await addButton.click()
+  await expect(page.locator('#title')).toHaveClass(/is-invalid/)
+  await expect(page.locator('#dateReleased')).toHaveClass(/is-invalid/)
+  await expect(page.locator('#state')).toHaveClass(/is-invalid/)
+  await expect(page.locator('#genre')).toHaveClass(/is-invalid/)
+  await expect(page.getByText('Proszę podać tytuł ogłoszenia')).toBeVisible()
+  await expect(page.getByText('Proszę wybrać gatunek')).toBeVisible()
+
   await page.locator('#title').fill(advertisementTitle)
   await page.locator('#dateReleased').fill('2020-01-01')
   await page.locator('#price').fill('199.99')
@@ -79,8 +89,10 @@ test('visitor can create an account, sign in and add an advertisement', async ({
   await page.locator('#genre').selectOption({ label: genreName })
   await page.locator('#description').fill('Ogłoszenie utworzone automatycznie przez test E2E.')
   await page.locator('input[type="file"]').setInputFiles('../Client/Games4Trade/src/assets/logo.png')
+  const photoPreview = page.getByTestId('photo-preview')
+  await expect(photoPreview).toBeVisible()
+  await expect.poll(() => photoPreview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
 
-  const addButton = page.getByRole('button', { name: 'Dodaj ogłoszenie!' })
   await expect(addButton).toBeEnabled()
   await addButton.click()
   await confirmDialog(page)
@@ -88,6 +100,7 @@ test('visitor can create an account, sign in and add an advertisement', async ({
   await expect(page.locator('.swal2-popup')).toBeVisible()
   await confirmDialog(page)
   await expect(page.getByText(advertisementTitle)).toBeVisible()
+  const advertisementUrl = page.url()
 
   const uploadedImage = page.locator('.gallery img')
   await expect(uploadedImage).toBeVisible()
@@ -97,4 +110,10 @@ test('visitor can create an account, sign in and add an advertisement', async ({
   await expect(page).toHaveURL(/\/$/)
   await expect(page.locator('h1')).toContainText('Games4Trade')
   await expect(page.getByText(advertisementTitle)).toBeVisible()
+
+  await page.goto(advertisementUrl)
+  await page.getByRole('button', { name: 'Modyfikuj' }).click()
+  const savedPhotoPreview = page.getByTestId('photo-preview')
+  await expect(savedPhotoPreview).toBeVisible()
+  await expect.poll(() => savedPhotoPreview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
 })

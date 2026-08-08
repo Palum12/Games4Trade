@@ -1,7 +1,7 @@
 <template>
-<div v-if="hasDataLoaded" class="no-gutters advertisement">
-    <div class="row">
-        <div class="col-12 col-md-7">
+<div v-if="hasDataLoaded" class="advertisement container-xl py-3">
+    <div class="row g-4 align-items-start">
+        <div class="col-12 col-lg-6">
             <div v-if="advertisement.photos.length > 0" class="gallery">
                 <image-carousel :images="images"></image-carousel>
             </div>
@@ -9,7 +9,7 @@
                 <img src="../../assets/no_image_available.svg" alt="Brak zdjęcia"/>
             </div>
         </div>
-        <div class="col-12 col-md-5">
+        <div class="col-12 col-lg-6">
             <p>Dodane przez: <router-link :to="`/users/${advertisement.user.id}`"
                                           exact
                                           tag="a">{{advertisement.user.login}}</router-link></p>
@@ -38,14 +38,14 @@
             </div>
         </div>
     </div>
-    <div class="row m-1">
+    <div class="mt-4">
         <h2>{{advertisement.title}}</h2>
     </div>
-    <div class="row mt-1 container-fluid" style="white-space: pre-line;">
+    <div class="mt-3 description" style="white-space: pre-line;">
         {{advertisement.description}}
     </div>
-    <div class="row m-1 d-flex justify-content-between">
-        <button class="btn btn-info" type="button" @click="$router.go(-1)">Powrót</button>
+    <div class="d-flex flex-wrap gap-2 mt-4">
+        <button class="btn btn-outline-secondary" type="button" @click="$router.go(-1)">Powrót</button>
         <button v-if="isOwner"
                 type="button"
                 @click="$router.push(`/advertisements/${advertisement.id}/edit`)"
@@ -164,26 +164,22 @@ export default {
 
 <style scoped>
     img {
-        min-height: 200px;
-        height: 45vh;
-        max-height: 90%;
-        width: 60vh;
-        object-fit: contain ;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        max-height: 420px;
+        object-fit: contain;
+        background-color: white;
+        border-radius: 0.5rem;
     }
     .gallery{
-        min-height: 300px;
-        height: 45vh;
-        max-height: 90%;
-        min-width: 400px;
-        width: 60vh;
-        max-width: 90%;
-        overflow: hidden;
-        overflow-y: auto;
+        width: 100%;
+        min-height: 240px;
     }
     .advertisement {
-        margin: 0 2vw;
-        padding-bottom: 2vh;
-        width: 90vw;
-        text-justify: newspaper;
+        padding-bottom: 2rem;
+    }
+    .description {
+        max-width: 75ch;
     }
 </style>

@@ -1,21 +1,25 @@
 <template>
-    <div v-if="hasDataLoaded" class="row no-gutters p-2">
-        <div class="form rounded col-12 p-3">
-            <form @submit.prevent="onSubmit">
-                <div class="col-12">
+    <div v-if="hasDataLoaded" class="container-xl py-3">
+        <div class="form rounded-3 shadow-sm p-4">
+            <form novalidate @submit.prevent="saveAdd">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <p class="form-text mb-0">Pola oznaczone <span class="text-danger">*</span> są wymagane.</p>
+                    </div>
                     <div class="form-group">
-                        <label for="title">Tytuł</label>
+                        <label for="title">Tytuł <span class="text-danger">*</span></label>
                         <input
                                 type="text"
                                 id="title"
                                 class="form-control"
+                                :class="{ 'is-invalid': v$.advertisement.title.$error }"
                                 @blur="v$.advertisement.title.$touch()"
                                 v-model="advertisement.title">
-                        <p v-show="!v$.advertisement.title.required">
+                        <div v-if="v$.advertisement.title.$error" class="invalid-feedback">
                             Proszę podać tytuł ogłoszenia
-                        </p>
+                        </div>
                     </div>
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-12 col-md-3">
                             <p>Wybierz typ ogłoszenia: </p>
                             <div class="form-group noBottomMargin">
@@ -29,47 +33,36 @@
                                     <label><input type="radio" value="Accessory" v-model="advertisement.discriminator">Akcesorium</label>
                                 </div>
                             </div>
-                            <label for="dateReleased">Data wydania przedmiotu</label>
+                            <label for="dateReleased">Data wydania przedmiotu <span class="text-danger">*</span></label>
                             <input
                                     type="date"
                                     min="1960-01-01"
                                     max="2030-01-01"
                                     class="form-control"
-                                    v-bind:class="[v$.advertisement.dateReleased.$error ? invalidClass : ''
-                                            , formClass]"
+                                    :class="{ 'is-invalid': v$.advertisement.dateReleased.$error }"
                                     id="dateReleased"
                                     @blur="v$.advertisement.dateReleased.$touch()"
                                     v-model="advertisement.dateReleased"
                                     >
-                            <p v-show="!v$.advertisement.dateReleased.isAfter">
-                                Proszę podać realną datę po roku 1960
-                            </p>
-                            <p v-show="!v$.advertisement.dateReleased.isBefore">
-                                Proszę podać realną datę do miesiąca w przyszłość
-                            </p>
+                            <div v-if="v$.advertisement.dateReleased.$error" class="invalid-feedback">
+                                Proszę podać poprawną datę wydania po 1960 roku.
+                            </div>
                         </div>
                         <div class="col-12 col-md-9">
                             <div class="form-group">
                                 <div class="input">
-                                    <label for="price">Twoj wycena</label>
+                                    <label for="price">Twoja wycena <span class="text-danger">*</span></label>
                                     <input
                                             type="text"
                                             class="form-control"
-                                            v-bind:class="[v$.advertisement.price.$error ? invalidClass : ''
-                                            , formClass]"
+                                            :class="{ 'is-invalid': v$.advertisement.price.$error }"
                                             id="price"
                                             @blur="v$.advertisement.price.$touch()"
                                             v-model.number="advertisement.price">
                                 </div>
-                                <p v-show="!v$.advertisement.price.required">
-                                    Proszę podać wycenę
-                                </p>
-                                <p v-if="!v$.advertisement.price.decimal">
-                                    Proszę wpisać liczbę!
-                                </p>
-                                <p v-else-if="!v$.advertisement.price.minVal">
-                                    Cena nie może być ujemna!
-                                </p>
+                                <div v-if="v$.advertisement.price.$error" class="invalid-feedback">
+                                    Proszę podać dodatnią wycenę liczbową.
+                                </div>
                             </div>
                             <div class="form-group noBottomMargin">
                                 <input type="checkbox" id="exchange" v-model="advertisement.exchangeActive">
@@ -85,28 +78,30 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="advertisement.discriminator==='Accessory'" class="form-row">
+                    <div v-if="advertisement.discriminator==='Accessory'" class="row g-3">
                         <div class="form-group col-12 col-md-5">
-                            <label for="manufacturer">Producent</label>
+                            <label for="manufacturer">Producent <span class="text-danger">*</span></label>
                             <input
                                     type="text"
                                     id="manufacturer"
                                     class="form-control"
+                                    :class="{ 'is-invalid': hasAttemptedSubmit && !isAccessoryManufacturer }"
                                     v-model="accessoryManufacturer">
-                            <p v-show="!isAccessoryManufacturer">
+                            <div v-if="hasAttemptedSubmit && !isAccessoryManufacturer" class="invalid-feedback">
                                 Proszę podać producenta akcesorium
-                            </p>
+                            </div>
                         </div>
                         <div class="form-group col-12 col-md-7">
-                            <label for="manufacturer">Model</label>
+                            <label for="model">Model <span class="text-danger">*</span></label>
                             <input
                                     type="text"
                                     id="model"
                                     class="form-control"
+                                    :class="{ 'is-invalid': hasAttemptedSubmit && !isAccessoryModel }"
                                     v-model="accessoryModel">
-                            <p v-show="!isAccessoryModel">
+                            <div v-if="hasAttemptedSubmit && !isAccessoryModel" class="invalid-feedback">
                                 Proszę podać model akcesorium
-                            </p>
+                            </div>
                         </div>
                     </div>
                     <div v-if="advertisement.discriminator === 'Game'" class="form-group">
@@ -117,27 +112,29 @@
                                 class="form-control"
                                 v-model="advertisement.developer">
                     </div>
-                    <div class="form-row">
+                    <div class="row g-3">
                         <div class="form-group col-12 col-md-5">
                             <div class="input">
-                                <label for="state">Stan przedmiotu</label>
+                                <label for="state">Stan przedmiotu <span class="text-danger">*</span></label>
                                 <select
                                         class="form-control"
+                                        :class="{ 'is-invalid': v$.advertisement.stateId.$error }"
                                         id="state"
                                         @blur="v$.advertisement.stateId.$touch()"
                                         v-model="advertisement.stateId">
                                     <option v-for="state in states" :key="state.id" :value="state.id">{{state.value}}</option>
                                 </select>
                             </div>
-                            <p v-show="!v$.advertisement.stateId.required">
+                            <div v-if="v$.advertisement.stateId.$error" class="invalid-feedback">
                                 Proszę wskazać stan przedmiotu ogłoszenia
-                            </p>
+                            </div>
                         </div>
                         <div class="form-group col-12 col-md-7">
                             <div class="input">
-                                <label for="system">System</label>
+                                <label for="system">System <span class="text-danger">*</span></label>
                                 <select
                                         class="form-control"
+                                        :class="{ 'is-invalid': v$.advertisement.systemId.$error }"
                                         id="system"
                                         @blur="v$.advertisement.systemId.$touch()"
                                         v-model="advertisement.systemId">
@@ -147,17 +144,18 @@
                                             :value="system.id">{{system.manufacturer + ' ' + system.model}}</option>
                                 </select>
                             </div>
-                            <p v-show="!v$.advertisement.systemId.required">
+                            <div v-if="v$.advertisement.systemId.$error" class="invalid-feedback">
                                 Proszę wybrać system
-                            </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-row">
+                    <div class="row g-3">
                         <div v-if="advertisement.discriminator !== 'Accessory'" class="form-group col-12 col-md-5">
                             <div class="input">
-                                <label for="region">Region</label>
+                                <label for="region">Region <span class="text-danger">*</span></label>
                                 <select
                                         class="form-control"
+                                        :class="{ 'is-invalid': hasAttemptedSubmit && !isRegionSelected }"
                                         id="region"
                                         v-model="regionId">
                                     <option
@@ -166,15 +164,16 @@
                                             :value="region.id">{{region.value}}</option>
                                 </select>
                             </div>
-                            <p v-show="!isRegionSelected">
+                            <div v-if="hasAttemptedSubmit && !isRegionSelected" class="invalid-feedback">
                                 Proszę wybrać region
-                            </p>
+                            </div>
                         </div>
                         <div v-if="advertisement.discriminator === 'Game'" class="form-group col-12 col-md-7">
                             <div class="input">
-                                <label for="genre">Gatunek</label>
+                                <label for="genre">Gatunek <span class="text-danger">*</span></label>
                                 <select
                                         class="form-control"
+                                        :class="{ 'is-invalid': hasAttemptedSubmit && !isGenreSelected }"
                                         id="genre"
                                         v-model="genreId">
                                     <option
@@ -183,28 +182,42 @@
                                             :value="genre.id">{{genre.value}}</option>
                                 </select>
                             </div>
-                            <p v-show="!isGenreSelected">
+                            <div v-if="hasAttemptedSubmit && !isGenreSelected" class="invalid-feedback">
                                 Proszę wybrać gatunek
-                            </p>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="description">Opis</label>
+                        <label for="description">Opis <span class="text-danger">*</span></label>
                         <textarea
                                 id="description"
                                 class="form-control"
+                                :class="{ 'is-invalid': v$.advertisement.description.$error }"
                                 rows="3"
                                 @blur="v$.advertisement.description.$touch()"
                                 v-model="advertisement.description">
                         </textarea>
-                        <p v-show="!v$.advertisement.description.required">
+                        <div v-if="v$.advertisement.description.$error" class="invalid-feedback">
                             Opis nie może być pusty
-                        </p>
+                        </div>
                     </div>
-                    <div class="row d-flex justify-content-around ">
+                    <div v-if="photoPreviews.length > 0" class="photo-preview-section">
+                        <p class="mb-2">Podgląd zdjęć ({{ photoPreviews.length }})</p>
+                        <div class="photo-preview-grid">
+                            <figure v-for="preview in photoPreviews" :key="preview.key" class="photo-preview">
+                                <img
+                                        :src="preview.url"
+                                        :alt="`Podgląd zdjęcia: ${preview.name}`"
+                                        :title="preview.name"
+                                        data-testid="photo-preview">
+                                <figcaption>{{ preview.name }}</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 border-top pt-3 mt-2">
                         <button
                                 type="button"
-                                class="btn btn-info m-1"
+                                class="btn btn-outline-secondary"
                                 @click="$router.go(-1)">Powrót</button>
                         <div v-if="selectedFiles.length === 0">
                             <input
@@ -214,36 +227,34 @@
                                     accept="image/x-png, image/jpeg"
                                     multiple="multiple"
                                     @change="selectedPhotos">
-                            <button type="button" class="btn btn-info m-1" @click="$refs.fileInput.click()" title="Uwaga, można dodać tylko zdjęcia poniżej 3 MB!">Dodaj zdjęcia</button>
+                            <button type="button" class="btn btn-info" @click="$refs.fileInput.click()" title="Uwaga, można dodać tylko zdjęcia poniżej 3 MB!">Dodaj zdjęcia</button>
                         </div>
                         <div v-else>
-                            <button type="button" class="btn btn-danger m-1" @click="selectedFiles = []; hasPhotoChanged= true">Usuń zdjęcia</button>
+                            <button type="button" class="btn btn-danger" @click="removeSelectedPhotos">Usuń zdjęcia</button>
                         </div>
                         <div v-if="isEditing">
                             <button
                                     type="button"
-                                    class="btn btn-warning m-1"
+                                    class="btn btn-warning"
                                     @click="remove">Usuń</button>
                         </div>
                         <div v-if="isEditing">
                             <button
                                     v-if="advertisement.isActive"
                                     type="button"
-                                    class="btn btn-warning m-1"
+                                    class="btn btn-warning"
                                     @click="archive">Archiwizuj</button>
                         </div>
                         <div v-if="!isEditing" >
                             <button
                                     type="button"
-                                    :disabled="!isValidationOk"
-                                    class="btn btn-primary m-1"
+                                    class="btn btn-primary"
                                     @click="saveAdd">Dodaj ogłoszenie!</button>
                         </div>
                         <div v-else>
                             <button
                                     type="button"
-                                    :disabled="!isValidationOk"
-                                    class="btn btn-primary m-1"
+                                    class="btn btn-primary"
                                     @click="saveAdd">Zapisz zmiany!</button>
                         </div>
                     </div>
@@ -270,9 +281,9 @@ export default {
       dataSent: false,
       userId: null,
       isEditing: false,
-      formClass: 'form-control',
-      invalidClass: 'is-invalid',
+      hasAttemptedSubmit: false,
       selectedFiles: [],
+      photoPreviews: [],
       hasPhotoChanged: false,
       advertisement: {
         id: null,
@@ -363,8 +374,10 @@ export default {
         showPhone: false,
         isActive: true
       }
+      this.setPhotoPreviews([])
       this.selectedFiles = []
       this.isEditing = false
+      this.hasAttemptedSubmit = false
       let vm = this
       this.$store.dispatch('getUserId')
         .then(response => {
@@ -397,6 +410,7 @@ export default {
                   }
                   if (response.data.photos.length > 0) {
                     vm.selectedFiles = response.data.photos
+                    vm.setPhotoPreviews(response.data.photos)
                   }
                   vm.isEditing = true
                   vm.hasDataLoaded = true
@@ -410,28 +424,69 @@ export default {
         })
     },
     selectedPhotos (event) {
-      this.hasPhotoChanged = true
+      const files = Array.from(event.target.files)
       this.$store.dispatch('setSpinnerLoading')
-      this.selectedFiles = event.target.files
-      for (var i = 0; i < this.selectedFiles.length; i++) {
-        let file = this.selectedFiles[i]
+      for (var i = 0; i < files.length; i++) {
+        let file = files[i]
         if (!file.type.includes('image')) {
           this.$store.dispatch('unsetSpinnerLoading')
           mixins.methods.customErrorPopUp(this, 'Wybrane rozszerzenie pliku nie jest wspierane!')
-          this.selectedFiles = []
+          event.target.value = ''
           return
         }
         let fileSize = file.size / 1024 / 1024
         if (fileSize > 3) {
           this.$store.dispatch('unsetSpinnerLoading')
           mixins.methods.customErrorPopUp(this, 'Wybrany plik jest większy niż 3 MB!')
-          this.selectedFiles = []
+          event.target.value = ''
           return
         }
       }
+      this.hasPhotoChanged = true
+      this.selectedFiles = files
+      this.setPhotoPreviews(files)
       this.$store.dispatch('unsetSpinnerLoading')
     },
+    setPhotoPreviews (photos) {
+      this.clearPhotoPreviews()
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      this.photoPreviews = Array.from(photos).map((photo, index) => {
+        if (photo instanceof File) {
+          return {
+            key: `${photo.name}-${photo.lastModified}-${index}`,
+            name: photo.name,
+            url: URL.createObjectURL(photo),
+            isObjectUrl: true
+          }
+        }
+        return {
+          key: `saved-${photo.id}`,
+          name: `Zdjęcie ${index + 1}`,
+          url: `${baseUrl}/advertisements/${this.advertisement.id}/photos/${photo.id}`,
+          isObjectUrl: false
+        }
+      })
+    },
+    clearPhotoPreviews () {
+      this.photoPreviews.forEach(preview => {
+        if (preview.isObjectUrl) {
+          URL.revokeObjectURL(preview.url)
+        }
+      })
+      this.photoPreviews = []
+    },
+    removeSelectedPhotos () {
+      this.selectedFiles = []
+      this.hasPhotoChanged = true
+      this.clearPhotoPreviews()
+    },
     saveAdd () {
+      this.hasAttemptedSubmit = true
+      this.v$.$touch()
+      if (!this.isValidationOk) {
+        return
+      }
+
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
@@ -587,6 +642,7 @@ export default {
     return {
       advertisement: {
         dateReleased: {
+          required,
           isAfter (date) {
             return date == null || date === '' ||
             new Date(date) > new Date('1960-01-01T00:00:00Z')
@@ -619,6 +675,9 @@ export default {
   mounted () {
     this.getData()
   },
+  beforeUnmount () {
+    this.clearPhotoPreviews()
+  },
   beforeRouteEnter (to, from, next) {
     next(vm => {
       if (vm.$store.getters.isAuthenticated) {
@@ -649,7 +708,42 @@ export default {
 </script>
 
 <style scoped>
+    .form-group {
+        margin-bottom: 0;
+    }
+    .invalid-feedback {
+        display: block;
+    }
     .noBottomMargin {
         margin-bottom: 0 !important;
+    }
+    .photo-preview-section {
+        border-top: 1px solid var(--bs-border-color, #dee2e6);
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+    }
+    .photo-preview-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .photo-preview {
+        margin: 0;
+        width: 104px;
+    }
+    .photo-preview img {
+        aspect-ratio: 1;
+        border: 1px solid var(--bs-border-color, #dee2e6);
+        border-radius: 0.375rem;
+        display: block;
+        object-fit: cover;
+        width: 100%;
+    }
+    .photo-preview figcaption {
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>

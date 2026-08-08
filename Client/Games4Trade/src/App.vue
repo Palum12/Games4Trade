@@ -57,11 +57,29 @@ onMounted(async () => {
   -moz-osx-font-smoothing: grayscale;
   background-color: whitesmoke;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .form {
   background-color: whitesmoke;
   border: solid 1px #26bba6;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Bootstrap 5 no longer defines the Bootstrap 4 helper used by legacy forms. */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -0.25rem;
+  margin-left: -0.25rem;
+}
+
+.form-row > [class*='col-'] {
+  padding-right: 0.25rem;
+  padding-left: 0.25rem;
 }
 
 .overlay {
