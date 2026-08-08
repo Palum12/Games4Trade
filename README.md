@@ -54,20 +54,35 @@ To konto jest wyłącznie do uruchamiania lokalnego i testów. Nie używaj tych 
 
 Testy Playwright sprawdzają pełny przepływ w Chromium: logowanie administratora i utworzenie gatunku/systemu, a następnie rejestrację użytkownika, logowanie oraz dodanie ogłoszenia.
 
-Najpierw uruchom aplikację przez Docker Compose z pierwszego rozdziału. Następnie w drugim terminalu wykonaj:
+Test uruchamia własne, odizolowane środowisko Docker: frontend na porcie `8080`, API na `5001` i osobną bazę PostgreSQL. Baza jest tworzona od nowa przed każdym uruchomieniem oraz usuwana razem z wolumenem po zakończeniu testu — również po niepowodzeniu. Nie trzeba uruchamiać aplikacji z pierwszego rozdziału; może ona działać równolegle, a jej dane nie zostaną zmienione.
+
+Przy pierwszym uruchomieniu potrzebny jest lokalny obraz API. Zbuduj go raz w katalogu głównym repozytorium (po zmianie backendu powtórz tę komendę):
+
+```powershell
+docker compose build api
+```
+
+Skrypt E2E tworzy własny obraz frontendu dla portu API `5001`; nie modyfikuje obrazu ani kontenerów zwykłej aplikacji.
+
+Przy pierwszym uruchomieniu przygotuj zależności i przeglądarkę:
 
 ```powershell
 Set-Location E2E
 npm ci
 npx playwright install chromium
-npm run test:e2e
 ```
 
-`npx playwright install chromium` pobiera przeglądarkę tylko przy pierwszym uruchomieniu albo po zmianie wersji Playwright. Testy domyślnie używają aplikacji pod `http://localhost:80`; inny adres można podać przez zmienną `E2E_BASE_URL`:
+Następnie uruchom testy:
 
 ```powershell
-$env:E2E_BASE_URL = 'http://localhost:8080'
 npm run test:e2e
 ```
 
-Do interaktywnego uruchamiania użyj `npm run test:e2e:ui`. Testy tworzą własne, oznaczone dane w lokalnej bazie; można je wyczyścić komendą `docker compose down -v`.
+`npx playwright install chromium` pobiera przeglądarkę tylko przy pierwszym uruchomieniu albo po zmianie wersji Playwright. Do interaktywnego uruchamiania użyj `npm run test:e2e:ui` — środowisko E2E zostanie usunięte po zamknięciu interfejsu Playwright.
+
+Jeśli celowo chcesz uruchomić testy przeciwko już działającej aplikacji, użyj `npm run test:e2e:existing` i opcjonalnie podaj jej adres przez zmienną `E2E_BASE_URL`:
+
+```powershell
+$env:E2E_BASE_URL = 'http://localhost:80'
+npm run test:e2e:existing
+```
