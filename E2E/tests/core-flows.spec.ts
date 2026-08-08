@@ -12,8 +12,8 @@ test.describe.configure({ mode: 'serial' })
 async function confirmDialog(page: Page) {
   const confirmButton = page.locator('.swal2-confirm')
   await expect(confirmButton).toBeVisible()
+  await expect(page.locator('.swal2-container')).toHaveCSS('position', 'fixed')
   await confirmButton.click()
-  await expect(confirmButton).toBeHidden()
 }
 
 async function confirmSuccessDialog(page: Page) {
@@ -78,11 +78,23 @@ test('visitor can create an account, sign in and add an advertisement', async ({
   await page.locator('#region').selectOption({ label: 'PAL' })
   await page.locator('#genre').selectOption({ label: genreName })
   await page.locator('#description').fill('Ogłoszenie utworzone automatycznie przez test E2E.')
+  await page.locator('input[type="file"]').setInputFiles('../Client/Games4Trade/src/assets/logo.png')
 
   const addButton = page.getByRole('button', { name: 'Dodaj ogłoszenie!' })
   await expect(addButton).toBeEnabled()
   await addButton.click()
   await confirmDialog(page)
   await expect(page).toHaveURL(/\/advertisements\/\d+$/)
+  await expect(page.locator('.swal2-popup')).toBeVisible()
+  await confirmDialog(page)
+  await expect(page.getByText(advertisementTitle)).toBeVisible()
+
+  const uploadedImage = page.locator('.gallery img')
+  await expect(uploadedImage).toBeVisible()
+  await expect.poll(() => uploadedImage.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
+
+  await page.getByRole('link', { name: 'Games4Trade' }).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(page.locator('h1')).toContainText('Games4Trade')
   await expect(page.getByText(advertisementTitle)).toBeVisible()
 })

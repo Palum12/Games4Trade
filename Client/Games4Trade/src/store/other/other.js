@@ -17,7 +17,7 @@ const actions = {
   },
   getAnnouncement ({dispatch}, id) {
     dispatch('setSpinnerLoading')
-    return axios.get(`/announcements/${id}`)
+    return axios.get(`announcements/${id}`)
       .then(response => {
         dispatch('unsetSpinnerLoading')
         return Promise.resolve(response)

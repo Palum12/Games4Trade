@@ -98,7 +98,7 @@ export default {
     },
     getNextPageAnnouncements () {
       let vm = this
-      axios.get(`/announcements/page/${this.nextPage}`)
+      axios.get(`announcements/page/${this.nextPage}`)
         .then(response => {
           vm.announcements.push(...response.data)
           let data = response.data

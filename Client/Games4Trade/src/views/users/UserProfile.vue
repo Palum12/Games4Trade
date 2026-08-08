@@ -87,7 +87,7 @@ export default {
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
-          axios.delete(`/users/${vm.currentUserId}/observed/`,
+          axios.delete(`users/${vm.currentUserId}/observed/`,
             {
               data:
                 {
@@ -106,7 +106,7 @@ export default {
     },
     startObserving () {
       let vm = this
-      axios.post(`/users/${vm.currentUserId}/observed/`,
+      axios.post(`users/${vm.currentUserId}/observed/`,
         {
           ObservingUserId: vm.currentUserId,
           ObservedUserId: vm.user.id

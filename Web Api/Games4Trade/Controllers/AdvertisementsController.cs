@@ -45,16 +45,16 @@ namespace Games4TradeAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]string search, [FromQuery]string sort, [FromQuery]int? page, [FromQuery]int? size,[FromQuery]bool? desc,
-            [FromQuery]string type, [FromQuery(Name="genres")]int[] genres, [FromQuery]int? state, [FromQuery]int? region, [FromQuery(Name = "systems")]int[] systems)
+        public async Task<IActionResult> Get([FromQuery]string? search, [FromQuery]string? sort, [FromQuery]int? page, [FromQuery]int? size,[FromQuery]bool? desc,
+            [FromQuery]string? type, [FromQuery(Name="genres")]int[]? genres, [FromQuery]int? state, [FromQuery]int? region, [FromQuery(Name = "systems")]int[]? systems)
         {
             var query = new AdQueryOptions
             {
                 Desc = desc,
-                Genres = genres,
+                Genres = genres ?? Array.Empty<int>(),
                 Page = page.GetValueOrDefault() > 0 ? page.GetValueOrDefault() - 1 : 0,
                 PageSize = size,
-                Systems = systems,
+                Systems = systems ?? Array.Empty<int>(),
                 Region = region,
                 Search = search,
                 Sort = sort,

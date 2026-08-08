@@ -442,7 +442,7 @@ export default {
                 if (vm.hasPhotoChanged) {
                   const fd = new FormData()
                   for (let i = 0; i < vm.selectedFiles.length; i++) {
-                    fd.append('', vm.selectedFiles[i], vm.selectedFiles[i].name)
+                    fd.append('photos', vm.selectedFiles[i], vm.selectedFiles[i].name)
                   }
                   axios.patch(`advertisements/${vm.advertisement.id}/photos`, fd,
                     {
@@ -479,7 +479,7 @@ export default {
                   let id = response.data
                   const fd = new FormData()
                   for (let i = 0; i < vm.selectedFiles.length; i++) {
-                    fd.append('', vm.selectedFiles[i], vm.selectedFiles[i].name)
+                    fd.append('photos', vm.selectedFiles[i], vm.selectedFiles[i].name)
                   }
                   axios.patch(`advertisements/${id}/photos`, fd,
                     {

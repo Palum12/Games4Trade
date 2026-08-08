@@ -8,6 +8,7 @@ import store from './store'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
+import 'sweetalert2/dist/sweetalert2.min.css'
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/'
 axios.defaults.baseURL = apiUrl

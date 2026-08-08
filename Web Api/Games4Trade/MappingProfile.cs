@@ -44,7 +44,8 @@ namespace Games4TradeAPI
 
             CreateMap<AdvertisementSaveDto, Advertisement>()
                 .ForMember(a => a.DateCreated, opt => opt.MapFrom(a => DateTime.UtcNow))
-                .ForMember(a => a.ExchangeActive, opt => opt.MapFrom(a => true))
+                .ForMember(a => a.IsActive, opt => opt.MapFrom(_ => true))
+                .ForMember(a => a.ExchangeActive, opt => opt.MapFrom(a => a.ExchangeActive))
                 .ForMember(a => a.UserId, opt => opt.Ignore());
             CreateMap<AdvertisementSaveDto, Game>()
                 .ForMember(g => g.GameRegionId, opt => opt.MapFrom(a => a.RegionId))

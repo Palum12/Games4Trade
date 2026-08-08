@@ -1,7 +1,7 @@
 <template>
     <div>
         <nav class="navbar sticky-top navbar-expand-lg navbar-light" id="mainNavbar">
-            <router-link class="navbar-brand" to="/">Games4Trade</router-link>
+            <router-link class="navbar-brand" :to="{ name: 'Home' }">Games4Trade</router-link>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
