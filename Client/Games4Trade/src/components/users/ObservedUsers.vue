@@ -63,7 +63,8 @@ export default {
         })
     },
     getPhotoUrl (userId) {
-      return process.env.VUE_APP_API_URL + `users/${userId}/photo`
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      return `${baseUrl}/users/${userId}/photo`
     },
     prepareDescription (content) {
       if (content == null) {
@@ -111,7 +112,7 @@ export default {
     },
     getNextPageUsers () {
       let vm = this
-      axios.get(`/users/${this.userId}/observed/?page=${this.nextPage}`)
+      axios.get(`users/${this.userId}/observed/?page=${this.nextPage}`)
         .then(response => {
           vm.users.push(...response.data)
           let data = response.data
@@ -126,7 +127,7 @@ export default {
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
-          axios.delete(`/users/${vm.userId}/observed/`, { data: {
+          axios.delete(`users/${vm.userId}/observed/`, { data: {
             ObservingUserId: vm.userId,
             ObservedUserId: id
           }

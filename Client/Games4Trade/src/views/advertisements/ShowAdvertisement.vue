@@ -1,25 +1,15 @@
 <template>
-<div v-if="hasDataLoaded" class="no-gutters advertisement">
-    <div class="row">
-        <div class="col-12 col-md-7">
-            <div v-if="advertisement.photos.length > 1" class="gallery">
-                <vue-flux
-                        :options="fluxOptions"
-                        :images="images"
-                        :transitions="fluxTransitions"
-                        ref="slider">
-                    <flux-controls slot="controls"></flux-controls>
-                    <flux-pagination slot="pagination"></flux-pagination>
-                </vue-flux>
-            </div>
-            <div v-else-if="advertisement.photos.length === 1">
-                <img :src="images[0]">
+<div v-if="hasDataLoaded" class="advertisement container-xl py-3">
+    <div class="row g-4 align-items-start">
+        <div class="col-12 col-lg-6">
+            <div v-if="advertisement.photos.length > 0" class="gallery">
+                <image-carousel :images="images"></image-carousel>
             </div>
             <div v-else>
-                <img src="../../assets/no_image_available.svg"/>
+                <img src="../../assets/no_image_available.svg" alt="Brak zdjęcia"/>
             </div>
         </div>
-        <div class="col-12 col-md-5">
+        <div class="col-12 col-lg-6">
             <p>Dodane przez: <router-link :to="`/users/${advertisement.user.id}`"
                                           exact
                                           tag="a">{{advertisement.user.login}}</router-link></p>
@@ -44,18 +34,18 @@
             </div>
             <p v-if="advertisement.dateReleased != null">Data wydania: {{advertisement.dateReleased.substring(0, 10)}}</p>
             <div v-if="!isOwner && $store.getters.isAuthenticated">
-                <button type="button" class="btn btn-primary btn-block" @click="sendMessage">Napisz do użytkownika!</button>
+        <button type="button" class="btn btn-primary w-100" @click="sendMessage">Napisz do użytkownika!</button>
             </div>
         </div>
     </div>
-    <div class="row m-1">
+    <div class="mt-4">
         <h2>{{advertisement.title}}</h2>
     </div>
-    <div class="row mt-1 container-fluid" style="white-space: pre-line;">
+    <div class="mt-3 description" style="white-space: pre-line;">
         {{advertisement.description}}
     </div>
-    <div class="row m-1 d-flex justify-content-between">
-        <button class="btn btn-info" type="button" @click="$router.go(-1)">Powrót</button>
+    <div class="d-flex flex-wrap gap-2 mt-4">
+        <button class="btn btn-outline-secondary" type="button" @click="$router.go(-1)">Powrót</button>
         <button v-if="isOwner"
                 type="button"
                 @click="$router.push(`/advertisements/${advertisement.id}/edit`)"
@@ -72,23 +62,14 @@
 <script>
 import axios from 'axios'
 import mixnis from '../../mixins/mixins'
-import { VueFlux, FluxControls, FluxPagination, Transitions } from 'vue-flux'
+import ImageCarousel from '../../components/common/ImageCarousel.vue'
 export default {
   name: 'ShowAdvertisement',
   components: {
-    VueFlux,
-    FluxControls,
-    FluxPagination
+    ImageCarousel
   },
   data () {
     return {
-      fluxOptions: {
-        autoplay: true,
-        enableGestures: true
-      },
-      fluxTransitions: {
-        transitionBook: Transitions.transitionSwipe
-      },
       userId: null,
       hasDataLoaded: false,
       isOwner: false,
@@ -97,7 +78,8 @@ export default {
   },
   computed: {
     images () {
-      return this.advertisement.photos.map(x => `http://localhost:5000/api/advertisements/${this.advertisement.id}/photos/${x.id}`)
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      return this.advertisement.photos.map(x => `${baseUrl}/advertisements/${this.advertisement.id}/photos/${x.id}`)
     }
   },
   methods: {
@@ -182,26 +164,22 @@ export default {
 
 <style scoped>
     img {
-        min-height: 200px;
-        height: 45vh;
-        max-height: 90%;
-        width: 60vh;
-        object-fit: contain ;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        max-height: 420px;
+        object-fit: contain;
+        background-color: white;
+        border-radius: 0.5rem;
     }
     .gallery{
-        min-height: 300px;
-        height: 45vh;
-        max-height: 90%;
-        min-width: 400px;
-        width: 60vh;
-        max-width: 90%;
-        overflow: hidden;
-        overflow-y: auto;
+        width: 100%;
+        min-height: 240px;
     }
     .advertisement {
-        margin: 0 2vw;
-        padding-bottom: 2vh;
-        width: 90vw;
-        text-justify: newspaper;
+        padding-bottom: 2rem;
+    }
+    .description {
+        max-width: 75ch;
     }
 </style>

@@ -14,17 +14,17 @@
                         </div>
                         <button
                                 v-if="isLiked(system)"
-                                class="btn btn-success ml-sm-1"
+                                class="btn btn-success ms-sm-1"
                                 @click="dislike(system)">Interesuje Cię ten system!</button>
                         <button
                                 v-else
-                                class="btn btn-primary ml-sm-1"
+                                class="btn btn-primary ms-sm-1"
                                 @click="like(system)">Ten system mnie interesuje!</button>
                     </div>
                 </div>
             </form>
         </div>
-        <button class="btn btn-primary btn-block" @click="saveInterestingSystems">Zapisz</button>
+        <button class="btn btn-primary w-100" @click="saveInterestingSystems">Zapisz</button>
     </div>
 </template>
 

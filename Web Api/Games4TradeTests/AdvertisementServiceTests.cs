@@ -9,6 +9,7 @@ using Xunit;
 using Games4TradeAPI.Services;
 using Games4TradeAPI;
 using Games4TradeAPI.Interfaces.Repositories;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Games4TradeAPITests
 {
@@ -18,10 +19,9 @@ namespace Games4TradeAPITests
 
         public AdvertisementsServiceFixture()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new MappingProfile());
-            });
+            var config = new MapperConfiguration(
+                cfg => cfg.AddProfile(new MappingProfile()),
+                NullLoggerFactory.Instance);
             Mapper = config.CreateMapper();
         }
 

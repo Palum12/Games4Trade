@@ -18,7 +18,7 @@ namespace Games4TradeAPI.Data
         public virtual DbSet<Photo> Photos { get; set; }
         public virtual DbSet<Advertisement> Advertisements { get; set; }
         public virtual DbSet<AdvertisementItem> AdvertisementItems { get; set; }
-        public virtual DbSet<Console> Consoles { get; set; }
+        public virtual DbSet<Models.Console> Consoles { get; set; }
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<Accessory> Accessories { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
@@ -32,6 +32,20 @@ namespace Games4TradeAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // The original migrations use table-per-hierarchy mapping: all kinds of
+            // advertisement items are persisted in AdvertisementItems.  Keep that
+            // mapping explicitly so EF Core does not infer separate derived tables.
+            modelBuilder.Entity<AdvertisementItem>()
+                .HasDiscriminator<string>("Discriminator")
+                .HasValue<AdvertisementItem>("AdvertisementItem")
+                .HasValue<Accessory>("Accessory")
+                .HasValue<Models.Console>("Console")
+                .HasValue<Game>("Game");
+
+            modelBuilder.Entity<AdvertisementItem>()
+                .Property<string>("Discriminator")
+                .HasColumnType("text");
+
             modelBuilder.Entity<ObservedUsersRelationship>(entity =>
             {
                 entity.HasKey(uu => new {uu.ObservingUserId, uu.ObservedUserId});
@@ -199,16 +213,19 @@ namespace Games4TradeAPI.Data
                 entity.HasOne(a => a.Advertisement).WithOne(ad => ad.Item).HasForeignKey<AdvertisementItem>(a => a.AdvertisementId);
             });
 
-            modelBuilder.Entity<Console>(entity =>
+            modelBuilder.Entity<Models.Console>(entity =>
             {
                 entity.HasOne(c => c.ConsoleRegion).WithMany(r => r.Consoles)
-                    .HasForeignKey(c => c.ConsoleRegionId);
+                    .HasForeignKey(c => c.ConsoleRegionId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Game>(entity =>
             {
-                entity.HasOne(g => g.Genre).WithMany(ge => ge.Games).HasForeignKey(g => g.GenreId);
-                entity.HasOne(g => g.GameRegion).WithMany(r => r.Games).HasForeignKey(g => g.GameRegionId);
+                entity.HasOne(g => g.Genre).WithMany(ge => ge.Games).HasForeignKey(g => g.GenreId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(g => g.GameRegion).WithMany(r => r.Games).HasForeignKey(g => g.GameRegionId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Message>(entity =>

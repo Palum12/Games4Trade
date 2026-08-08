@@ -36,7 +36,7 @@ namespace Games4TradeAPI.Services
             var messageModel = new Message()
             {
                 Content = message.Content,
-                DateCreated = DateTime.Now,
+                DateCreated = DateTime.UtcNow,
                 IsDelivered = false,
                 ReceiverId = message.ReceiverId,
                 SenderId = currentUserId

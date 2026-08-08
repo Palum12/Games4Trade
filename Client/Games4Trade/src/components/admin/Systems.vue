@@ -32,14 +32,14 @@
                             <button class="btn btn-warning"
                                     :disabled="system.manufacturer === '' || system.model === ''"
                                     @click="modify(system)">Modyfikuj</button>
-                            <button class="btn btn-danger ml-1"
+                            <button class="btn btn-danger ms-1"
                                     @click="remove(system.id)">X</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-        <button class="btn btn-info btn-block" :disabled="!canAdd" @click="addPlace">Dodaj nowy system</button>
+        <button class="btn btn-info w-100" :disabled="!canAdd" @click="addPlace">Dodaj nowy system</button>
     </div>
 </template>
 
@@ -77,9 +77,9 @@ export default {
     },
     save (system) {
       let vm = this
-      this.$store.dispatch('setSpinnerLoading')
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.post('systems', {manufacturer: system.manufacturer, model: system.model})
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -106,9 +106,9 @@ export default {
         mixins.methods.customErrorPopUp(vm, 'Proszę zmień coś zanim spróbujesz zapisać zmiany !')
         return
       }
-      this.$store.dispatch('setSpinnerLoading')
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.put(`systems/${system.id}`, {manufacturer: system.manufacturer, model: system.model})
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -132,10 +132,10 @@ export default {
         })
     },
     remove (systemId) {
-      this.$store.dispatch('setSpinnerLoading')
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.delete(`systems/${systemId}`)
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')

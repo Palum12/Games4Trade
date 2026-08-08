@@ -1,7 +1,7 @@
 <template>
     <div class="row admin no-gutters ">
-        <tabs :options="{ useUrlFragment: false }">
-            <tab name="Gatunki i Systemy" class="tabs-height">
+        <Tabs>
+            <TabPanel title="Gatunki i Systemy" class="tabs-height">
                 <div class="row">
                     <div class="col-md-6 col-12">
                         <genres></genres>
@@ -10,24 +10,27 @@
                         <systems></systems>
                     </div>
                 </div>
-            </tab>
-            <tab name="Ogłoszenia dla społeczności" class="tabs-height">
+            </TabPanel>
+            <TabPanel title="Ogłoszenia dla społeczności" class="tabs-height">
                 <announcements-list class="announcements mb-1"></announcements-list>
-                <button class="btn btn-success btn-block" @click="addNewAnnouncement">Dodaj nowe ogłoszenie !</button>
-            </tab>
-        </tabs>
+                <button class="btn btn-success w-100" @click="addNewAnnouncement">Dodaj nowe ogłoszenie !</button>
+            </TabPanel>
+        </Tabs>
     </div>
 
 </template>
 
 <script>
-import genres from '../components/admin/Genres'
-import systems from '../components/admin/Systems'
-import announcementsList from '../components/announcements/AnnouncementsList'
-import 'vue-tabs-component/docs/resources/tabs-component.css'
+import Tabs from '../components/ui/Tabs.vue'
+import TabPanel from '../components/ui/TabPanel.vue'
+import genres from '../components/admin/Genres.vue'
+import systems from '../components/admin/Systems.vue'
+import announcementsList from '../components/announcements/AnnouncementsList.vue'
 export default {
   name: 'AdminPanel',
   components: {
+    Tabs,
+    TabPanel,
     genres,
     systems,
     announcementsList
@@ -50,24 +53,12 @@ export default {
 </script>
 
 <style scoped>
-    .tabs-component {
-        width: 100vw;
-        margin-top: 0;
-        margin-bottom: 0;
-        margin-left: 1vw;
-        margin-right: 1vw;
-    }
-
-    .tabs-component >>> .tabs-component-panels{
-        padding-top: 2em !important;
-        padding-bottom: 2em !important;
-    }
     .announcements {
         min-height: 200px;
         height: 70vh;
         max-height: 90%;
     }
     .tabs-height {
-        height: 73vh !important;
+        min-height: 400px;
     }
 </style>

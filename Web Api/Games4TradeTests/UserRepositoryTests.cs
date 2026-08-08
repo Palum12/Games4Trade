@@ -20,7 +20,12 @@ namespace Games4TradeAPITests
                 Id = 1,
                 Email = "test1@test.pl",
                 Login = "test1",
-                Password = "test1"
+                Password = "test1",
+                Salt = "test-salt",
+                Role = "User",
+                Description = string.Empty,
+                PhoneNumber = string.Empty,
+                RecoveryAddress = string.Empty
 
             },
             new User()
@@ -28,21 +33,36 @@ namespace Games4TradeAPITests
                 Id = 2,
                 Email = "test2@test.pl",
                 Login = "test2",
-                Password = "test2"
+                Password = "test2",
+                Salt = "test-salt",
+                Role = "User",
+                Description = string.Empty,
+                PhoneNumber = string.Empty,
+                RecoveryAddress = string.Empty
             },
             new User()
             {
                 Id = 3,
                 Email = "test3@test.pl",
                 Login = "test3",
-                Password = "test3"
+                Password = "test3",
+                Salt = "test-salt",
+                Role = "User",
+                Description = string.Empty,
+                PhoneNumber = string.Empty,
+                RecoveryAddress = string.Empty
             },
             new User()
             {
                 Id = 4,
                 Email = "test4@test.pl",
                 Login = "test4",
-                Password = "test4"
+                Password = "test4",
+                Salt = "test-salt",
+                Role = "User",
+                Description = string.Empty,
+                PhoneNumber = string.Empty,
+                RecoveryAddress = string.Empty
             }
 
         };

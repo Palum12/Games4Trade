@@ -21,14 +21,14 @@
                             <button class="btn btn-warning"
                                     :disabled="genre.value === ''"
                                     @click="modify(genre)">Modyfikuj</button>
-                            <button class="btn btn-danger ml-1"
+                            <button class="btn btn-danger ms-1"
                                     @click="remove(genre.id)">X</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-        <button class="btn btn-info btn-block" :disabled="!canAdd" @click="addPlace">Dodaj nowy gatunek</button>
+        <button class="btn btn-info w-100" :disabled="!canAdd" @click="addPlace">Dodaj nowy gatunek</button>
     </div>
 </template>
 
@@ -66,9 +66,9 @@ export default {
     },
     save (genre) {
       let vm = this
-      this.$store.dispatch('setSpinnerLoading')
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.post('genres', {value: genre.value})
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -94,9 +94,9 @@ export default {
         mixins.methods.customErrorPopUp(vm, 'Proszę zmień coś zanim spróbujesz zapisać zmiany !')
         return
       }
-      this.$store.dispatch('setSpinnerLoading')
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.put(`genres/${genre.id}`, {value: genre.value})
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')
@@ -118,10 +118,10 @@ export default {
         })
     },
     remove (genreId) {
-      this.$store.dispatch('setSpinnerLoading')
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
+          vm.$store.dispatch('setSpinnerLoading')
           axios.delete(`genres/${genreId}`)
             .then(() => {
               vm.$store.dispatch('unsetSpinnerLoading')

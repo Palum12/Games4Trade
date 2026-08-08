@@ -1,31 +1,21 @@
-# Games4Trade
+# Games4Trade Frontend
 
 ## Project setup
-```
+```bash
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+### Compile and hot-reload for development
+```bash
+npm run dev
 ```
 
-### Compiles and minifies for production
-```
+### Build for production
+```bash
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Run your end-to-end tests
-```
-npm run test:e2e
+### Preview the production build locally
+```bash
+npm run preview
 ```

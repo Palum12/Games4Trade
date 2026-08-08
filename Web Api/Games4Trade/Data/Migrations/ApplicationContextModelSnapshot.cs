@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
+#nullable disable
+
 namespace Games4TradeAPI.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
@@ -15,40 +17,49 @@ namespace Games4TradeAPI.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("Games4Trade.Models.Advertisement", b =>
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Games4TradeAPI.Models.Advertisement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("Now()");
 
-                    b.Property<bool?>("ExchangeActive")
-                        .IsRequired()
+                    b.Property<bool>("ExchangeActive")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
                     b.Property<decimal>("Price")
                         .HasColumnType("money");
 
-                    b.Property<bool>("ShowEmail");
+                    b.Property<bool>("ShowEmail")
+                        .HasColumnType("boolean");
 
-                    b.Property<bool>("ShowPhone");
+                    b.Property<bool>("ShowPhone")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Title")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -57,26 +68,34 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("Advertisements");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.AdvertisementItem", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.AdvertisementItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
 
-                    b.Property<int>("AdvertisementId");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("DateReleased");
+                    b.Property<int>("AdvertisementId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("DateReleased")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Discriminator")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("text");
 
-                    b.Property<int>("StateId");
+                    b.Property<int>("StateId")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("SystemId");
+                    b.Property<int>("SystemId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -90,13 +109,17 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("AdvertisementItems");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("AdvertisementItem");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Announcement", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Announcement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -104,14 +127,18 @@ namespace Games4TradeAPI.Data.Migrations
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("Now()");
 
-                    b.Property<bool>("IsActive");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Title")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int?>("UserId");
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -120,15 +147,18 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("Announcements");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Genre", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Genre", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
 
@@ -138,11 +168,13 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("Genres");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Message", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -150,13 +182,17 @@ namespace Games4TradeAPI.Data.Migrations
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("Now()");
 
-                    b.Property<bool>("IsDelivered");
+                    b.Property<bool>("IsDelivered")
+                        .HasColumnType("boolean");
 
-                    b.Property<int>("ReceiverId");
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("SenderId");
+                    b.Property<int>("SenderId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -167,11 +203,13 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.ObservedUsersRelationship", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.ObservedUsersRelationship", b =>
                 {
-                    b.Property<int>("ObservingUserId");
+                    b.Property<int>("ObservingUserId")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("ObservedUserId");
+                    b.Property<int>("ObservedUserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("ObservingUserId", "ObservedUserId");
 
@@ -180,20 +218,25 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("ObservedUsersRelationship");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Photo", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Photo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
 
-                    b.Property<int?>("AdvertisementId");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AdvertisementId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("Now()");
 
                     b.Property<string>("Path")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -202,15 +245,18 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("Photos");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Region", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Region", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasMaxLength(16);
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
 
                     b.HasKey("Id");
 
@@ -220,22 +266,40 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("Regions");
 
                     b.HasData(
-                        new { Id = 1, Value = "PAL" },
-                        new { Id = 2, Value = "NTSC" },
-                        new { Id = 3, Value = "INNY" },
-                        new { Id = 4, Value = "MULTI" }
-                    );
+                        new
+                        {
+                            Id = 1,
+                            Value = "PAL"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Value = "NTSC"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Value = "INNY"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Value = "MULTI"
+                        });
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.State", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.State", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasMaxLength(16);
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
 
                     b.HasKey("Id");
 
@@ -245,25 +309,40 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("States");
 
                     b.HasData(
-                        new { Id = 1, Value = "Nowy" },
-                        new { Id = 2, Value = "Używany" },
-                        new { Id = 3, Value = "Uszkodzony" }
-                    );
+                        new
+                        {
+                            Id = 1,
+                            Value = "Nowy"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Value = "Używany"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Value = "Uszkodzony"
+                        });
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.System", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.System", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Manufacturer")
                         .IsRequired()
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Model")
                         .IsRequired()
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
 
@@ -272,44 +351,54 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("Systems");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.User", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(11);
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)");
 
-                    b.Property<int?>("PhotoId");
+                    b.Property<int?>("PhotoId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("RecoveryAddress")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'User'")
-                        .HasMaxLength(8);
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasDefaultValueSql("'User'");
 
                     b.Property<string>("Salt")
                         .IsRequired()
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
@@ -325,11 +414,13 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.UserLikedGenre", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.UserLikedGenre", b =>
                 {
-                    b.Property<int>("GenreId");
+                    b.Property<int>("GenreId")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("GenreId", "UserId");
 
@@ -338,11 +429,13 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("UserGenreRelationship");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.UserOwnedSystem", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.UserOwnedSystem", b =>
                 {
-                    b.Property<int>("SystemId");
+                    b.Property<int>("SystemId")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("SystemId", "UserId");
 
@@ -351,171 +444,278 @@ namespace Games4TradeAPI.Data.Migrations
                     b.ToTable("UserSystemRelationship");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Accessory", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Accessory", b =>
                 {
-                    b.HasBaseType("Games4Trade.Models.AdvertisementItem");
+                    b.HasBaseType("Games4TradeAPI.Models.AdvertisementItem");
 
-                    b.Property<string>("AccessoryManufacturer");
+                    b.Property<string>("AccessoryManufacturer")
+                        .HasColumnType("text");
 
-                    b.Property<string>("AccessoryModel");
-
-                    b.ToTable("Accessory");
+                    b.Property<string>("AccessoryModel")
+                        .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("Accessory");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Console", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Console", b =>
                 {
-                    b.HasBaseType("Games4Trade.Models.AdvertisementItem");
+                    b.HasBaseType("Games4TradeAPI.Models.AdvertisementItem");
 
-                    b.Property<int>("ConsoleRegionId");
+                    b.Property<int?>("ConsoleRegionId")
+                        .HasColumnType("integer");
 
                     b.HasIndex("ConsoleRegionId");
-
-                    b.ToTable("Console");
 
                     b.HasDiscriminator().HasValue("Console");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Game", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Game", b =>
                 {
-                    b.HasBaseType("Games4Trade.Models.AdvertisementItem");
+                    b.HasBaseType("Games4TradeAPI.Models.AdvertisementItem");
 
-                    b.Property<string>("Developer");
+                    b.Property<string>("Developer")
+                        .HasColumnType("text");
 
-                    b.Property<int>("GameRegionId");
+                    b.Property<int?>("GameRegionId")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("GenreId");
+                    b.Property<int?>("GenreId")
+                        .HasColumnType("integer");
 
                     b.HasIndex("GameRegionId");
 
                     b.HasIndex("GenreId");
 
-                    b.ToTable("Game");
-
                     b.HasDiscriminator().HasValue("Game");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Advertisement", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Advertisement", b =>
                 {
-                    b.HasOne("Games4Trade.Models.User", "User")
+                    b.HasOne("Games4TradeAPI.Models.User", "User")
                         .WithMany("Advertisements")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.AdvertisementItem", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.AdvertisementItem", b =>
                 {
-                    b.HasOne("Games4Trade.Models.Advertisement", "Advertisement")
+                    b.HasOne("Games4TradeAPI.Models.Advertisement", "Advertisement")
                         .WithOne("Item")
-                        .HasForeignKey("Games4Trade.Models.AdvertisementItem", "AdvertisementId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("Games4TradeAPI.Models.AdvertisementItem", "AdvertisementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Games4Trade.Models.State", "State")
+                    b.HasOne("Games4TradeAPI.Models.State", "State")
                         .WithMany("AdvertisementItems")
                         .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Games4Trade.Models.System", "System")
+                    b.HasOne("Games4TradeAPI.Models.System", "System")
                         .WithMany("AdvertisementItems")
                         .HasForeignKey("SystemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advertisement");
+
+                    b.Navigation("State");
+
+                    b.Navigation("System");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Announcement", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Announcement", b =>
                 {
-                    b.HasOne("Games4Trade.Models.User", "User")
+                    b.HasOne("Games4TradeAPI.Models.User", "User")
                         .WithMany("Announcements")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Message", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Message", b =>
                 {
-                    b.HasOne("Games4Trade.Models.User", "Receiver")
+                    b.HasOne("Games4TradeAPI.Models.User", "Receiver")
                         .WithMany("MessagesRecived")
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Games4Trade.Models.User", "Sender")
+                    b.HasOne("Games4TradeAPI.Models.User", "Sender")
                         .WithMany("MessagesSent")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.ObservedUsersRelationship", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.ObservedUsersRelationship", b =>
                 {
-                    b.HasOne("Games4Trade.Models.User", "ObservedUser")
+                    b.HasOne("Games4TradeAPI.Models.User", "ObservedUser")
                         .WithMany("ObservedUsers")
                         .HasForeignKey("ObservedUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Games4Trade.Models.User", "ObservingUser")
+                    b.HasOne("Games4TradeAPI.Models.User", "ObservingUser")
                         .WithMany("ObservingUsers")
                         .HasForeignKey("ObservingUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ObservedUser");
+
+                    b.Navigation("ObservingUser");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Photo", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Photo", b =>
                 {
-                    b.HasOne("Games4Trade.Models.Advertisement", "Advertisement")
+                    b.HasOne("Games4TradeAPI.Models.Advertisement", "Advertisement")
                         .WithMany("Photos")
                         .HasForeignKey("AdvertisementId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Advertisement");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.User", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.User", b =>
                 {
-                    b.HasOne("Games4Trade.Models.Photo", "Photo")
+                    b.HasOne("Games4TradeAPI.Models.Photo", "Photo")
                         .WithOne("User")
-                        .HasForeignKey("Games4Trade.Models.User", "PhotoId");
+                        .HasForeignKey("Games4TradeAPI.Models.User", "PhotoId");
+
+                    b.Navigation("Photo");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.UserLikedGenre", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.UserLikedGenre", b =>
                 {
-                    b.HasOne("Games4Trade.Models.Genre", "Genre")
+                    b.HasOne("Games4TradeAPI.Models.Genre", "Genre")
                         .WithMany("LikedByUsers")
                         .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Games4Trade.Models.User", "User")
+                    b.HasOne("Games4TradeAPI.Models.User", "User")
                         .WithMany("LikedGenres")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Genre");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.UserOwnedSystem", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.UserOwnedSystem", b =>
                 {
-                    b.HasOne("Games4Trade.Models.System", "System")
+                    b.HasOne("Games4TradeAPI.Models.System", "System")
                         .WithMany("OwnedByUsers")
                         .HasForeignKey("SystemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Games4Trade.Models.User", "User")
+                    b.HasOne("Games4TradeAPI.Models.User", "User")
                         .WithMany("OwnedSystems")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("System");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Console", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Console", b =>
                 {
-                    b.HasOne("Games4Trade.Models.Region", "ConsoleRegion")
+                    b.HasOne("Games4TradeAPI.Models.Region", "ConsoleRegion")
                         .WithMany("Consoles")
                         .HasForeignKey("ConsoleRegionId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("ConsoleRegion");
                 });
 
-            modelBuilder.Entity("Games4Trade.Models.Game", b =>
+            modelBuilder.Entity("Games4TradeAPI.Models.Game", b =>
                 {
-                    b.HasOne("Games4Trade.Models.Region", "GameRegion")
+                    b.HasOne("Games4TradeAPI.Models.Region", "GameRegion")
                         .WithMany("Games")
                         .HasForeignKey("GameRegionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Games4Trade.Models.Genre", "Genre")
+                    b.HasOne("Games4TradeAPI.Models.Genre", "Genre")
                         .WithMany("Games")
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("GameRegion");
+
+                    b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("Games4TradeAPI.Models.Advertisement", b =>
+                {
+                    b.Navigation("Item")
+                        .IsRequired();
+
+                    b.Navigation("Photos");
+                });
+
+            modelBuilder.Entity("Games4TradeAPI.Models.Genre", b =>
+                {
+                    b.Navigation("Games");
+
+                    b.Navigation("LikedByUsers");
+                });
+
+            modelBuilder.Entity("Games4TradeAPI.Models.Photo", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Games4TradeAPI.Models.Region", b =>
+                {
+                    b.Navigation("Consoles");
+
+                    b.Navigation("Games");
+                });
+
+            modelBuilder.Entity("Games4TradeAPI.Models.State", b =>
+                {
+                    b.Navigation("AdvertisementItems");
+                });
+
+            modelBuilder.Entity("Games4TradeAPI.Models.System", b =>
+                {
+                    b.Navigation("AdvertisementItems");
+
+                    b.Navigation("OwnedByUsers");
+                });
+
+            modelBuilder.Entity("Games4TradeAPI.Models.User", b =>
+                {
+                    b.Navigation("Advertisements");
+
+                    b.Navigation("Announcements");
+
+                    b.Navigation("LikedGenres");
+
+                    b.Navigation("MessagesRecived");
+
+                    b.Navigation("MessagesSent");
+
+                    b.Navigation("ObservedUsers");
+
+                    b.Navigation("ObservingUsers");
+
+                    b.Navigation("OwnedSystems");
                 });
 #pragma warning restore 612, 618
         }

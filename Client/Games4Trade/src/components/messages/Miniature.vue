@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-3">
-            <img :src="`http://localhost:5000/api/users/${message.otherUserId}/photo`">
+            <img :src="getPhotoUrl(message.otherUserId)">
         </div>
         <div class="col-9">
             <div class="row">
@@ -24,10 +24,16 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Miniature',
   props: ['message', 'userId'],
   methods: {
+    getPhotoUrl (userId) {
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      return `${baseUrl}/users/${userId}/photo`
+    },
     shortenString (text) {
       if (text.length > 60) {
         return text.substring(0, 57) + '...'

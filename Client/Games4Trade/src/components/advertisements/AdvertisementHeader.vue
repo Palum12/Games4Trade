@@ -4,7 +4,7 @@
             <a class="list-group-item list-group-item-action flex-column align-items-start mb-1">
                 <div class="row">
                     <div class="col-2">
-                        <img :src="`http://localhost:5000/api/advertisements/${advertisement.id}/photos/default`">
+                        <img :src="getPhotoUrl(advertisement.id)">
                     </div>
                     <div class="col-9">
                             <div class="row">
@@ -37,9 +37,17 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'AdvertisementHeader',
-  props: ['advertisement']
+  props: ['advertisement'],
+  methods: {
+    getPhotoUrl (advertisementId) {
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      return `${baseUrl}/advertisements/${advertisementId}/photos/default`
+    }
+  }
 }
 </script>
 

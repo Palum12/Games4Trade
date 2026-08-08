@@ -18,7 +18,7 @@ const mutations = {
 
 const actions = {
   getGenres ({commit}) {
-    return axios.get('/genres')
+    return axios.get('genres')
       .then(response => {
         commit('setGenres', response.data)
         return Promise.resolve()

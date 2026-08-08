@@ -14,7 +14,7 @@
                         @click="stopObserving">Przestań obserwować
                 </button>
             </div>
-            <div class="col-8 ml-3">
+            <div class="col-8 ms-3">
                 <h3>{{ucFirst(user.login)}}</h3>
                 <p>
                     {{prepareGenres(user.likedGenres)}}<br>
@@ -62,7 +62,8 @@ export default {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
     getPhotoUrl (userId) {
-      return process.env.VUE_APP_API_URL + `users/${userId}/photo`
+      const baseUrl = axios.defaults.baseURL ? axios.defaults.baseURL.replace(/\/$/, '') : ''
+      return `${baseUrl}/users/${userId}/photo`
     },
     prepareDescription (descrption) {
       if (descrption == null) {
@@ -86,7 +87,7 @@ export default {
       let vm = this
       mixins.methods.confirmationDialog(vm)
         .then(() => {
-          axios.delete(`/users/${vm.currentUserId}/observed/`,
+          axios.delete(`users/${vm.currentUserId}/observed/`,
             {
               data:
                 {
@@ -105,7 +106,7 @@ export default {
     },
     startObserving () {
       let vm = this
-      axios.post(`/users/${vm.currentUserId}/observed/`,
+      axios.post(`users/${vm.currentUserId}/observed/`,
         {
           ObservingUserId: vm.currentUserId,
           ObservedUserId: vm.user.id

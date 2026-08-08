@@ -64,7 +64,7 @@ namespace Games4TradeAPI.Services
             var currentUser = await userRepository.GetUserByLogin(login);
             var announcementModel = mapper.Map<AnnouncementSaveDto, Announcement>(announcement);
             announcementModel.UserId = currentUser.Id;
-            announcementModel.DateCreated = DateTime.Now;
+            announcementModel.DateCreated = DateTime.UtcNow;
             await repository.AddAsync(announcementModel);
             var result = await repository.SaveChangesAsync();
             if (result > 0)

@@ -17,7 +17,7 @@
 
 <script>
 import axios from 'axios'
-import AdvertisementList from './AdvertisementList'
+import AdvertisementList from './AdvertisementList.vue'
 export default {
   name: 'HomePageAdvertisements',
   components: {
@@ -36,9 +36,9 @@ export default {
   computed: {
     urlToGet () {
       if (this.areRecommended) {
-        return `/users/${this.userId}/advertisements/recommended?page=${this.nextPage}`
+        return `users/${this.userId}/advertisements/recommended?page=${this.nextPage}`
       } else {
-        return `/advertisements/?page=${this.nextPage}&size=${this.pageSize}&desc=true`
+        return `advertisements/?page=${this.nextPage}&size=${this.pageSize}&desc=true`
       }
     }
   },
@@ -65,7 +65,7 @@ export default {
         .then(response => {
           vm.userId = response.data
         }).then(() => {
-          axios.get(`/users/${vm.userId}/advertisements/recommended?page=1`)
+          axios.get(`users/${vm.userId}/advertisements/recommended?page=1`)
             .then(response => {
               if (response.data.length > 0) {
                 vm.areRecommended = true
@@ -73,7 +73,7 @@ export default {
                 vm.nextPage = vm.nextPage + 1
               } else {
                 vm.areRecommended = false
-                axios.get(`/advertisements/?page=${vm.nextPage}&size=${vm.pageSize}&desc=true`)
+                axios.get(`advertisements/?page=${vm.nextPage}&size=${vm.pageSize}&desc=true`)
                   .then(response => {
                     vm.advertisements = response.data
                     vm.nextPage = vm.nextPage + 1
@@ -83,7 +83,7 @@ export default {
         })
     } else {
       vm.areRecommended = false
-      axios.get(`/advertisements/?page=${vm.nextPage}&size=${vm.pageSize}&desc=true`)
+      axios.get(`advertisements/?page=${vm.nextPage}&size=${vm.pageSize}&desc=true`)
         .then(response => {
           vm.advertisements = response.data
           vm.nextPage = vm.nextPage + 1

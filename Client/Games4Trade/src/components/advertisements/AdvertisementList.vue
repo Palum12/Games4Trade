@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import AdvertisementHeader from './AdvertisementHeader'
+import AdvertisementHeader from './AdvertisementHeader.vue'
 export default {
   name: 'AdvertisementList',
   components: {

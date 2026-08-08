@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import AdvertisementList from '../../components/advertisements/AdvertisementList'
+import AdvertisementList from '../../components/advertisements/AdvertisementList.vue'
 import axios from 'axios'
 export default {
   name: 'UsersAdvertisements',
@@ -31,7 +31,7 @@ export default {
     getAdvertisements () {
       let vm = this
       this.$store.dispatch('setSpinnerLoading')
-      axios.get(`/users/${vm.userId}/advertisements?page=1`)
+      axios.get(`users/${vm.userId}/advertisements?page=1`)
         .then(response => {
           vm.$store.dispatch('unsetSpinnerLoading')
           vm.advertisements = response.data
@@ -44,7 +44,7 @@ export default {
     getMoreAdvertisements () {
       if (this.isNextPage) {
         let vm = this
-        axios.get(`/users/${vm.userId}/advertisements?page=${this.nextPage}`)
+        axios.get(`users/${vm.userId}/advertisements?page=${this.nextPage}`)
           .then(response => {
             vm.advertisements.push(...response.data)
             if (response.data.length === 0) {

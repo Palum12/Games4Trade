@@ -169,7 +169,7 @@ namespace Games4TradeAPI.Services
                         game.Developer = ad.Developer;
                         game.GameRegionId = ad.RegionId.Value;
                         game.GenreId = ad.GenreId.Value;
-                        game.DateReleased = ad.DateReleased;
+                        game.DateReleased = ToUtc(ad.DateReleased);
                         game.StateId = ad.StateId;
                         game.SystemId = ad.SystemId;
                         game.Description = ad.Description;
@@ -177,13 +177,13 @@ namespace Games4TradeAPI.Services
                     case Accessory accessory:
                         accessory.AccessoryManufacturer = ad.AccessoryManufacturer;
                         accessory.AccessoryModel = ad.AccessoryModel;
-                        accessory.DateReleased = ad.DateReleased;
+                        accessory.DateReleased = ToUtc(ad.DateReleased);
                         accessory.StateId = ad.StateId;
                         accessory.SystemId = ad.SystemId;
                         accessory.Description = ad.Description;
                         break;
                     case Console console:
-                        console.DateReleased = ad.DateReleased;
+                        console.DateReleased = ToUtc(ad.DateReleased);
                         console.ConsoleRegionId = ad.RegionId.Value;
                         console.StateId = ad.StateId;
                         console.SystemId = ad.SystemId;
@@ -433,7 +433,7 @@ namespace Games4TradeAPI.Services
                 {
                     await photo.CopyToAsync(fileStream);
                 }
-                var newPhoto = new Photo {DateCreated = DateTime.Now, Path = path, AdvertisementId = adId};
+                var newPhoto = new Photo {DateCreated = DateTime.UtcNow, Path = path, AdvertisementId = adId};
                 photosAdded.Add(newPhoto);
                 await photoRepository.AddAsync(newPhoto);
 
@@ -452,8 +452,10 @@ namespace Games4TradeAPI.Services
                             }
                         ));
                         image.Save(outputStream, new JpegEncoder());
-                    }                    
-                }
+        }
+
+            }
+
             }
 
             repoRes = await repository.SaveChangesAsync();
@@ -545,8 +547,10 @@ namespace Games4TradeAPI.Services
                     result = mapper.Map<Advertisement, AdvertisementGameDto>(g.Advertisement);
                     mapper.Map(g, result);
                     result.Discriminator = nameof(Game);
-                    var tempGenre = await genreRepository.GetAsync(g.GenreId);
-                    var tempRegionGame = await regionRepository.GetAsync(g.GameRegionId);
+                    var tempGenre = await genreRepository.GetAsync(g.GenreId ??
+                        throw new InvalidOperationException("Game advertisement is missing a genre."));
+                    var tempRegionGame = await regionRepository.GetAsync(g.GameRegionId ??
+                        throw new InvalidOperationException("Game advertisement is missing a region."));
                     ((AdvertisementGameDto)result).Genre = mapper.Map<Genre, GenreDto>(tempGenre);
                     ((AdvertisementGameDto)result).Region = mapper.Map<Region, RegionDto>(tempRegionGame);
                     break;
@@ -554,7 +558,8 @@ namespace Games4TradeAPI.Services
                     result = mapper.Map<Advertisement, AdvertisementConsoleDto>(c.Advertisement);
                     mapper.Map(c, result);
                     result.Discriminator = nameof(Console);
-                    var tempRegionConsole = await regionRepository.GetAsync(c.ConsoleRegionId);
+                    var tempRegionConsole = await regionRepository.GetAsync(c.ConsoleRegionId ??
+                        throw new InvalidOperationException("Console advertisement is missing a region."));
                     ((AdvertisementConsoleDto)result).Region = mapper.Map<Region, RegionDto>(tempRegionConsole);
                     break;
                 case Accessory a:
@@ -583,5 +588,11 @@ namespace Games4TradeAPI.Services
             return result;
         }
 
+        private static DateTime? ToUtc(DateTime? value)
+        {
+            return value.HasValue
+                ? DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+                : null;
+        }
     }
 }

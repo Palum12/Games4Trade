@@ -80,7 +80,8 @@ namespace Games4TradeAPI.Repositories
                         query = query.Where(a => a.Item is Game);
                         if (options.Genres.Any())
                         {
-                            query = query.Where(a => options.Genres.Contains(((Game)a.Item).GenreId));
+                            query = query.Where(a => ((Game)a.Item).GenreId.HasValue &&
+                                options.Genres.Contains(((Game)a.Item).GenreId.Value));
                         }
 
                         if (options.Region.HasValue)
@@ -134,7 +135,8 @@ namespace Games4TradeAPI.Repositories
 
             var ads = await Context.Advertisements.Include(a => a.Item)
                 .Where( a => a.IsActive && a.UserId != userId && (observedUsers.Contains(a.UserId) || systems.Contains(a.Item.SystemId) || 
-                            (a.Item is Game && genres.Contains(((Game)a.Item).GenreId)))  )
+                            (a.Item is Game && ((Game)a.Item).GenreId.HasValue &&
+                                genres.Contains(((Game)a.Item).GenreId.Value)))  )
                 .Skip(skip).Take(pageSize)
                 .Include(a => a.Photos)
                 .OrderByDescending(a => a.DateCreated)

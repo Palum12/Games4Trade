@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: Games4TradeE2E
+      POSTGRES_USER: e2e
+      POSTGRES_PASSWORD: e2e-password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U e2e -d Games4TradeE2E"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    image: games4trade-api:e2e
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__ApplicationContext: Server=db;Port=5432;User Id=e2e;Password=e2e-password;Database=Games4TradeE2E;
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5001:80"
+
+  client:
+    image: games4trade-client:e2e
+    build:
+      context: ../Client/Games4Trade
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:5001/api/
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
+volumes:
+  postgres_data:

@@ -7,11 +7,11 @@ namespace Games4TradeAPI.Models
     {
         public string Login { get; set; }
         public string Email { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Description { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Description { get; set; }
         public string Password { get; set; }
         public string Salt { get; set; }
-        public string RecoveryAddress { get; set; }
+        public string? RecoveryAddress { get; set; }
         public string Role { get; set; }
         public int? PhotoId { get; set; }
         public virtual Photo Photo { get; set; }

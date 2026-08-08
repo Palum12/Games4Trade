@@ -22,23 +22,23 @@
                     </div>
                     <div v-if="isEditing" class="form-group d-flex justify-content-end">
                         <div v-if="!announcement.isActive">
-                            <button type="button" class="btn btn-info btn-primary btn-block" @click="changeStatus">Udostępnij</button>
+                            <button type="button" class="btn btn-info btn-primary w-100" @click="changeStatus">Udostępnij</button>
                         </div>
                         <div v-if="announcement.isActive">
-                            <button type="button" class="btn btn-info btn-warning btn-block" @click="changeStatus">Archiwizuj</button>
+                            <button type="button" class="btn btn-info btn-warning w-100" @click="changeStatus">Archiwizuj</button>
                         </div>
-                        <div class="ml-2">
-                            <button type="button" class="btn btn-info btn-block" @click="goBack">Powrót</button>
+                        <div class="ms-2">
+                            <button type="button" class="btn btn-info w-100" @click="goBack">Powrót</button>
                         </div>
-                        <div class="ml-2">
-                            <button type="button" class="btn btn-info btn-block" @click="modify">modifykuj</button>
+                        <div class="ms-2">
+                            <button type="button" class="btn btn-info w-100" @click="modify">modifykuj</button>
                         </div>
-                        <div class="ml-2">
-                            <button type="button" class="btn btn-danger btn-block" @click="remove">Usuń</button>
+                        <div class="ms-2">
+                            <button type="button" class="btn btn-danger w-100" @click="remove">Usuń</button>
                         </div>
                     </div>
                     <div v-if="!isEditing" class="form-group">
-                        <button type="submit" class="btn btn-info btn-block">Dodaj</button>
+                        <button type="submit" class="btn btn-info w-100">Dodaj</button>
                     </div>
                 </form>
             </div>
