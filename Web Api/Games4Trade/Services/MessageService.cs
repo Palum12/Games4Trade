@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
+using System.Linq;
+using Games4TradeAPI.Core.Mapping;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
 using Games4TradeAPI.Interfaces.Services;
@@ -13,22 +14,19 @@ namespace Games4TradeAPI.Services
     {
         private readonly IMessageRepository repository;
         private readonly IUserRepository userRepository;
-        private readonly IMapper mapper;
         private const int PageSize = 20;
 
-        public MessageService(IMessageRepository repository, IUserRepository userRepository, IMapper mapper)
+        public MessageService(IMessageRepository repository, IUserRepository userRepository)
         {
             this.repository = repository;
             this.userRepository = userRepository;
-            this.mapper = mapper;
         }
 
         public async Task<IEnumerable<MessageDto>> GetMessagesWithUser(int currentUserId, int selectedUserId, int page)
         {
             var repoResponse =
                 await repository.GetMessagesWithReciever(currentUserId, selectedUserId, page, PageSize);
-            var result = mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(repoResponse);
-            return result;
+            return repoResponse.Select(message => message.ToDto());
         }
 
         public async Task<OperationResult> AddMessage(int currentUserId, MessagePostDto message)
@@ -70,7 +68,7 @@ namespace Games4TradeAPI.Services
                         DateCreated = message.DateCreated
                     };
                     otherUser = await userRepository.GetAsync(message.ReceiverId);
-                    newestMessageSent.OtherUser = mapper.Map<User, UserSimpleDto>(otherUser);
+                    newestMessageSent.OtherUser = otherUser.ToSimpleDto();
                     result.Add(newestMessageSent);
                 }
                 else
@@ -83,7 +81,7 @@ namespace Games4TradeAPI.Services
                         DateCreated = message.DateCreated
                     };
                     otherUser = await userRepository.GetAsync(message.SenderId);
-                    newestMessageRecieved.OtherUser = mapper.Map<User, UserSimpleDto>(otherUser);
+                    newestMessageRecieved.OtherUser = otherUser.ToSimpleDto();
                     result.Add(newestMessageRecieved);
                 }
             }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
+using Games4TradeAPI.Core.Mapping;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
 using Games4TradeAPI.Interfaces.Repositories;
@@ -12,31 +12,29 @@ namespace Games4TradeAPI.Services
     public class SystemService : ISystemService
     {
         private readonly ISystemRepository repository;
-        private readonly IMapper mapper;
 
-        public SystemService(ISystemRepository repository, IMapper mapper)
+        public SystemService(ISystemRepository repository)
         {
             this.repository = repository;
-            this.mapper = mapper;
         }
 
         public async Task<IList<SystemDto>> GetSystems()
         {
             var repoResponse = await repository.GetAllAsync();
-            var systems = mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
+            var systems = repoResponse.Select(system => system.ToDto());
             return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s=> s.Model).ToList();
         }
 
         public async Task<IList<SystemDto>> GetSystemsForUser(int userId)
         {
             var repoResponse = await repository.GetSystemsForUser(userId);
-            var systems = mapper.Map<IEnumerable<Models.System>, IEnumerable<SystemDto>>(repoResponse);
+            var systems = repoResponse.Select(system => system.ToDto());
             return systems.OrderBy(s => s.Manufacturer).ThenByDescending(s => s.Model).ToList();
         }
 
         public async Task<OperationResult> CreateSystem(SystemCreateOrUpdateDto system)
         {
-            var systemModel = mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);
+            var systemModel = system.ToModel();
             var doesExists = await repository.GetSameSystem(systemModel);
             if (doesExists != null)
             {
@@ -55,7 +53,7 @@ namespace Games4TradeAPI.Services
                 return new OperationResult()
                 {
                     IsSuccessful = true,
-                    Payload = mapper.Map<Models.System, SystemDto>(systemModel)
+                    Payload = systemModel.ToDto()
                 };
             }
             else
@@ -66,7 +64,7 @@ namespace Games4TradeAPI.Services
 
         public async Task<OperationResult> EditSystem(int id, SystemCreateOrUpdateDto system)
         {
-            var systemModel = mapper.Map<SystemCreateOrUpdateDto, Models.System>(system);
+            var systemModel = system.ToModel();
             var doesExists = await repository.GetSameSystem(systemModel);
             if (doesExists != null && doesExists.Id == id)
             {

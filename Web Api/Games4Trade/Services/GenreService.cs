@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
+using Games4TradeAPI.Core.Mapping;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
 using Games4TradeAPI.Interfaces.Repositories;
@@ -12,31 +12,29 @@ namespace Games4TradeAPI.Services
     public class GenreService : IGenreService
     {
         private readonly IGenreRepository repository;
-        private readonly IMapper mapper;
 
-        public GenreService(IGenreRepository repository, IMapper mapper)
+        public GenreService(IGenreRepository repository)
         {
             this.repository = repository;
-            this.mapper = mapper;
         }
 
         public async Task<IList<GenreDto>> GetGenres()
         {
             var repoResponse = await repository.GetAllAsync();
-            var genres = mapper.Map<IEnumerable<Genre>, IEnumerable<GenreDto>>(repoResponse);
+            var genres = repoResponse.Select(genre => genre.ToDto());
             return genres.OrderBy(g => g.Value).ToList();
         }
 
         public async Task<IList<GenreDto>> GetGenresForUser(int userId)
         {
             var repoResponse = await repository.GetGenresForUser(userId);
-            var genres = mapper.Map<IEnumerable<Genre>, IEnumerable<GenreDto>>(repoResponse);
+            var genres = repoResponse.Select(genre => genre.ToDto());
             return genres.OrderBy(g => g.Value).ToList();
         }
 
         public async Task<OperationResult> CreateGenre(GenreCreateOrUpdateDto genre)
         {
-            var genreModel = mapper.Map<GenreCreateOrUpdateDto, Genre>(genre);
+            var genreModel = genre.ToModel();
             var doesExists = await repository.FindAsync(g => g.Value == genreModel.Value);
             if (doesExists.Any())
             {
@@ -87,7 +85,7 @@ namespace Games4TradeAPI.Services
                     return new OperationResult()
                     {
                         IsSuccessful = true,
-                        Payload = mapper.Map<Genre, GenreDto>(genreInDb)
+                        Payload = genreInDb.ToDto()
                     };
                 }
                 else

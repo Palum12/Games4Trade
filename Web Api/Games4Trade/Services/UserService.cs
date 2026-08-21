@@ -4,7 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
+using Games4TradeAPI.Core.Mapping;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
 using Games4TradeAPI.Interfaces.Repositories;
@@ -16,7 +16,6 @@ namespace Games4TradeAPI.Services
 {
     public class UserService : IUserService
     {
-        private readonly IMapper mapper;
         private readonly ILoginService loginService;
         private readonly ISystemRepository systemRepository;
         private readonly IUserRepository userRepository;
@@ -25,14 +24,12 @@ namespace Games4TradeAPI.Services
         private const int PageSize = 5;
 
         public UserService(
-            IMapper mapper,
             ILoginService loginService,
             ISystemRepository systemRepository,
             IGenreRepository genreRepository,
             IRepository<Photo> photoRepository,
             IUserRepository userRepository)
         {
-            this.mapper = mapper;
             this.loginService = loginService;
             this.userRepository = userRepository;
             this.systemRepository = systemRepository;
@@ -144,14 +141,13 @@ namespace Games4TradeAPI.Services
         public async Task<IList<UserDto>> Get()
         {
             var users = await userRepository.GetAllAsync();
-            var mappedUsers = mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(users);
-            return mappedUsers.ToList();
+            return users.Select(user => user.ToDto()).ToList();
         }
 
         public async Task<UserDto> GetUserById(int id)
         {
             var user = await userRepository.GetAsync(id);
-            return mapper.Map<User, UserDto>(user);
+            return user?.ToDto()!;
         }
 
         public async Task<UserProfileDto> GetUserProfile(int id, int? currentUser = null)
@@ -422,7 +418,7 @@ namespace Games4TradeAPI.Services
         {
             var result = new OperationResult();
 
-            var mappedUser = mapper.Map<UserRegisterDto, User>(newUser);
+            var mappedUser = newUser.ToModel();
             mappedUser.Salt = loginService.GetSalt();
             mappedUser.Password = loginService.ComputeHash(
                 mappedUser.Salt, "TempPass");

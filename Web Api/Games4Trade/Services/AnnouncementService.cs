@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
+using Games4TradeAPI.Core.Mapping;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
 using Games4TradeAPI.Interfaces.Repositories;
@@ -15,27 +15,24 @@ namespace Games4TradeAPI.Services
     {
         private readonly IAnnouncementRepository repository;
         private readonly IUserRepository userRepository;
-        private readonly IMapper mapper;
         private const int PageSize = 10;
 
-        public AnnouncementService(IAnnouncementRepository repository, IUserRepository userRepository, IMapper mapper)
+        public AnnouncementService(IAnnouncementRepository repository, IUserRepository userRepository)
         {
             this.repository = repository;
             this.userRepository = userRepository;
-            this.mapper = mapper;
         }
 
         public async Task<AnnouncementGetDto> GetAnnouncement(int id, bool isAdmin)
         {
             var result = await repository.GetAnnouncementWithAuthor(id, isAdmin);
-            return mapper.Map<Announcement, AnnouncementGetDto>(result);
+            return result?.ToDto()!;
         }
 
         public async Task<IList<AnnouncementGetDto>> GetAnnouncementsPage(int page, bool isAdmin)
         {
             var result = await repository.GetAnnouncementsPageWithAuthors(page, PageSize, isAdmin);
-            var response = mapper.Map<IEnumerable<Announcement>, IEnumerable<AnnouncementGetDto>>(result);
-            return response.ToList();
+            return result.Select(announcement => announcement.ToDto()).ToList();
         }
 
         public async Task<OperationResult> ChangeStatus(int id, AnnouncementArchiveDto value)
@@ -62,7 +59,7 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> CreateAnnouncement(AnnouncementSaveDto announcement, string login)
         {
             var currentUser = await userRepository.GetUserByLogin(login);
-            var announcementModel = mapper.Map<AnnouncementSaveDto, Announcement>(announcement);
+            var announcementModel = announcement.ToModel();
             announcementModel.UserId = currentUser.Id;
             announcementModel.DateCreated = DateTime.UtcNow;
             await repository.AddAsync(announcementModel);

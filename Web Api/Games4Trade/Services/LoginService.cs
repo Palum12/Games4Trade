@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
 using Games4TradeAPI.Interfaces.Repositories;
@@ -16,12 +15,10 @@ namespace Games4TradeAPI.Services
     public class LoginService : ILoginService
     {
         private readonly IUserRepository userRepository;
-        private readonly IMapper mapper;
         
-        public LoginService(IUserRepository userRepository, IMapper mapper)
+        public LoginService(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
-            this.mapper = mapper;
         }
 
         /// <summary>

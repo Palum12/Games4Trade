@@ -2,6 +2,8 @@ using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Games4TradeAPI;
+using Games4TradeAPI.Core.Advertisements;
+using Games4TradeAPI.Core.Images;
 using Games4TradeAPI.Data;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Hubs;
@@ -34,8 +36,6 @@ var connectionString = builder.Configuration.GetConnectionString("ApplicationCon
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseNpgsql(connectionString));
 
-builder.Services.AddAutoMapper(configuration => configuration.AddProfile<MappingProfile>());
-
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
@@ -45,6 +45,12 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
 builder.Services.AddScoped<IRegionService, RegionService>();
 builder.Services.AddScoped<IStateService, StateService>();
+
+builder.Services.AddScoped<IAdvertisementItemStrategy, GameAdvertisementItemStrategy>();
+builder.Services.AddScoped<IAdvertisementItemStrategy, ConsoleAdvertisementItemStrategy>();
+builder.Services.AddScoped<IAdvertisementItemStrategy, AccessoryAdvertisementItemStrategy>();
+builder.Services.AddScoped<IAdvertisementItemStrategyResolver, AdvertisementItemStrategyResolver>();
+builder.Services.AddSingleton<IThumbnailGenerator, SkiaThumbnailGenerator>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
