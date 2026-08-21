@@ -32,15 +32,16 @@ namespace Games4TradeAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // The original migrations use table-per-hierarchy mapping: all kinds of
-            // advertisement items are persisted in AdvertisementItems.  Keep that
-            // mapping explicitly so EF Core does not infer separate derived tables.
+            // EF Core also supports TPT and TPC, but either option would require a
+            // schema migration and change the query characteristics. The existing
+            // schema is TPH, so keep its shadow discriminator and move application
+            // behavior for each item type to strategies instead.
             modelBuilder.Entity<AdvertisementItem>()
                 .HasDiscriminator<string>("Discriminator")
-                .HasValue<AdvertisementItem>("AdvertisementItem")
-                .HasValue<Accessory>("Accessory")
-                .HasValue<Models.Console>("Console")
-                .HasValue<Game>("Game");
+                .HasValue<AdvertisementItem>(nameof(AdvertisementItem))
+                .HasValue<Accessory>(nameof(Accessory))
+                .HasValue<Models.Console>(nameof(Models.Console))
+                .HasValue<Game>(nameof(Game));
 
             modelBuilder.Entity<AdvertisementItem>()
                 .Property<string>("Discriminator")

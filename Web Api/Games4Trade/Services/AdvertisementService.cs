@@ -4,18 +4,14 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
+using Games4TradeAPI.Core.Advertisements;
+using Games4TradeAPI.Core.Images;
+using Games4TradeAPI.Core.Mapping;
 using Games4TradeAPI.Dtos;
 using Games4TradeAPI.Models;
 using Games4TradeAPI.Interfaces.Repositories;
 using Games4TradeAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
-using Console = Games4TradeAPI.Models.Console;
-using Image = SixLabors.ImageSharp.Image;
-using Region = Games4TradeAPI.Models.Region;
 
 namespace Games4TradeAPI.Services
 {
@@ -24,91 +20,72 @@ namespace Games4TradeAPI.Services
         private readonly IAdvertisementReposiotry repository;
         private readonly IUserRepository userRepository;
         private readonly IRepository<Photo> photoRepository;
-        private readonly IRepository<State> stateRepository;
-        private readonly IGenreRepository genreRepository;
-        private readonly IRepository<Region> regionRepository;
-        private readonly ISystemRepository systemRepository;
         private readonly IRepository<AdvertisementItem> advertisementItemRepository;
-        private readonly IMapper mapper;
+        private readonly IAdvertisementItemStrategyResolver strategyResolver;
+        private readonly IThumbnailGenerator thumbnailGenerator;
         private const int DefaultPageSize = 10;
 
         public AdvertisementService(
             IAdvertisementReposiotry repository,
             IUserRepository userRepository,
             IRepository<Photo> photoRepository,
-            IRepository<State> stateRepository,
-            IGenreRepository genreRepository,
-            IRepository<Region> regionRepository,
-            ISystemRepository systemRepository,
             IRepository<AdvertisementItem> advertisementItemRepository,
-            IMapper mapper)
+            IAdvertisementItemStrategyResolver strategyResolver,
+            IThumbnailGenerator thumbnailGenerator)
         {
             this.repository = repository;
             this.userRepository = userRepository;
             this.photoRepository = photoRepository;
-            this.stateRepository = stateRepository;
-            this.genreRepository = genreRepository;
-            this.regionRepository = regionRepository;
-            this.systemRepository = systemRepository;
             this.advertisementItemRepository = advertisementItemRepository;
-            this.mapper = mapper;
+            this.strategyResolver = strategyResolver;
+            this.thumbnailGenerator = thumbnailGenerator;
         }
         
         public async Task<OperationResult> AddAdvertisement(int userId, AdvertisementSaveDto ad)
         {
-            var isCorrectResultTuple = await CheckIfRelationshipsAreCorrect(ad);
-            if (isCorrectResultTuple.Item1)
+            if (!strategyResolver.TryResolve(ad.Discriminator, out var strategy))
             {
-                var advertisement = mapper.Map<AdvertisementSaveDto, Advertisement>(ad);
-                advertisement.UserId = userId;
-
-                switch (ad.Discriminator) // todo: test this
-                {
-                    case nameof(Game):
-                        var game = mapper.Map<AdvertisementSaveDto, Game>(ad);
-                        await advertisementItemRepository.AddAsync(game);
-                        advertisement.Item = game;
-                        break;
-                    case nameof(Accessory):
-                        var accessory = mapper.Map<AdvertisementSaveDto, Accessory>(ad);
-                        await advertisementItemRepository.AddAsync(accessory);
-                        advertisement.Item = accessory;
-                        break;
-                    case nameof(Console):
-                        var console = mapper.Map<AdvertisementSaveDto, Console>(ad);
-                        await advertisementItemRepository.AddAsync(console);
-                        advertisement.Item = console;
-                        break;
-                    default:
-                        return new OperationResult
-                        {
-                            IsSuccessful = false,
-                            IsClientError = true,
-                            Message = "Invalid discriminator!"
-                        };
-                }
-                await repository.AddAsync(advertisement);
-
-                var result = await repository.SaveChangesAsync();
-                if (result > 0)
-                {
-                    return new OperationResult
-                    {
-                        IsSuccessful = true,
-                        Payload = advertisement.Id
-                    };
-                }
-                return new OperationResult()
+                return new OperationResult
                 {
                     IsSuccessful = false,
-                    IsClientError = false
+                    IsClientError = true,
+                    Message = "Invalid discriminator!"
                 };
             }
-            return new OperationResult()
+
+            var relationshipError = await strategy.ValidateRelationshipsAsync(ad);
+            if (relationshipError != null)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = relationshipError
+                };
+            }
+
+            var advertisement = ad.ToModel();
+            advertisement.UserId = userId;
+
+            var item = strategy.Create(ad);
+            await advertisementItemRepository.AddAsync(item);
+            advertisement.Item = item;
+            await repository.AddAsync(advertisement);
+
+            var result = await repository.SaveChangesAsync();
+            if (result > 0)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = true,
+                    Payload = advertisement.Id
+                };
+            }
+
+            return new OperationResult
             {
                 IsSuccessful = false,
-                IsClientError = true,
-                Message = isCorrectResultTuple.Item2
+                IsClientError = false
             };
         }
 
@@ -142,14 +119,24 @@ namespace Games4TradeAPI.Services
                 };
             }
 
-            var isCorrectResultTuple = await CheckIfRelationshipsAreCorrect(ad);
-            if (!isCorrectResultTuple.Item1)
+            if (!strategyResolver.TryResolve(ad.Discriminator, out var strategy))
             {
                 return new OperationResult
                 {
                     IsSuccessful = false,
                     IsClientError = true,
-                    Message = isCorrectResultTuple.Item2
+                    Message = "Invalid discriminator!"
+                };
+            }
+
+            var relationshipError = await strategy.ValidateRelationshipsAsync(ad);
+            if (relationshipError != null)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = relationshipError
                 };
             }
 
@@ -161,68 +148,16 @@ namespace Games4TradeAPI.Services
             currentAd.Price = ad.Price;
             currentAd.Title = ad.Title;
 
-            if (currentAd.Item.GetType().Name.Equals(ad.Discriminator))
+            if (strategy.ItemType == currentAd.Item.GetType())
             {
-                switch (currentAd.Item)
-                {
-                    case Game game:
-                        game.Developer = ad.Developer;
-                        game.GameRegionId = ad.RegionId.Value;
-                        game.GenreId = ad.GenreId.Value;
-                        game.DateReleased = ToUtc(ad.DateReleased);
-                        game.StateId = ad.StateId;
-                        game.SystemId = ad.SystemId;
-                        game.Description = ad.Description;
-                        break;
-                    case Accessory accessory:
-                        accessory.AccessoryManufacturer = ad.AccessoryManufacturer;
-                        accessory.AccessoryModel = ad.AccessoryModel;
-                        accessory.DateReleased = ToUtc(ad.DateReleased);
-                        accessory.StateId = ad.StateId;
-                        accessory.SystemId = ad.SystemId;
-                        accessory.Description = ad.Description;
-                        break;
-                    case Console console:
-                        console.DateReleased = ToUtc(ad.DateReleased);
-                        console.ConsoleRegionId = ad.RegionId.Value;
-                        console.StateId = ad.StateId;
-                        console.SystemId = ad.SystemId;
-                        console.Description = ad.Description;
-                        break;
-                    default:
-                        break;
-                }
-                
+                strategy.Update(currentAd.Item, ad);
             }
             else
             {
                 advertisementItemRepository.Remove(currentAd.Item);
-                switch (ad.Discriminator)
-                {
-                    case nameof(Game):
-                        var game = mapper.Map<AdvertisementSaveDto, Game>(ad);
-                        await advertisementItemRepository.AddAsync(game);
-                        currentAd.Item = game;
-                        break;
-                    case nameof(Accessory):
-                        var accessory = mapper.Map<AdvertisementSaveDto, Accessory>(ad);
-                        await advertisementItemRepository.AddAsync(accessory);
-                        currentAd.Item = accessory;
-                        break;
-                    case nameof(Console):
-                        var console = mapper.Map<AdvertisementSaveDto, Console>(ad);
-                        await advertisementItemRepository.AddAsync(console);
-                        currentAd.Item = console;
-                        break;
-                    default:
-                        return new OperationResult
-                        {
-                            IsSuccessful = false,
-                            IsClientError = true,
-                            Message = "Invalid discriminator!"
-                        };
-                }
-
+                var replacementItem = strategy.Create(ad);
+                await advertisementItemRepository.AddAsync(replacementItem);
+                currentAd.Item = replacementItem;
             }
 
             var repoResult = await repository.SaveChangesAsync();
@@ -260,7 +195,7 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> GetRecommendedAdsForUser(int userId, int page)
         {
             var ads = await repository.GetRecommendedAdvertisements(userId, page, DefaultPageSize);
-            var result = mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
+            var result = ads.Select(advertisement => advertisement.ToSummaryDto()).ToList();
             return new OperationResult()
             {
                 IsSuccessful = true,
@@ -271,7 +206,7 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> GetAdvetisementsForUser(int userId, int page, bool selfService)
         {
             var ads = await repository.GetAdsForUser(userId, page, DefaultPageSize, selfService);
-            var result = mapper.Map<IEnumerable<Advertisement>, IEnumerable< AdvertisementWithoutItemDto>>(ads);
+            var result = ads.Select(advertisement => advertisement.ToSummaryDto()).ToList();
             return new OperationResult
             {
                 IsSuccessful = true,
@@ -282,7 +217,7 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> GetAdvetisements(AdQueryOptions queryOptions)
         {
             var ads = await repository.GetQueriedAds(queryOptions);
-            var result = mapper.Map<IEnumerable<Advertisement>, IEnumerable<AdvertisementWithoutItemDto>>(ads);
+            var result = ads.Select(advertisement => advertisement.ToSummaryDto()).ToList();
             
             return new OperationResult()
             {
@@ -441,20 +376,12 @@ namespace Games4TradeAPI.Services
                 if (i == 0)
                 {
                     var newPath = Path.Combine(directory, "miniature");
-                    using (var outputStream = new FileStream(newPath, FileMode.Create))
-                    using (Stream inputStream = photo.OpenReadStream())
+                    await using (var outputStream = new FileStream(newPath, FileMode.Create))
+                    await using (var inputStream = photo.OpenReadStream())
                     {
-                        var image = Image.Load(inputStream);
-                        image.Mutate(img => img.Resize(new ResizeOptions()
-                            {
-                                Mode = ResizeMode.Max,
-                                Size = new Size(300, 200)
-                            }
-                        ));
-                        image.Save(outputStream, new JpegEncoder());
-        }
-
-            }
+                        await thumbnailGenerator.WriteJpegAsync(inputStream, outputStream, 300, 200);
+                    }
+                }
 
             }
 
@@ -500,37 +427,6 @@ namespace Games4TradeAPI.Services
             return 0;
         }
 
-        private async Task<(bool, string)> CheckIfRelationshipsAreCorrect(AdvertisementSaveDto ad)
-        {
-            IList<Object> objects;
-            var system = await systemRepository.GetAsync(ad.SystemId);
-            var state = await stateRepository.GetAsync(ad.StateId);
-            Region region;
-            switch (ad.Discriminator)
-            {
-                case nameof(Game):
-                    var genre = await genreRepository.GetAsync(ad.GenreId.GetValueOrDefault());
-                    region = await regionRepository.GetAsync(ad.RegionId.GetValueOrDefault());
-                    objects = new List<object> { region, system, state, genre };
-                    break;
-                case nameof(Console):
-                    region = await regionRepository.GetAsync(ad.RegionId.GetValueOrDefault());
-                    objects = new List<object> { region, system, state };
-                    break;
-                case nameof(Accessory):
-                    objects = new List<object> { system, state };
-                    break;
-                default:
-                    return (false, "Wrong discriminator!");
-            }
-            if (objects.Any(o => o == null))
-            {
-                var message = "Invalid data";
-                return (false, message);
-            }
-            return (true, null);
-        }
-
         private async Task<bool> IsSelfService(int userId, int adId)
         {
             var ad = await repository.GetAsync(adId);
@@ -539,60 +435,8 @@ namespace Games4TradeAPI.Services
 
         private async Task<AdvertisementBasicDto> FillAdvertisement(AdvertisementItem source)
         {
-            AdvertisementBasicDto result;
-
-            switch (source)
-            {
-                case Game g:
-                    result = mapper.Map<Advertisement, AdvertisementGameDto>(g.Advertisement);
-                    mapper.Map(g, result);
-                    result.Discriminator = nameof(Game);
-                    var tempGenre = await genreRepository.GetAsync(g.GenreId ??
-                        throw new InvalidOperationException("Game advertisement is missing a genre."));
-                    var tempRegionGame = await regionRepository.GetAsync(g.GameRegionId ??
-                        throw new InvalidOperationException("Game advertisement is missing a region."));
-                    ((AdvertisementGameDto)result).Genre = mapper.Map<Genre, GenreDto>(tempGenre);
-                    ((AdvertisementGameDto)result).Region = mapper.Map<Region, RegionDto>(tempRegionGame);
-                    break;
-                case Console c:
-                    result = mapper.Map<Advertisement, AdvertisementConsoleDto>(c.Advertisement);
-                    mapper.Map(c, result);
-                    result.Discriminator = nameof(Console);
-                    var tempRegionConsole = await regionRepository.GetAsync(c.ConsoleRegionId ??
-                        throw new InvalidOperationException("Console advertisement is missing a region."));
-                    ((AdvertisementConsoleDto)result).Region = mapper.Map<Region, RegionDto>(tempRegionConsole);
-                    break;
-                case Accessory a:
-                    result = mapper.Map<Advertisement, AdvertisementAccessoryDto>(a.Advertisement);
-                    mapper.Map(a, result);
-                    result.Discriminator = nameof(Accessory);
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
-
-            var state = await stateRepository.GetAsync(source.StateId);
-            var system = await systemRepository.GetAsync(source.SystemId);
-            result.State = mapper.Map<State, StateDto>(state);
-            result.System = mapper.Map<Models.System, SystemDto>(system);
-
-            if (source.Advertisement.ShowEmail)
-            {
-                result.Email = source.Advertisement.User.Email;
-            }
-
-            if (source.Advertisement.ShowPhone && !string.IsNullOrEmpty(source.Advertisement.User.PhoneNumber))
-            {
-                result.PhoneNumber = source.Advertisement.User.PhoneNumber;
-            }
-            return result;
-        }
-
-        private static DateTime? ToUtc(DateTime? value)
-        {
-            return value.HasValue
-                ? DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
-                : null;
+            var strategy = strategyResolver.Resolve(source);
+            return await strategy.ToDtoAsync(source);
         }
     }
 }
