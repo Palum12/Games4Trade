@@ -114,7 +114,7 @@ namespace Games4TradeAPITests
         }
 
         [Fact]
-        public async void GetUserByLoginTest()
+        public async Task GetUserByLoginTest()
         {
             // Arrange
             var ctx = _fixture.ctx;
@@ -130,7 +130,7 @@ namespace Games4TradeAPITests
         }
 
         [Fact]
-        public async void GetObservedUsersForUser()
+        public async Task GetObservedUsersForUser()
         {
             // Arrange
             var ctx = _fixture.ctx;
@@ -146,7 +146,7 @@ namespace Games4TradeAPITests
         }
 
         [Fact]
-        public async void AddObservedUsersForUser()
+        public async Task AddObservedUsersForUser()
         {
             // Arrange
             var ctx = _fixture.ctx;

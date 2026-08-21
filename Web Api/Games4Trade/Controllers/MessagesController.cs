@@ -15,9 +15,12 @@ namespace Games4TradeAPI.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMessageService _messageService;
-        private readonly IHubContext<MessagesHub> _hubContext;
+        private readonly IHubContext<MessagesHub, IMessagesClient> _hubContext;
 
-        public MessagesController(IMessageService messageService, IUserService userService, IHubContext<MessagesHub> hub)
+        public MessagesController(
+            IMessageService messageService,
+            IUserService userService,
+            IHubContext<MessagesHub, IMessagesClient> hub)
         {
             _messageService = messageService;
             _userService = userService;
@@ -27,42 +30,47 @@ namespace Games4TradeAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMessages([FromQuery]int? otherUserId, [FromQuery]int? page)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            var currentUserId = await GetCurrentUserId();
             if (otherUserId.HasValue && page.HasValue)
             {
                 page = page > 0 ? page - 1 : 0;
                 var converstaion = await _messageService
-                    .GetMessagesWithUser(currentUserId.Value, otherUserId.Value, page.Value);
+                    .GetMessagesWithUser(currentUserId, otherUserId.Value, page.Value);
                 return Ok(converstaion);
             }
-            var messages = await _messageService.GetNewestMessages(currentUserId.Value);
+            var messages = await _messageService.GetNewestMessages(currentUserId);
             return Ok(messages);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(MessagePostDto message)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            var currentUserId = await GetCurrentUserId();
             var targetUser = await _userService.GetUserById(message.ReceiverId);
             if (targetUser == null)
             {
                 return BadRequest("Target user doesnt exist !");
             }
 
-            if (currentUserId.Value == targetUser.Id)
+            if (currentUserId == targetUser.Id)
             {
                 return BadRequest("Cannot send message to yourself!");
             }
 
-            var result = await _messageService.AddMessage(currentUserId.Value, message);
+            var result = await _messageService.AddMessage(currentUserId, message);
             if (result.IsSuccessful)
             {
+                if (result.Payload is not MessageDto createdMessage)
+                {
+                    return StatusCode(500, "Created message payload is missing.");
+                }
+
                 var connectionId = MessagesHub.TryGetUserConnection(targetUser.Login);
                 if (!string.IsNullOrEmpty(connectionId))
                 {
-                    await _hubContext.Clients.Client(connectionId).SendAsync("Recieve", message);
+                    await _hubContext.Clients.Client(connectionId).Recieve(createdMessage);
                 }
-                return Ok();
+                return Ok(createdMessage);
             }
 
             return StatusCode(500, result.Message);
@@ -71,10 +79,10 @@ namespace Games4TradeAPI.Controllers
         [HttpPatch]
         public async Task<IActionResult> SetMessagesUnActive(int otherUserId)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            var currentUserId = await GetCurrentUserId();
             if (otherUserId > 0)
             {
-                await _messageService.SetMessagesAsRead(currentUserId.Value, otherUserId);
+                await _messageService.SetMessagesAsRead(currentUserId, otherUserId);
                 return Ok();
             }
             return BadRequest("Incorrect Id");
@@ -84,9 +92,18 @@ namespace Games4TradeAPI.Controllers
         [Route("{otherUserId}/isUpdate")]
         public async Task<IActionResult> CheckIfThereAreNewMessages(int otherUserId)
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-            var result = await _messageService.CheckIfThereAreNewMessages(otherUserId, currentUserId.Value);
+            var currentUserId = await GetCurrentUserId();
+            var result = await _messageService.CheckIfThereAreNewMessages(otherUserId, currentUserId);
             return Ok(result);
+        }
+
+        private async Task<int> GetCurrentUserId()
+        {
+            var login = User.Identity?.Name
+                ?? throw new InvalidOperationException("Authenticated user has no name claim.");
+
+            return await _userService.GetUserIdByLogin(login)
+                ?? throw new InvalidOperationException("Authenticated user no longer exists.");
         }
 
     }

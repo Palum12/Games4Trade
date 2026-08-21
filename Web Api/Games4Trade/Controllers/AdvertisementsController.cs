@@ -28,7 +28,7 @@ namespace Games4TradeAPI.Controllers
         public async Task<IActionResult> Get(int id)
         {
             int? userId;
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 userId = await GetCurrentUserId();
             }
@@ -208,8 +208,11 @@ namespace Games4TradeAPI.Controllers
         
         private async Task<int> GetCurrentUserId()
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-            return currentUserId.Value;
+            var login = User.Identity?.Name
+                ?? throw new InvalidOperationException("Authenticated user has no name claim.");
+
+            return await _userService.GetUserIdByLogin(login)
+                ?? throw new InvalidOperationException("Authenticated user no longer exists.");
         }
     }
 }

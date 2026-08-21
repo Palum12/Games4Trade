@@ -25,7 +25,7 @@ namespace Games4TradeAPI.Controllers
         {
             page = page > 0 ? page - 1 : 0;
             IList<AnnouncementGetDto> announcements;
-            if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
             {
                 announcements = await _announcementService.GetAnnouncementsPage(page, true);
             }
@@ -39,8 +39,8 @@ namespace Games4TradeAPI.Controllers
         [HttpGet("{id}", Name = "Get")]
         public async Task<IActionResult> Get(int id)
         {
-            AnnouncementGetDto announcement;
-            if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            AnnouncementGetDto? announcement;
+            if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
             {
                 announcement = await _announcementService.GetAnnouncement(id, true);
             }
@@ -64,7 +64,12 @@ namespace Games4TradeAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var currentName = User.Identity.Name;
+                var currentName = User.Identity?.Name;
+                if (currentName == null)
+                {
+                    return Unauthorized();
+                }
+
                 var response = await _announcementService.CreateAnnouncement(value, currentName);
                 if (response.IsSuccessful)
                 {

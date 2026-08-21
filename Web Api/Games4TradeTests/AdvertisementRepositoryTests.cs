@@ -168,7 +168,7 @@ namespace Games4TradeAPITests
         }
 
         [Fact]
-        public async void AddAdvertisement()
+        public async Task AddAdvertisement()
         {
             var ctx = _fixture.ctx;
             var advertisementRepository = new AdvertisementRepository(ctx);
@@ -197,7 +197,7 @@ namespace Games4TradeAPITests
         }
 
         [Fact]
-        public async void SearchConsolesPositive()
+        public async Task SearchConsolesPositive()
         {
             // Arrange
             var ctx = _fixture.ctx;
@@ -209,16 +209,16 @@ namespace Games4TradeAPITests
                 Type = "console",
                 Systems = new int[0],
                 Genres = new int[0]
-            }) as List<Advertisement>;
+            });
 
             // Assert
 
-            Assert.Equal(3, consoles.Count);
+            Assert.Equal(3, consoles.Count());
         }
 
 
         [Fact]
-        public async void SearchAccessoriesNegative()
+        public async Task SearchAccessoriesNegative()
         {
 
             var ctx = _fixture.ctx;
@@ -229,13 +229,13 @@ namespace Games4TradeAPITests
                 Type = "accessory",
                 Systems = new int[0],
                 Genres = new int[0]
-            }) as List<Advertisement>;
+            });
             
             Assert.Empty(accessories);           
         }
 
         [Fact]
-        public async void GetAdsForUserTest()
+        public async Task GetAdsForUserTest()
         {
 
             var ctx = _fixture.ctx;
@@ -249,7 +249,7 @@ namespace Games4TradeAPITests
         }
 
         [Fact]
-        public async void GetRecommendedAdsForUserPositive()
+        public async Task GetRecommendedAdsForUserPositive()
         {
 
             var ctx = _fixture.ctx;

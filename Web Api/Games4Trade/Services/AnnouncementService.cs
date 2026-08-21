@@ -23,10 +23,10 @@ namespace Games4TradeAPI.Services
             this.userRepository = userRepository;
         }
 
-        public async Task<AnnouncementGetDto> GetAnnouncement(int id, bool isAdmin)
+        public async Task<AnnouncementGetDto?> GetAnnouncement(int id, bool isAdmin)
         {
             var result = await repository.GetAnnouncementWithAuthor(id, isAdmin);
-            return result?.ToDto()!;
+            return result?.ToDto();
         }
 
         public async Task<IList<AnnouncementGetDto>> GetAnnouncementsPage(int page, bool isAdmin)
@@ -59,6 +59,16 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> CreateAnnouncement(AnnouncementSaveDto announcement, string login)
         {
             var currentUser = await userRepository.GetUserByLogin(login);
+            if (currentUser == null)
+            {
+                return new OperationResult
+                {
+                    IsSuccessful = false,
+                    IsClientError = true,
+                    Message = "User was not found"
+                };
+            }
+
             var announcementModel = announcement.ToModel();
             announcementModel.UserId = currentUser.Id;
             announcementModel.DateCreated = DateTime.UtcNow;

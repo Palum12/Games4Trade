@@ -12,7 +12,7 @@ namespace Games4TradeAPI.Repositories
     {
         public GenreRepository(ApplicationContext context) : base(context) { }
 
-        public async Task<Genre> GetGenreWithGames(int id)
+        public async Task<Genre?> GetGenreWithGames(int id)
         {
             return await Context.Genres.Include(g => g.Games).Where(g => g.Id == id).SingleOrDefaultAsync();
         }

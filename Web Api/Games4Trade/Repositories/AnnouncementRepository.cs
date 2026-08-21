@@ -12,7 +12,7 @@ namespace Games4TradeAPI.Repositories
     {
         public AnnouncementRepository(ApplicationContext context) : base(context) {}
 
-        public async Task<Announcement> GetAnnouncementWithAuthor(int id, bool isAdmin)
+        public async Task<Announcement?> GetAnnouncementWithAuthor(int id, bool isAdmin)
         {
             return await Context.Announcements.Include(a => a.User)
                 .SingleOrDefaultAsync(a => a.Id == id && (isAdmin || a.IsActive));

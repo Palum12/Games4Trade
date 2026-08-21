@@ -51,7 +51,9 @@ public sealed class ConsoleAdvertisementItemStrategy : AdvertisementItemStrategy
 
         var region = await regionRepository.GetAsync(source.ConsoleRegionId
             ?? throw new InvalidOperationException("Console advertisement is missing a region."));
-        result.Region = region.ToDto();
+        result.Region = (region
+            ?? throw new InvalidOperationException("Console advertisement references a missing region."))
+            .ToDto();
         return result;
     }
 }

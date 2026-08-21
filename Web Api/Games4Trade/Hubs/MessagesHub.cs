@@ -9,26 +9,38 @@ namespace Games4TradeAPI.Hubs
     [Authorize]
     public class MessagesHub : Hub<IMessagesClient>
     {
-        private static readonly ConcurrentDictionary<string, string> users = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, string> users = new();
 
-        public static string TryGetUserConnection (string username)
+        public static string? TryGetUserConnection(string username)
         {
-            users.TryGetValue(username, out string connectionId);
+            users.TryGetValue(username, out var connectionId);
             return connectionId;
         }
 
         public override Task OnConnectedAsync()
         {
-            string userName = Context.User.Identity.Name;
-            string connectionId = Context.ConnectionId;
+            var userName = Context.User?.Identity?.Name;
+            if (userName == null)
+            {
+                Context.Abort();
+                return Task.CompletedTask;
+            }
+
+            var connectionId = Context.ConnectionId;
             users.AddOrUpdate(userName, connectionId, (key, value) => connectionId);
             return base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override Task OnDisconnectedAsync(Exception? exception)
         {
-            string username = Context.User.Identity.Name;
-            users.TryRemove(username, out _);
+            var username = Context.User?.Identity?.Name;
+            if (username != null &&
+                users.TryGetValue(username, out var currentConnectionId) &&
+                currentConnectionId == Context.ConnectionId)
+            {
+                users.TryRemove(username, out _);
+            }
+
             return base.OnDisconnectedAsync(exception);
         }
     }

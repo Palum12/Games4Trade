@@ -11,42 +11,45 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch, type WatchStopHandle } from 'vue'
 import { useStore } from 'vuex'
-import { HubConnectionBuilder } from '@microsoft/signalr'
 
 import Navbar from './components/Navbar.vue'
 import LoadingSpinner from './components/common/LoadingSpinner.vue'
+import { connectToMessageHub, disconnectFromMessageHub } from './services/messageHub'
 
 const store = useStore()
 const isSpinnerLoading = computed(() => store.getters.isSpinnerLoading as boolean)
 const messageHubUrl = import.meta.env.VITE_MESSAGE_HUB_URL as string | undefined
+let stopWatchingToken: WatchStopHandle | undefined
 
 onMounted(async () => {
   await store.dispatch('tryAutoLogin')
 
-  const tokenWithoutHeader = store.getters.getTokenWithoutHeader as string | null | undefined
-  if (tokenWithoutHeader && messageHubUrl) {
-    const hubConnection = new HubConnectionBuilder()
-      .withUrl(messageHubUrl, {
-        accessTokenFactory: () => tokenWithoutHeader
+  stopWatchingToken = watch(
+    () => store.getters.getTokenWithoutHeader as string | null | undefined,
+    (tokenWithoutHeader) => {
+      if (!tokenWithoutHeader || !messageHubUrl) {
+        void disconnectFromMessageHub()
+        return
+      }
+
+      void connectToMessageHub(messageHubUrl, tokenWithoutHeader).catch((error: unknown) => {
+        console.error('Failed to connect to message hub', error)
       })
-      .withAutomaticReconnect()
-      .build()
-
-    hubConnection.on('Recieve', (value) => {
-      console.debug('Message received from hub', value)
-    })
-
-    hubConnection.start().catch((error) => {
-      console.error('Failed to connect to message hub', error)
-    })
-  }
+    },
+    { immediate: true }
+  )
 
   void store.dispatch('getGenres')
   void store.dispatch('getSystems')
   void store.dispatch('getRegions')
   void store.dispatch('getStates')
+})
+
+onBeforeUnmount(() => {
+  stopWatchingToken?.()
+  void disconnectFromMessageHub()
 })
 </script>
 

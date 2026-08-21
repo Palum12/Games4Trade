@@ -140,8 +140,13 @@ namespace Games4TradeAPI.Services
         public string ComputeHash(string salt, string password)
         {
             var saltBytes = Convert.FromBase64String(salt);
-            using (var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, saltBytes, 1000))
-            return Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(256));
+            var hash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                saltBytes,
+                1000,
+                HashAlgorithmName.SHA1,
+                256);
+            return Convert.ToBase64String(hash);
         }
 
         /// <summary>

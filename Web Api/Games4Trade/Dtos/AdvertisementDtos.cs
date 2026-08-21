@@ -8,7 +8,7 @@ namespace Games4TradeAPI.Dtos
         public int Id { get; set; }
         public int UserId { get; set; }
         public int? MainPhotoId { get; set; }
-        public string Title { get; set; }      
+        public string Title { get; set; } = string.Empty;
         public DateTime? DateCreated { get; set; }
         public bool ExchangeActive { get; set; }
         public bool IsActive { get; set; }
@@ -20,8 +20,8 @@ namespace Games4TradeAPI.Dtos
         public int Id { get; set; }
         public int UserId { get; set; }
 
-        public string Title { get; set; }
-        public string Discriminator { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Discriminator { get; set; } = string.Empty;
         public DateTime? DateCreated { get; set; }
         public bool ExchangeActive { get; set; }
         public bool IsActive { get; set; }
@@ -29,23 +29,23 @@ namespace Games4TradeAPI.Dtos
         public bool ShowEmail { get; set; }
         public bool ShowPhone { get; set; }
 
-        public string PhoneNumber { get; set; }
-        public string Email { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public DateTime? DateReleased { get; set; }
-        public StateDto State { get; set; }                
-        public SystemDto System { get; set; }
+        public StateDto State { get; set; } = null!;
+        public SystemDto System { get; set; } = null!;
 
-        public UserDto User { get; set; }
-        public ICollection<PhotoDto> Photos { get; set; }
+        public UserDto User { get; set; } = null!;
+        public ICollection<PhotoDto> Photos { get; set; } = [];
     }
 
     public class AdvertisementGameDto : AdvertisementBasicDto
     {       
         public string? Developer { get; set; }
-        public GenreDto Genre { get; set; }
-        public RegionDto Region { get; set; }
+        public GenreDto Genre { get; set; } = null!;
+        public RegionDto Region { get; set; } = null!;
     }
 
     public class AdvertisementAccessoryDto : AdvertisementBasicDto
@@ -56,18 +56,18 @@ namespace Games4TradeAPI.Dtos
 
     public class AdvertisementConsoleDto : AdvertisementBasicDto
     {
-        public RegionDto Region { get; set; }
+        public RegionDto Region { get; set; } = null!;
     }
 
     public class AdvertisementSaveDto
     {
-        public string Title { get; set; }
-        public string Discriminator { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Discriminator { get; set; } = string.Empty;
         public bool ExchangeActive {get;set;}
         public decimal Price { get; set; }
         public int StateId { get; set; }
         public int SystemId { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public DateTime? DateReleased { get; set; }
         public bool ShowEmail { get; set; }
         public bool ShowPhone { get; set; }

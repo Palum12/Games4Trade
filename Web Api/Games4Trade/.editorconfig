@@ -1,0 +1,5 @@
+# Docker builds use this directory as their build context, so the repository-level
+# rule for immutable EF migrations is repeated here.
+
+[Data/Migrations/*.cs]
+dotnet_diagnostic.CS8981.severity = none

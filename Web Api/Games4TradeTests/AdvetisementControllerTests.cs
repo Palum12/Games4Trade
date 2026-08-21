@@ -18,11 +18,13 @@ namespace Games4TradeAPITests
 
         public AdvertisementsControllerFixture()
         {
-             User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "admin"),
-                new Claim(ClaimTypes.Role, "Admin")
-            }));
+            User = new ClaimsPrincipal(new ClaimsIdentity(
+                new[]
+                {
+                    new Claim(ClaimTypes.Name, "admin"),
+                    new Claim(ClaimTypes.Role, "Admin")
+                },
+                "TestJwt"));
 
             NewAdd = new AdvertisementSaveDto
             {
@@ -53,7 +55,7 @@ namespace Games4TradeAPITests
         }
 
         [Fact]
-        public async void AddAdPositive()
+        public async Task AddAdPositive()
         {
             // Arrange
             var adServiceMock = new Mock<IAdvertisementService>();
@@ -82,7 +84,7 @@ namespace Games4TradeAPITests
         }
 
         [Fact]
-        public async void AddAdNegative()
+        public async Task AddAdNegative()
         {
             // Arrange
             var adServiceMock = new Mock<IAdvertisementService>();

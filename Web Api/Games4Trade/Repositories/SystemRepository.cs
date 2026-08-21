@@ -12,12 +12,12 @@ namespace Games4TradeAPI.Repositories
     {
         public SystemRepository(ApplicationContext context) : base(context) { }
 
-        public async Task<Models.System> GetSystemWithItems(int id)
+        public async Task<Models.System?> GetSystemWithItems(int id)
         {
             return await Context.Systems.Include( s=> s.AdvertisementItems).Where(s => s.Id == id).SingleOrDefaultAsync();
         }
 
-        public async Task<Models.System> GetSameSystem(Models.System system)
+        public async Task<Models.System?> GetSameSystem(Models.System system)
         {
             return await Context.Systems
                 .Where(s => s.Manufacturer == system.Manufacturer && s.Model == system.Model)

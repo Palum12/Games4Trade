@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Games4Trade/Games4TradeAPI.csproj" />
+  <Project Path="Games4TradeTests/Games4TradeTests.csproj" />
+</Solution>

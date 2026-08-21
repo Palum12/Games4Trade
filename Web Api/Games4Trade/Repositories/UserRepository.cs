@@ -12,19 +12,19 @@ namespace Games4TradeAPI.Repositories
     {
         public UserRepository(ApplicationContext context) : base(context) { }
 
-        public async Task<User> GetUserByLogin(string login)
+        public async Task<User?> GetUserByLogin(string login)
         {
             return await Context.Users.SingleOrDefaultAsync(u => u.Login.Equals(login));
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User?> GetUserByEmail(string email)
         {
             return await Context.Users.SingleOrDefaultAsync(u => u.Email.Equals(email));
         }
 
-        public async Task<User> GetUserByRecoveryAddress(string recoveryAddress)
+        public async Task<User?> GetUserByRecoveryAddress(string recoveryAddress)
         {
-            return await Context.Users.SingleOrDefaultAsync(u => u.RecoveryAddress.Equals(recoveryAddress));
+            return await Context.Users.SingleOrDefaultAsync(u => u.RecoveryAddress == recoveryAddress);
         }
 
         public async Task<IList<User>> GetObservedUsersForUser(int userId, int? page = null, int? pageSize = null)

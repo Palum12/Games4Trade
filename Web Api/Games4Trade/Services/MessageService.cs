@@ -43,7 +43,7 @@ namespace Games4TradeAPI.Services
             var response = await repository.SaveChangesAsync();
             if (response > 0)
             {
-                return new OperationResult(){IsSuccessful = true, Payload = messageModel};
+                return new OperationResult(){IsSuccessful = true, Payload = messageModel.ToDto()};
             }
             else
             {
@@ -57,7 +57,6 @@ namespace Games4TradeAPI.Services
             var result = new List<NewestMessageDto>();
             foreach (var message in repoResponse)
             {
-                var otherUser = new User();   
                 if (message.SenderId == currentUserId)
                 {
                     var newestMessageSent = new NewestMessageDto
@@ -67,7 +66,7 @@ namespace Games4TradeAPI.Services
                         OtherUserId = message.ReceiverId,
                         DateCreated = message.DateCreated
                     };
-                    otherUser = await userRepository.GetAsync(message.ReceiverId);
+                    var otherUser = await GetExistingUser(message.ReceiverId);
                     newestMessageSent.OtherUser = otherUser.ToSimpleDto();
                     result.Add(newestMessageSent);
                 }
@@ -80,7 +79,7 @@ namespace Games4TradeAPI.Services
                         OtherUserId = message.SenderId,
                         DateCreated = message.DateCreated
                     };
-                    otherUser = await userRepository.GetAsync(message.SenderId);
+                    var otherUser = await GetExistingUser(message.SenderId);
                     newestMessageRecieved.OtherUser = otherUser.ToSimpleDto();
                     result.Add(newestMessageRecieved);
                 }
@@ -105,6 +104,12 @@ namespace Games4TradeAPI.Services
         public async Task<bool> CheckIfThereAreNewMessages(int senderId, int reciverId)
         {
             return await repository.CheckIfThereAreNewMessages(senderId, reciverId);
+        }
+
+        private async Task<User> GetExistingUser(int userId)
+        {
+            return await userRepository.GetAsync(userId)
+                ?? throw new InvalidOperationException($"Message references missing user {userId}.");
         }
     }
 }

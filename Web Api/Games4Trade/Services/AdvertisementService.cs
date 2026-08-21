@@ -101,6 +101,11 @@ namespace Games4TradeAPI.Services
                 };
             }
             var ad = await repository.GetAsync(adId);
+            if (ad == null)
+            {
+                return AdvertisementNotFoundResult();
+            }
+
             ad.IsActive = false;
             await repository.SaveChangesAsync();
 
@@ -141,6 +146,10 @@ namespace Games4TradeAPI.Services
             }
 
             var currentAd = await repository.GetAdvertisementWithDetails(adId, userId);
+            if (currentAd == null)
+            {
+                return AdvertisementNotFoundResult();
+            }
 
             currentAd.ExchangeActive = ad.ExchangeActive;
             currentAd.ShowEmail = ad.ShowEmail;
@@ -226,12 +235,27 @@ namespace Games4TradeAPI.Services
             };
         }
 
-        public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, string message = null)
+        public async Task<OperationResult> DeleteAdvertisement(int userId, int adId, string? message = null)
         {
             var ad = await repository.GetAsync(adId);
+            if (ad == null)
+            {
+                return AdvertisementNotFoundResult();
+            }
+
             if (ad.UserId != userId)
             {
                 var user = await userRepository.GetAsync(userId);
+                if (user == null)
+                {
+                    return new OperationResult
+                    {
+                        IsSuccessful = false,
+                        IsClientError = true,
+                        Message = "Użytkownik nie istnieje"
+                    };
+                }
+
                 if (user.Role.Equals("Admin"))
                 {
                     if (message == null)
@@ -245,6 +269,16 @@ namespace Games4TradeAPI.Services
                     }                   
                     
                     var otherUser = await userRepository.GetAsync(ad.UserId);
+                    if (otherUser == null)
+                    {
+                        return new OperationResult
+                        {
+                            IsSuccessful = false,
+                            IsClientError = true,
+                            Message = "Właściciel ogłoszenia nie istnieje"
+                        };
+                    }
+
                     var text = string.Format(
                         @"Witaj. </br> Twoje ogłoszenie z serwisu Games4Trade o tytule: '{0}' zostało usunięte. Oto powód usunięcia ogłoszenia:<br>{1}",
                         ad.Title, message);
@@ -286,7 +320,7 @@ namespace Games4TradeAPI.Services
             return new OperationResult() {IsSuccessful = false, IsClientError = true};
         }
 
-        public async Task<byte[]> GetAdPhoto(int adId, int? photoId = null)
+        public async Task<byte[]?> GetAdPhoto(int adId, int? photoId = null)
         {
             if (photoId.HasValue)
             {
@@ -314,9 +348,13 @@ namespace Games4TradeAPI.Services
 
         public async Task<OperationResult> ChangeAdPhotos(int adId, int userId, IFormFileCollection photos)
         {
-            var user = await userRepository.GetAsync(userId);
             var ad = await repository.GetAsync(adId);
-            if (! await IsSelfService(userId, adId))
+            if (ad == null)
+            {
+                return AdvertisementNotFoundResult();
+            }
+
+            if (ad.UserId != userId)
             {
                 return new OperationResult()
                 {
@@ -430,7 +468,17 @@ namespace Games4TradeAPI.Services
         private async Task<bool> IsSelfService(int userId, int adId)
         {
             var ad = await repository.GetAsync(adId);
-            return ad.UserId == userId;
+            return ad?.UserId == userId;
+        }
+
+        private static OperationResult AdvertisementNotFoundResult()
+        {
+            return new OperationResult
+            {
+                IsSuccessful = false,
+                IsClientError = true,
+                Message = "Ogłoszenie nie istnieje"
+            };
         }
 
         private async Task<AdvertisementBasicDto> FillAdvertisement(AdvertisementItem source)

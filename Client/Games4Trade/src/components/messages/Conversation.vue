@@ -27,12 +27,14 @@
 
 <script>
 import axios from 'axios'
+import { subscribeToMessages } from '../../services/messageHub'
 export default {
   name: 'Conversation',
   data () {
     return {
       otherUserId: null,
       interval: null,
+      unsubscribeFromMessages: null,
       conversation: [],
       isNextPage: true,
       isLoading: false,
@@ -65,6 +67,18 @@ export default {
         })
       this.newMessage = ''
     },
+    handleReceivedMessage (message) {
+      if (message.senderId !== Number(this.otherUserId)) {
+        return
+      }
+
+      if (!this.conversation.some(existingMessage => existingMessage.id === message.id)) {
+        this.conversation.unshift(message)
+      }
+
+      axios.patch(`Messages?otherUserId=${this.otherUserId}`)
+        .catch(error => console.log(error))
+    },
     getNextPageMessages () {
       let vm = this
       vm.isLoading = true
@@ -96,7 +110,7 @@ export default {
         axios.get(`Messages/${vm.otherUserId}/isUpdate`)
           .then(response => {
             if (response.data === true) {
-              var latestId = vm.conversation[0].id
+              var latestId = vm.conversation[0]?.id ?? 0
               let messages
               axios.get(`Messages?otherUserId=${this.otherUserId}&page=1`)
                 .then(response => {
@@ -114,11 +128,13 @@ export default {
     }
   },
   async mounted () {
+    this.unsubscribeFromMessages = subscribeToMessages(this.handleReceivedMessage)
     await this.refreshData()
     document.getElementById('inner').addEventListener('scroll', this.scrollEnded)
     this.addInterval()
   },
   beforeUnmount () {
+    this.unsubscribeFromMessages?.()
     clearInterval(this.interval)
   }
 }

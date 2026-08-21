@@ -16,9 +16,6 @@ axios.defaults.baseURL = apiUrl
 axios.interceptors.request.use((config) => {
   const token = store.getters.getToken as string | null | undefined
   if (token) {
-    if (!config.headers) {
-      config.headers = {}
-    }
     config.headers.Authorization = token
   }
   return config

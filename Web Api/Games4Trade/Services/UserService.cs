@@ -144,13 +144,13 @@ namespace Games4TradeAPI.Services
             return users.Select(user => user.ToDto()).ToList();
         }
 
-        public async Task<UserDto> GetUserById(int id)
+        public async Task<UserDto?> GetUserById(int id)
         {
             var user = await userRepository.GetAsync(id);
-            return user?.ToDto()!;
+            return user?.ToDto();
         }
 
-        public async Task<UserProfileDto> GetUserProfile(int id, int? currentUser = null)
+        public async Task<UserProfileDto?> GetUserProfile(int id, int? currentUser = null)
         {
             var user = await userRepository.GetAsync(id);
             if (user == null)
@@ -181,7 +181,7 @@ namespace Games4TradeAPI.Services
         public async Task<int?> GetUserIdByLogin(string login)
         {
             var user = await userRepository.GetUserByLogin(login);
-            return user.Id;
+            return user?.Id;
         }
 
         public async Task<IList<ObservedUserDto>> GetObservedUsersForUser(int userId, int? page = null)
@@ -232,6 +232,11 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> ChangeUserDescription(int userId, string description)
         {
             var user = await userRepository.GetAsync(userId);
+            if (user == null)
+            {
+                return UserNotFoundResult();
+            }
+
             if (user.Description != null && user.Description.Equals(description))
             {
                 return new OperationResult
@@ -256,6 +261,11 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> ChangeUserEmail(int userId, string email)
         {
             var user = await userRepository.GetAsync(userId);
+            if (user == null)
+            {
+                return UserNotFoundResult();
+            }
+
             if (user.Email.Equals(email))
             {
                 return new OperationResult
@@ -280,6 +290,11 @@ namespace Games4TradeAPI.Services
         public async Task<OperationResult> ChangeUserPhone(int userId, string phone)
         {
             var user = await userRepository.GetAsync(userId);
+            if (user == null)
+            {
+                return UserNotFoundResult();
+            }
+
             if (user.PhoneNumber != null && user.PhoneNumber.Equals(phone))
             {
                 return new OperationResult
@@ -307,24 +322,31 @@ namespace Games4TradeAPI.Services
             if (user?.PhotoId != null)
             {
                 var photo = await photoRepository.GetAsync(user.PhotoId.Value);
-                var bytes = await File.ReadAllBytesAsync(photo.Path);
-                return bytes;
+                if (photo != null)
+                {
+                    return await File.ReadAllBytesAsync(photo.Path);
+                }
             }
 
             return await File.ReadAllBytesAsync(@"photos/defaultUserPhoto.png");
         }
 
-        public async Task<OperationResult> ChangeUserPhoto(int userId, IFormFile photo)
+        public async Task<OperationResult> ChangeUserPhoto(int userId, IFormFile? photo)
         {
             var user = await userRepository.GetAsync(userId);
+            if (user == null)
+            {
+                return UserNotFoundResult();
+            }
+
             if (photo == null && user.PhotoId.HasValue)
             {
                 var oldPhoto = await photoRepository.GetAsync(user.PhotoId.Value);
                 if (oldPhoto != null)
                 {
                     File.Delete(oldPhoto.Path);
+                    photoRepository.Remove(oldPhoto);
                 }
-                photoRepository.Remove(oldPhoto);
                 user.PhotoId = null;
                 var repoRes = await userRepository.SaveChangesAsync();
                 if (repoRes > 0)
@@ -356,8 +378,8 @@ namespace Games4TradeAPI.Services
                 if (oldPhoto != null)
                 {
                     File.Delete(oldPhoto.Path);
+                    photoRepository.Remove(oldPhoto);
                 }
-                photoRepository.Remove(oldPhoto);
                 user.PhotoId = null;
                 user.Photo = null;
                 var repoRes = await userRepository.SaveChangesAsync();
@@ -380,6 +402,16 @@ namespace Games4TradeAPI.Services
             }
             File.Delete(path);
             return OtherServices.GetIncorrectDatabaseConnectionResult();
+        }
+
+        private static OperationResult UserNotFoundResult()
+        {
+            return new OperationResult
+            {
+                IsSuccessful = false,
+                IsClientError = true,
+                Message = "Użytkownik nie istnieje"
+            };
         }
 
         public async Task<OperationResult> ReplaceGenresForUser(int userId, IList<int> genresIds)

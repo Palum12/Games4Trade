@@ -32,6 +32,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: http://localhost:5001/api/
+        VITE_MESSAGE_HUB_URL: http://localhost:5001/messagehub
     depends_on:
       - api
     ports:

@@ -27,6 +27,7 @@
 <script>
 import axios from 'axios'
 import Miniature from '../components/messages/Miniature.vue'
+import { subscribeToMessages } from '../services/messageHub'
 export default {
   name: 'Messages',
   components: {
@@ -37,6 +38,7 @@ export default {
       dataLoaded: false,
       conversations: [],
       interval: null,
+      unsubscribeFromMessages: null,
       hasUnSavedChanges: false,
       userId: Number
     }
@@ -61,6 +63,9 @@ export default {
   },
   async mounted () {
     let vm = this
+    this.unsubscribeFromMessages = subscribeToMessages(() => {
+      void vm.getNewestMessages()
+    })
     await this.$store.dispatch('getUserId')
       .then(response => {
         vm.userId = response.data
@@ -71,6 +76,7 @@ export default {
     }, 5000)
   },
   beforeUnmount () {
+    this.unsubscribeFromMessages?.()
     clearInterval(this.interval)
   },
   beforeRouteEnter (to, from, next) {

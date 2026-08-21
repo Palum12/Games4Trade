@@ -13,8 +13,8 @@ namespace Games4TradeAPI.Interfaces.Services
         Task<OperationResult> AddObservedUser(ObservedUsersRelationshipDto pair);
         Task<OperationResult> DeleteObservedUser(ObservedUsersRelationshipDto pair);
         Task<IList<UserDto>> Get();
-        Task<UserDto> GetUserById(int id);
-        Task<UserProfileDto> GetUserProfile(int id, int? currentUser = null);
+        Task<UserDto?> GetUserById(int id);
+        Task<UserProfileDto?> GetUserProfile(int id, int? currentUser = null);
         Task<int?> GetUserIdByLogin(string login);
         Task<IList<ObservedUserDto>> GetObservedUsersForUser(int userId, int? page = null);
         Task<OperationResult> CreateUser(UserRegisterDto newUser);
@@ -23,7 +23,7 @@ namespace Games4TradeAPI.Interfaces.Services
         Task<OperationResult> ChangeUserEmail(int userId, string email);
         Task<OperationResult> ChangeUserPhone(int userId, string phone);
         Task<Byte[]> GetUserPhoto(int userId);
-        Task<OperationResult> ChangeUserPhoto(int userId, IFormFile photo);
+        Task<OperationResult> ChangeUserPhoto(int userId, IFormFile? photo);
         Task<OperationResult> ReplaceGenresForUser(int userId, IList<int> genresIds);
         Task<OperationResult> ReplaceSystemsForUser(int userId, IList<int> systemsIds);
     }

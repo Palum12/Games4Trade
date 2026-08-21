@@ -40,7 +40,7 @@ namespace Games4TradeAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            if (User.Identity.IsAuthenticated && await IsSelfService(id))
+            if (User.Identity?.IsAuthenticated == true && await IsSelfService(id))
             {
                 var user = await _userService.GetUserById(id);
                 if (user == null)
@@ -49,9 +49,9 @@ namespace Games4TradeAPI.Controllers
                 }
                 return Ok(user);
             }
-            else if (User.Identity.IsAuthenticated)
+            else if (User.Identity?.IsAuthenticated == true)
             {
-                var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+                var currentUserId = await GetCurrentUserId();
                 var user = await _userService.GetUserProfile(id, currentUserId);
                 if (user == null)
                 {
@@ -93,7 +93,7 @@ namespace Games4TradeAPI.Controllers
         [Route("id")]
         public async Task<IActionResult> GetLoggedUserId()
         {
-            var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
+            var currentUserId = await GetCurrentUserId();
             return Ok(currentUserId);
         }
 
@@ -395,13 +395,21 @@ namespace Games4TradeAPI.Controllers
 
         private async Task<bool> IsSelfService(int userId)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated == true)
             {
-                var currentUserId = await _userService.GetUserIdByLogin(User.Identity.Name);
-                return currentUserId.Value == userId;
+                return await GetCurrentUserId() == userId;
             }
 
             return false;
+        }
+
+        private async Task<int> GetCurrentUserId()
+        {
+            var login = User.Identity?.Name
+                ?? throw new InvalidOperationException("Authenticated user has no name claim.");
+
+            return await _userService.GetUserIdByLogin(login)
+                ?? throw new InvalidOperationException("Authenticated user no longer exists.");
         }
       
     }

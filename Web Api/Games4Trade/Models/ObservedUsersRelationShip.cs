@@ -3,8 +3,8 @@
     public class ObservedUsersRelationship
     {
         public int ObservingUserId { get; set; }
-        public virtual User ObservingUser { get; set; }
+        public virtual User ObservingUser { get; set; } = null!;
         public int ObservedUserId { get; set; }
-        public virtual User ObservedUser { get; set; }
+        public virtual User ObservedUser { get; set; } = null!;
     }
 }

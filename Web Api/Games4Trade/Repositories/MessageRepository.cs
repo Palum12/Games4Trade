@@ -13,16 +13,18 @@ namespace Games4TradeAPI.Repositories
         public MessageRepository(ApplicationContext context) : base(context) { }
 
         public async Task<IEnumerable<Message>> GetNewestMessagesForUser(int currentUserId)
-        {                
-            var query = from m in Context.Messages
-                let msgTo = m.ReceiverId == currentUserId
-                let msgFrom = m.SenderId == currentUserId
-                where msgTo || msgFrom
-                group m by msgTo ? m.SenderId : m.ReceiverId into g
-                select g.OrderByDescending(x => x.DateCreated).First();
-            var result = await query.OrderByDescending(m => m.DateCreated).ToListAsync();
+        {
+            var latestMessageIds = Context.Messages
+                .Where(message =>
+                    message.ReceiverId == currentUserId || message.SenderId == currentUserId)
+                .GroupBy(message =>
+                    message.ReceiverId == currentUserId ? message.SenderId : message.ReceiverId)
+                .Select(conversation => conversation.Max(message => message.Id));
 
-            return result;
+            return await Context.Messages
+                .Where(message => latestMessageIds.Contains(message.Id))
+                .OrderByDescending(message => message.DateCreated)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Message>> GetMessagesWithReciever(int senderId, int recieverId, int page, int pageSize)

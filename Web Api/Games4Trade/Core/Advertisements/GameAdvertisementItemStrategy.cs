@@ -58,8 +58,12 @@ public sealed class GameAdvertisementItemStrategy : AdvertisementItemStrategy<Ga
         var region = await regionRepository.GetAsync(source.GameRegionId
             ?? throw new InvalidOperationException("Game advertisement is missing a region."));
 
-        result.Genre = genre.ToDto();
-        result.Region = region.ToDto();
+        result.Genre = (genre
+            ?? throw new InvalidOperationException("Game advertisement references a missing genre."))
+            .ToDto();
+        result.Region = (region
+            ?? throw new InvalidOperationException("Game advertisement references a missing region."))
+            .ToDto();
         return result;
     }
 }

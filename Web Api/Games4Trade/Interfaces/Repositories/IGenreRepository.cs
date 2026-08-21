@@ -6,7 +6,7 @@ namespace Games4TradeAPI.Interfaces.Repositories
 {
     public interface IGenreRepository : IRepository<Genre>
     {
-        Task<Genre> GetGenreWithGames(int id);
+        Task<Genre?> GetGenreWithGames(int id);
         Task<IList<Genre>> GetGenresForUser(int userId);
     }
 }

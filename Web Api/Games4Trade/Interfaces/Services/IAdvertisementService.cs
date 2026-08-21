@@ -15,8 +15,8 @@ namespace Games4TradeAPI.Interfaces.Services
         Task<OperationResult> GetRecommendedAdsForUser(int userId, int page);
         Task<OperationResult> GetAdvetisementsForUser(int userId, int page, bool selfService);
         Task<OperationResult> GetAdvetisements(AdQueryOptions queryOptions);
-        Task<OperationResult> DeleteAdvertisement(int userId, int adId, string reason = null);
-        Task<Byte[]> GetAdPhoto(int adId, int? photoId = null);
+        Task<OperationResult> DeleteAdvertisement(int userId, int adId, string? reason = null);
+        Task<Byte[]?> GetAdPhoto(int adId, int? photoId = null);
         Task<OperationResult> ChangeAdPhotos(int adId, int userId, IFormFileCollection photos);
     }
 }

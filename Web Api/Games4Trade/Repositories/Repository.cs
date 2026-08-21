@@ -25,7 +25,7 @@ namespace Games4TradeAPI.Repositories
         public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate) =>
             await Context.Set<TEntity>().Where(predicate).ToListAsync();
 
-        public async Task<TEntity> GetAsync(int id) => await Context.Set<TEntity>().FindAsync(id);
+        public async Task<TEntity?> GetAsync(int id) => await Context.Set<TEntity>().FindAsync(id);
 
         public async Task<IEnumerable<TEntity>> GetAllAsync() => await Context.Set<TEntity>().ToListAsync();
         

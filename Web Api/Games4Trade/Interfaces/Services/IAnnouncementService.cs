@@ -7,7 +7,7 @@ namespace Games4TradeAPI.Interfaces.Services
 {
     public interface IAnnouncementService
     {
-        Task<AnnouncementGetDto> GetAnnouncement(int id, bool isAdmin);
+        Task<AnnouncementGetDto?> GetAnnouncement(int id, bool isAdmin);
         Task<IList<AnnouncementGetDto>> GetAnnouncementsPage(int page, bool isAdmin);
         Task<OperationResult> ChangeStatus(int id, AnnouncementArchiveDto value);
         Task<OperationResult> CreateAnnouncement(AnnouncementSaveDto announcement, string login);
